@@ -51,6 +51,76 @@ const Home: NextPage = () => {
             </p>
           </a>
         </div>
+
+        <br></br>
+        <button className="button-palette" role="button">Piano</button>
+
+        <br></br>
+        <br></br>
+
+
+        <table className="table-palette">
+          <thead>
+            <tr>
+              <th>Palette:</th>
+              <th className="table-palette-th2">ROCK</th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+            </tr>
+          </tfoot>
+          <tbody>
+            <tr>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">Piano</button>
+                </div>
+              </td>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">Piano</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">Electric Guitar</button>
+                </div>
+              </td>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">Electric Guitar</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">Rock Drums</button>
+                </div>
+              </td>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">Rock Drums</button>
+                </div>
+              </td>              
+            </tr>
+            <tr>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">Bass Guitar</button>
+                </div>
+              </td>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">Bass Guitar</button>
+                </div>
+              </td> 
+            </tr>
+          </tbody>
+        </table>
       </main>
 
       <footer className={styles.footer}>
