@@ -1,8 +1,19 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { GeistProvider, CssBaseline } from '@geist-ui/core'
+import { useEffect } from 'react';
+import { ping } from '../components/Helper';
 
 function MyApp({ Component, pageProps }: AppProps) {
+
+  const fetchPing = async () => {
+    await ping();
+  };
+
+  useEffect(() => {
+    fetchPing();
+  });
+
   return (
     <GeistProvider>
       <CssBaseline />
