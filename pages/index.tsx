@@ -3,6 +3,12 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
+function ShowPalette() {
+}
+
+var paletteNums = ["piano", "overdriven guitar", "rock drums", "bass guitar"];
+var paletteNumsStates = [1, 1, 1, 1]
+
 const Home: NextPage = () => {
   return (
     <div className={styles.container}>
@@ -52,6 +58,13 @@ const Home: NextPage = () => {
           </a>
         </div>
 
+        <div id="PaletteList" className="palette-list">
+          <a href="#" onClick={ShowPalette}>Rock</a>
+          <a href="#" onClick={ShowPalette}>Electronic</a>
+          <a href="#" onClick={ShowPalette}>Lo-Fi</a>
+          <a href="#" onClick={ShowPalette}>Hip-Hop</a>
+        </div>
+
         <br></br>
         <button className="button-palette" role="button">Piano</button>
 
@@ -68,6 +81,12 @@ const Home: NextPage = () => {
           </thead>
           <tfoot>
             <tr>
+              <td>
+                <button>RESET</button>
+              </td>
+              <td>
+                <button>SAVE</button>
+              </td>
             </tr>
           </tfoot>
           <tbody>
@@ -79,19 +98,7 @@ const Home: NextPage = () => {
               </td>
               <td>
                 <div className="table-palette-buttonframe">
-                  <button className="button-palette" role="button">Piano</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div className="table-palette-buttonframe">
-                  <button className="button-palette" role="button">Electric Guitar</button>
-                </div>
-              </td>
-              <td>
-                <div className="table-palette-buttonframe">
-                  <button className="button-palette" role="button">Electric Guitar</button>
+                  <button className="button-palette" role="button">Overdriven Guitar</button>
                 </div>
               </td>
             </tr>
@@ -103,21 +110,9 @@ const Home: NextPage = () => {
               </td>
               <td>
                 <div className="table-palette-buttonframe">
-                  <button className="button-palette" role="button">Rock Drums</button>
-                </div>
-              </td>              
-            </tr>
-            <tr>
-              <td>
-                <div className="table-palette-buttonframe">
                   <button className="button-palette" role="button">Bass Guitar</button>
                 </div>
               </td>
-              <td>
-                <div className="table-palette-buttonframe">
-                  <button className="button-palette" role="button">Bass Guitar</button>
-                </div>
-              </td> 
             </tr>
           </tbody>
         </table>
@@ -135,6 +130,7 @@ const Home: NextPage = () => {
           </span>
         </a>
       </footer>
+
     </div>
   )
 }
