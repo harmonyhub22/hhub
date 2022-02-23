@@ -46,6 +46,14 @@ table.table-palette thead th:nth-child(even) {
   color: #FFFFFF;
   border-radius: 0px 50px 0px 0px;
 }
+table.table-palette tfoot {
+  font-size: 30px;
+  font-weight: bold;
+  color: #FFFFFF;
+  padding: 5px 5px;
+  justify-content: center;
+  border-radius: 50px 50px 50px 50px;
+}
 
 .table-palette-buttonframe {
   width: 75%;
@@ -179,4 +187,31 @@ table.table-palette thead th:nth-child(even) {
 .button-palette:disabled {
   cursor: default;
   opacity: .24;
+}
+
+
+.palette-list {
+  height: 100%;
+  width: 250px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  right:0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 15%;
+}
+.palette-list a {
+  background-color: #111;
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+.palette-list a:hover {
+  color: #f1f1f1;
+  background-color: #320F48;
 }
