@@ -32,7 +32,7 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@geist-ui/core@^2.3.3":
+"@geist-ui/core@^2.3.4":
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/@geist-ui/core/-/core-2.3.4.tgz#901bb14617288d6d4ce0514c93841f32f48a6fcb"
   integrity sha512-jLfNjMW6zm2ITvfPHSiiP4YWvGA5eJxLXb/60v6VOk9XKF1dWPvcOi8tEn+edBRjponxN5y3wUseK4hQDqgnmA==
