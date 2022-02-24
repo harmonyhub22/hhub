@@ -1,24 +1,30 @@
 import React, { Component,useState, useEffect } from "react";
-import {Button, Page, Text, GeistProvider, CssBaseline } from '@geist-ui/core'
+import {Button, Page, Text, GeistProvider, CssBaseline, Table } from '@geist-ui/core'
 import socketIOClient from "socket.io-client";
 const ENDPOINT = "http://localhost:5000";
+
+
 function Session() {
+  
   const [response, setResponse] = useState("");
 
-  useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
-    socket.on("/queuejoin", data => {
-      setResponse(data);
-    });
-  }, []);
+
+  const addLayer = () =>{
+    alert("added")
+  };
+
+  const finishSong = () =>{
+    alert("OOOf")
+  };
 
   return (
     <Page>
       <Text h1>Session Page</Text>
-      <Button>Submit</Button>
-      <p>
-      It's <time dateTime={response}>{response}</time>
-      </p>
+      <audio controls>
+        <source src = "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3" type = "audio/mpeg"></source> 
+      </audio>
+      <Button onClick = {() => addLayer()}>Submit Layer</Button>
+      <Button onClick = {() => finishSong()}>Finish Song</Button>
     </Page>
   );
 }
