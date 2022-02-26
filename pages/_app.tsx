@@ -2,7 +2,7 @@ import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { GeistProvider, CssBaseline } from '@geist-ui/core'
 import { useEffect } from 'react';
-import { ping } from '../components/Helper';
+import { ping, getCurrentUser } from '../components/Helper';
 
 function MyApp({ Component, pageProps }: AppProps) {
 
@@ -12,6 +12,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     fetchPing();
+    getCurrentUser();
   });
 
   return (

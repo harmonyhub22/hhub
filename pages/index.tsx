@@ -4,6 +4,7 @@ import Image from "next/image";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
+  console.log(process.env.SERVER_URL)
   return (
     <div className={styles.container}>
         <main className={styles.main}>
