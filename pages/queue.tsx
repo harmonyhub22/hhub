@@ -1,18 +1,27 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import { joinWaitQueue } from "../components/Session";
 
 const Queue = (): React.ReactNode => {
   const [socket, setSocket] = useState();
+  const [joinedTime, setJoinedTime] = useState();
   const Router = useRouter();
 
-  
+  const joinQueue = async () => {
+    const queueResponse = await joinWaitQueue();
+    console.log(queueResponse);
+    setJoinedTime(queueResponse.timeEntered);
+  }
 
-  return (
-    <div>
-      <Navbar />
-      <h1>Queue Page</h1>
-    </div>
+  useEffect(() => {
+    joinQueue();
+  }, []);
+
+  return (<>
+      <h1>Queue Loading Page</h1>
+      <p>Join at time: {joinedTime}</p>
+    </>
   );
 };
 
