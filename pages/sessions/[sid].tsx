@@ -13,30 +13,33 @@ import {
 } from "@geist-ui/core";
 import io from "socket.io-client";
 import { saveAs } from "file-saver";
+
 const ENDPOINT = "http://localhost:5000";
+const socket = io(ENDPOINT, {transports: ['websocket']});
 
 function Session() {
   const [response, setResponse] = useState("");
   const [input, setInput] = useState("");
-  const [socket, setSocket] = useState({});
+  //const [socket, setSocket] = useState({});
   const { visible, setVisible, bindings } = useModal();
-  const [state, setState] = React.useState(false);
-  const socketInitializer = async () => {
-    await fetch("/api/socket");
-    const newSocket = io();
+  const [showPallete, setShowPallete] = React.useState(false);
 
-    newSocket.on("connect", () => {
-      console.log("connected");
-    });
+//   const socketInitializer = async () => {
+//     await fetch("/api/socket");
+//     const newSocket = io();
 
-    newSocket.on("update-input", (msg) => {
-      console.log("input updated!");
-    });
+//     newSocket.on("connect", () => {
+//       console.log("connected");
+//     });
 
-    setSocket(newSocket);
-  };
+//     newSocket.on("update-input", (msg) => {
+//       console.log("input updated!");
+//     });
 
-  useEffect(() => socketInitializer(), []);
+//     setSocket(newSocket);
+//   };
+
+  //useEffect(() => socketInitializer(), []);
 
   const onChangeHandler = (e) => {
     setInput(e.target.value);
@@ -45,16 +48,22 @@ function Session() {
 
   const addLayer = () => {
     alert("added");
+    socket.emit("addlayer", {
+        data: 'im a layer'
+    });
   };
 
-  // const finishSong = () =>{
-  //   alert("OOOf")
-  // };
+  const finishSong = () => {
+    alert("TODO");
+    // TODO: make backend request to process the finished song (send all of the layers)
+  };
+
   const saveFile = () => {
     saveAs(
       "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3"
     );
   };
+  
   return (
     <Page>
       <Text h1>Session Page</Text>
@@ -86,12 +95,12 @@ function Session() {
           value={input}
           onChange={onChangeHandler}
         />
-        <Button auto onClick={() => setState(true)} scale={1}>
+        <Button auto onClick={() => setShowPallete(true)} scale={1}>
           Show Pallete
         </Button>
         <Drawer
-          visible={state}
-          onClose={() => setState(false)}
+          visible={showPallete}
+          onClose={() => setShowPallete(false)}
           placement="right"
         >
           <Drawer.Title>Pallete</Drawer.Title>
