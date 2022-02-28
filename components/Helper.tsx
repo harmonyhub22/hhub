@@ -2,9 +2,10 @@ import { config } from './config'
 
 export const ping = async () => {
     try {
-        const response = await fetch(config.server_url + '/ping', {
+        const response = await fetch(config.server_url + 'ping', {
             method: 'GET',
             headers: {
+                credentials: 'include',
                 'Content-Type': 'application/json'
             }
         });
@@ -14,11 +15,10 @@ export const ping = async () => {
     }
 }
 
-export const getCurrentUser = async () => {
+export const getCurrentMember = async () => {
     try {
-        const response = await fetch(config.server_url + '/')
-        const jsonResponse = await response.json();
-        return jsonResponse;
+        const response = await fetch(config.server_url + '')
+        return response.json();
     } catch (e) {
         console.log(e)
     }
