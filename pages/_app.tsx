@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   const fetchCurrentMember = async () => {
     const member = await getCurrentMember();
-    console.log(member)
+    //console.log(member)
     setMember(member);
   }
 

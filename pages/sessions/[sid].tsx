@@ -1,4 +1,5 @@
 import React, { Component, useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import {
   Button,
   Page,
@@ -11,40 +12,35 @@ import {
   CssBaseline,
   Table,
 } from "@geist-ui/core";
-import io from "socket.io-client";
+import { io } from "socket.io-client";
+import { config } from "../../components/config";
 import { saveAs } from "file-saver";
-
-const ENDPOINT = "http://localhost:5000";
-const socket = io(ENDPOINT, {transports: ['websocket']});
+import { getCurrentMember } from '../../components/Helper';
 
 function Session() {
   const [response, setResponse] = useState("");
-  const [input, setInput] = useState("");
-  //const [socket, setSocket] = useState({});
+  const [socket, setSocket] = useState(null);
   const { visible, setVisible, bindings } = useModal();
   const [showPallete, setShowPallete] = React.useState(false);
+  const router = useRouter();
 
-//   const socketInitializer = async () => {
-//     await fetch("/api/socket");
-//     const newSocket = io();
+  const sessionId = router.query.id;
+  
+  // put the user in their web socket room (room # = session ID)
+  const startSession = async () => {
+    const newSocket = io(config.server_url);
+    setSocket(newSocket);
+    const member = await getCurrentMember();
+    const data = {
+        'fullName': member.firstname + ' ' + member.lastname,
+        'sessionId': sessionId
+    };
+    socket.emit('join', data);
+  }
 
-//     newSocket.on("connect", () => {
-//       console.log("connected");
-//     });
-
-//     newSocket.on("update-input", (msg) => {
-//       console.log("input updated!");
-//     });
-
-//     setSocket(newSocket);
-//   };
-
-  //useEffect(() => socketInitializer(), []);
-
-  const onChangeHandler = (e) => {
-    setInput(e.target.value);
-    socket.emit("input-change", e.target.value);
-  };
+  useEffect(() => {
+    startSession();
+  }, []);
 
   const addLayer = () => {
     alert("added");
