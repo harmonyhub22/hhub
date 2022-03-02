@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import { joinWaitQueue } from "../components/Session";
 import { config } from "../components/config";
 import { io } from "socket.io-client";
+import { createSocket } from "../components/socket";
 
 const Queue = (): React.ReactNode => {
   const [socket, setSocket] = useState(io);
@@ -11,39 +12,24 @@ const Queue = (): React.ReactNode => {
   const [sessionId, setSessionId] = useState();
   const router = useRouter();
 
-  socket.on('connect', () => {
-      console.log('connected!');
-  });
-
-  socket.on("disconnect", () => {
-    console.log("disconnected!");
-  });
-
-  socket.on('message', function(msg) {
-    console.log(msg);
-  });
-  
-  socket.on("error", (error) => {
-    console.log('error connecting!!')
-  });
-
   const joinQueue = async () => {
+    // now join a session by connecting to the web socket
+    if (!socket) {
+      const newSocket = createSocket();
+      newSocket.on('session_made', (data) => {
+        setSessionId(data.sessionId);
+        router.push({
+            pathname: "/sessions/" + sessionId,
+            query: { id: sessionId }
+        });
+      }); 
+      setSocket(newSocket);
+    }
+  
     const queueResponse = await joinWaitQueue();
     console.log(queueResponse);
     setJoinedTime(queueResponse.timeEntered);
-
-    // now join a session by connecting to the web socket
-    const newSocket = io("http://localhost:5000/api");
-    setSocket(newSocket);
   }
-
-  socket.on('session_made', function(data) {
-    setSessionId(data.sessionId);
-    router.push({
-        pathname: "/sessions/" + sessionId,
-        query: { id: sessionId }
-    });
-  }); 
 
   useEffect(() => {
     joinQueue();
