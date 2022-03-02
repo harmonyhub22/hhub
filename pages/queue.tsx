@@ -6,10 +6,26 @@ import { config } from "../components/config";
 import { io } from "socket.io-client";
 
 const Queue = (): React.ReactNode => {
-  const [socket, setSocket] = useState(null);
+  const [socket, setSocket] = useState(io);
   const [joinedTime, setJoinedTime] = useState();
   const [sessionId, setSessionId] = useState();
   const router = useRouter();
+
+  socket.on('connect', () => {
+      console.log('connected!');
+  });
+
+  socket.on("disconnect", () => {
+    console.log("disconnected!");
+  });
+
+  socket.on('message', function(msg) {
+    console.log(msg);
+  });
+  
+  socket.on("error", (error) => {
+    console.log('error connecting!!')
+  });
 
   const joinQueue = async () => {
     const queueResponse = await joinWaitQueue();
@@ -17,7 +33,7 @@ const Queue = (): React.ReactNode => {
     setJoinedTime(queueResponse.timeEntered);
 
     // now join a session by connecting to the web socket
-    const newSocket = io(config.server_url);
+    const newSocket = io("http://localhost:5000/api");
     setSocket(newSocket);
   }
 

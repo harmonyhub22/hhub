@@ -13,13 +13,13 @@ const Navbar = () => {
     <>
       <IconContext.Provider value={{ color: 'black' }}>
       <div className={styles.navbar}>
-        <Link href="/" className={styles.menu_bars}>
+        <Link href="/">
           <FaIcons.FaBars onClick={showSidebar} />
         </Link>
         <nav className={sidebar ? styles.nav_menu_active : styles.nav_menu}>
           <ul className={styles.nav_menu_items}>
             <li className={styles.navbar_toggle}>
-              <Link href="/" className={styles.menu_bars}>
+              <Link href="/">
                 <AiIcons.AiOutlineClose onClick={showSidebar} />
               </Link>
             </li>

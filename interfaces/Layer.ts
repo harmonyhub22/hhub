@@ -1,5 +1,4 @@
-export {}
-interface Layer{
+export default interface Layer {
     startTime: number;
     endTime: number;
     numRepeats: number;

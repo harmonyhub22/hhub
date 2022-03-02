@@ -19,7 +19,7 @@ import { getCurrentMember } from '../../components/Helper';
 
 function Session() {
   const [response, setResponse] = useState("");
-  const [socket, setSocket] = useState(null);
+  const [socket, setSocket] = useState(io);
   const { visible, setVisible, bindings } = useModal();
   const [showPallete, setShowPallete] = React.useState(false);
   const router = useRouter();
@@ -28,7 +28,7 @@ function Session() {
   
   // put the user in their web socket room (room # = session ID)
   const startSession = async () => {
-    const newSocket = io(config.server_url);
+    const newSocket = io("http://localhost:5000/api");
     setSocket(newSocket);
     const member = await getCurrentMember();
     const data = {
@@ -86,11 +86,6 @@ function Session() {
             Download
           </Modal.Action>
         </Modal>
-        <input
-          placeholder="Type something"
-          value={input}
-          onChange={onChangeHandler}
-        />
         <Button auto onClick={() => setShowPallete(true)} scale={1}>
           Show Pallete
         </Button>
