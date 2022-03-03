@@ -18,6 +18,7 @@ import { saveAs } from "file-saver";
 // import { getCurrentMember } from "../../components/Helper";
 import Timeline from "react-calendar-timeline";
 import moment from "moment";
+import Head from "next/head";
 
 function Session() {
   const [response, setResponse] = useState("");
@@ -102,44 +103,53 @@ function Session() {
             type="audio/mpeg"
           ></source>
         </audio>
-        <Button onClick={addLayer}>Submit Layer</Button>
-        <Button auto onClick={() => setVisible(true)}>
+      </Grid.Container> */}
+      <Head>
+          <h3>Your song session! Add a layer to your song with your partner!</h3>
+      </Head>
+      <div>
+        <Timeline
+          groups={groups}
+          items={items}
+          defaultTimeStart={moment().add(-12, "hour")}
+          defaultTimeEnd={moment().add(12, "hour")}
+        />
+      </div>
+
+      <Drawer
+        visible={showPallete}
+        onClose={() => setShowPallete(false)}
+        placement="right"
+      >
+        <Drawer.Title>Pallete</Drawer.Title>
+        <Drawer.Subtitle>Pallete will go here</Drawer.Subtitle>
+        <Drawer.Content>
+          <p>Some content contained within the drawer.</p>
+        </Drawer.Content>
+      </Drawer>
+
+      <Modal {...bindings}>
+        <Modal.Title>Finishing Song</Modal.Title>
+        <Modal.Content>
+          <p>Would you like to leave or download the song</p>
+        </Modal.Content>
+        <Modal.Action passive onClick={() => setVisible(false)}>
+          Leave
+        </Modal.Action>
+        <Modal.Action passive onClick={() => saveFile()}>
+          Download
+        </Modal.Action>
+      </Modal>
+
+      <Page.Footer>
+        <Button auto onClick={() => setVisible(true)} type="success">
           Finish Song
         </Button>
-        <Modal {...bindings}>
-          <Modal.Title>Finishing Song</Modal.Title>
-          <Modal.Content>
-            <p>Would you like to leave or download the song</p>
-          </Modal.Content>
-          <Modal.Action passive onClick={() => setVisible(false)}>
-            Leave
-          </Modal.Action>
-          <Modal.Action passive onClick={() => saveFile()}>
-            Download
-          </Modal.Action>
-        </Modal>
         <Button auto onClick={() => setShowPallete(true)} scale={1}>
           Show Pallete
         </Button>
-        <Drawer
-          visible={showPallete}
-          onClose={() => setShowPallete(false)}
-          placement="right"
-        >
-          <Drawer.Title>Pallete</Drawer.Title>
-          <Drawer.Subtitle>Pallete will go here</Drawer.Subtitle>
-          <Drawer.Content>
-            <p>Some content contained within the drawer.</p>
-          </Drawer.Content>
-        </Drawer>
-      </Grid.Container> */}
-      <div>
-        <Timeline groups={groups}
-                    items={items}
-                    defaultTimeStart={moment().add(-12, 'hour')}
-                    defaultTimeEnd={moment().add(12, 'hour')}
-            />
-      </div>
+        <Button onClick={addLayer}>Submit Layer</Button>
+      </Page.Footer>
     </Page>
   );
 }
