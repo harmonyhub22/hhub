@@ -2,6 +2,7 @@ import { io } from "socket.io-client";
 import { config } from "./config";
 
 export const createSocket = () => {
+    console.log(config.server_url);
     const socket = io(config.server_url + '');
     socket.on('connect', () => {
         console.log('connected!');
