@@ -15,17 +15,37 @@ const Home = () => {
         });
     };
 
+    const enterSession2 = async () => {
+      router.push({
+        pathname: "/temp",
+      });
+    };
+
     return (
-        <>
-        <Navbar/>
+      <>
+        <Navbar />
         <div>
-            <h1>Harmony Hub</h1>
+          <h1>Harmony Hub</h1>
         </div>
-        
-        <Button shadow type="secondary" id="btn-new-session" onClick={enterSession}>
-            New Session
+
+        <Button
+          shadow
+          type="secondary"
+          id="btn-new-session"
+          onClick={enterSession}
+        >
+          New Session
         </Button>
-        </>
+
+        <Button
+          shadow
+          type="secondary"
+          id="btn-new-session"
+          onClick={enterSession2}
+        >
+          New Session (temp)
+        </Button>
+      </>
     );
 };
 
