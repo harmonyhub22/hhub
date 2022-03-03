@@ -11,31 +11,33 @@ const Navbar = () => {
   const showSidebar = () => setSidebar(!sidebar)
   return (
     <>
-      <IconContext.Provider value={{ color: 'black' }}>
-      <div className={styles.navbar}>
-        <Link href="/">
-          <FaIcons.FaBars onClick={showSidebar} />
-        </Link>
-        <nav className={sidebar ? styles.nav_menu_active : styles.nav_menu}>
-          <ul className={styles.nav_menu_items}>
-            <li className={styles.navbar_toggle}>
-              <Link href="/">
-                <AiIcons.AiOutlineClose onClick={showSidebar} />
-              </Link>
-            </li>
-            {SidebarData.map((item, index) => {
-              return (
-                <li key={index} className={item.cName}>
-                  {item.icon}
-                  <Link href={item.path}>
-                    <span className={styles.navbar_item_label}>{item.title}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      </div>
+      <IconContext.Provider value={{ color: "black" }}>
+        <div className={styles.navbar}>
+          <Link href="/" passHref>
+            <FaIcons.FaBars onClick={showSidebar} />
+          </Link>
+          <nav className={sidebar ? styles.nav_menu_active : styles.nav_menu}>
+            <ul className={styles.nav_menu_items}>
+              <li className={styles.navbar_toggle}>
+                <Link href="/" passHref>
+                  <AiIcons.AiOutlineClose onClick={showSidebar} />
+                </Link>
+              </li>
+              {SidebarData.map((item, index) => {
+                return (
+                  <li key={index} className={item.cName}>
+                    {item.icon}
+                    <Link href={item.path} passHref>
+                      <span className={styles.navbar_item_label}>
+                        {item.title}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        </div>
       </IconContext.Provider>
     </>
   );

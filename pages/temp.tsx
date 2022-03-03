@@ -16,6 +16,8 @@ import {
 // import { config } from "../../components/config";
 import { saveAs } from "file-saver";
 // import { getCurrentMember } from "../../components/Helper";
+import Timeline from "react-calendar-timeline";
+import moment from "moment";
 
 function Session() {
   const [response, setResponse] = useState("");
@@ -25,6 +27,36 @@ function Session() {
 //   const router = useRouter();
 
 //   const sessionId = router.query.id;
+
+    // groups represent our layers 
+    const groups = [
+      { id: 1, title: "layer 1" },
+      { id: 2, title: "layer 2" },
+    ];
+
+    const items = [
+      {
+        id: 1,
+        group: 1,
+        title: "item 1",
+        start_time: moment(),
+        end_time: moment().add(1, "hour"),
+      },
+      {
+        id: 2,
+        group: 2,
+        title: "item 2",
+        start_time: moment().add(-0.5, "hour"),
+        end_time: moment().add(0.5, "hour"),
+      },
+      {
+        id: 3,
+        group: 1,
+        title: "item 3",
+        start_time: moment().add(2, "hour"),
+        end_time: moment().add(3, "hour"),
+      },
+    ];
 
   // put the user in their web socket room (room # = session ID)
 //   const startSession = async () => {
@@ -62,7 +94,7 @@ function Session() {
 
   return (
     <Page>
-      <Text h1>Session Page</Text>
+      {/* <Text h1>Session Page</Text>
       <Grid.Container gap={1} justify="flex-end" height="100px">
         <audio controls id="">
           <source
@@ -100,7 +132,14 @@ function Session() {
             <p>Some content contained within the drawer.</p>
           </Drawer.Content>
         </Drawer>
-      </Grid.Container>
+      </Grid.Container> */}
+      <div>
+        <Timeline groups={groups}
+                    items={items}
+                    defaultTimeStart={moment().add(-12, 'hour')}
+                    defaultTimeEnd={moment().add(12, 'hour')}
+            />
+      </div>
     </Page>
   );
 }

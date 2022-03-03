@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app'
 import { GeistProvider, CssBaseline } from '@geist-ui/core'
 import { useEffect, useState } from 'react';
 import { getCurrentMember } from '../components/Helper';
+import "react-calendar-timeline/src/lib/Timeline.scss";
 
 function MyApp({ Component, pageProps }: AppProps) {
 
