@@ -21,7 +21,8 @@ const Queue = (): React.ReactNode => {
     const joinQueue = async () => {
       socket.on('session_made', moveToSession);
       const queue = await joinWaitQueue();
-      console.log(queue);
+      if (queue === null || queue === undefined)
+        return;
       setJoinedTime(queue.timeEntered);
     };
     joinQueue();

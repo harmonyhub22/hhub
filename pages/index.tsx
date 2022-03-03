@@ -17,8 +17,9 @@ const Home = () => {
 
     const checkLiveSession = async () => {
         const liveSession = await getLiveSession();
-        if (liveSession !== null)
-            setLiveSessionId(liveSession.sessionId);
+        if (liveSession === null || liveSession === undefined)
+            return;
+        setLiveSessionId(liveSession.sessionId);
     };
 
     const enterLiveSession = async () => {

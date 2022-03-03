@@ -10,6 +10,10 @@ export const getCurrentMember = async () => {
                 "Content-Type": "application/json",
             }
         });
+        if (response.redirected) {
+            console.log('response redirected');
+            window.location.href = response.url;
+        }
         const member: Member = await response.json();
         return member;
     } catch (e) {
