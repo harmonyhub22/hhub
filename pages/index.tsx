@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Button } from '@geist-ui/core';
 import { useRouter } from 'next/router'
 import Navbar from '../components/Navbar';
 import { getLiveSession } from '../components/Session';
+import { SocketContext } from '../context/socket';
 
 const Home = () => {
     const [liveSessionId, setLiveSessionId] = useState<string>();
     const router = useRouter();
+
+    const socket = useContext(SocketContext);
 
     // match with partner, and then route to session page with new session id
     const enterQueue = async () => {
@@ -31,6 +34,10 @@ const Home = () => {
         });
     };
 
+    const sendMsg = () => {
+        socket.emit('message', 'test message');
+    }
+
     useEffect(() => {
         checkLiveSession();
     }, []);
@@ -51,6 +58,10 @@ const Home = () => {
             Join your Live Session
         </Button>
         }
+
+        <Button shadow type="secondary" id="btn-new-session" onClick={sendMsg}>
+            Send Message
+        </Button>
         </>
     );
 };

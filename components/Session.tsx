@@ -5,7 +5,7 @@ import { config } from "./config";
 
 export const joinWaitQueue = async () => {
   try {
-    const response = await fetch(config.server_url + "queue", {
+    const response = await fetch(config.server_url + "api/queue", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -24,7 +24,7 @@ export const joinWaitQueue = async () => {
 
 export const getLiveSession = async () => {
   try {
-    const response = await fetch(config.server_url + "session/live", {
+    const response = await fetch(config.server_url + "api/session/live", {
       method: "GET",
       credentials: "include",
       headers: {

@@ -16,14 +16,16 @@ function MyApp({ Component, pageProps }: AppProps) {
   const fetchCurrentMember = async () => {
     const fetchedMember = await getCurrentMember();
     console.log(fetchedMember)
-    setMember(fetchedMember);
+    if (fetchedMember?.memberId !== member?.memberId)
+      setMember(fetchedMember);
   }
 
   useEffect(() => {
-    if (socket === null || socket === undefined) 
-      setSocket(createSocket());
     fetchCurrentMember();
-  }, [socket]);
+    if ((member !== undefined && member !== null) && (socket === null || socket === undefined)) 
+      setSocket(createSocket(member.memberId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [member]);
 
   return (
     <GeistProvider>

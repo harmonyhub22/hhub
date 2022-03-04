@@ -7,7 +7,9 @@ const nextConfig = {
   reactStrictMode: true,
   env: {
     SERVER_URL: process.env.SERVER_URL || defaultServerUrl,
+    SOCKET_URL: process.env.SOCKET_URL || defaultServerUrl,
   },
+  /*
   async rewrites() {
     return {
       fallback: [
@@ -21,6 +23,7 @@ const nextConfig = {
       ]
     };
   }
+  */
 }
 
 module.exports = nextConfig

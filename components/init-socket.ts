@@ -1,9 +1,13 @@
 import { io } from "socket.io-client";
 import { config } from "./config";
 
-export const createSocket = () => {
+export const createSocket = (memberId:string) => {
     console.log(config.server_url);
-    const socket = io(config.server_url + '');
+    const socket = io(config.socket_url + '', {
+      query: {
+        'memberId': memberId,
+      }
+    });
     socket.on('connect', () => {
         console.log('connected!');
     });
@@ -12,7 +16,7 @@ export const createSocket = () => {
       console.log("disconnected!");
     });
   
-    socket.on('message', function(msg) {
+    socket.on('message', (msg) => {
       console.log(msg);
     });
     

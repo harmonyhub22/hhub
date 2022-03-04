@@ -3,7 +3,7 @@ import { config } from './config'
 
 export const getCurrentMember = async () => {
     try {
-        const response = await fetch(config.server_url + '', {
+        const response = await fetch(config.server_url + 'api/', {
             method: "GET",
             credentials: 'include',
             headers: {
