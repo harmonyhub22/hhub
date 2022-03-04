@@ -28,6 +28,7 @@ const Home = () => {
     const enterLiveSession = async () => {
         if (liveSessionId === null || liveSessionId === undefined)
             return;
+        socket.emit('join-session', { 'sessionId': liveSessionId });
         router.push({
             pathname: "/sessions/" + liveSessionId,
             query: { id: liveSessionId }
@@ -49,9 +50,11 @@ const Home = () => {
             <h1>Harmony Hub</h1>
         </div>
         
+        {(liveSessionId === null || liveSessionId === undefined) &&
         <Button shadow type="secondary" id="btn-new-session" onClick={enterQueue}>
             Join a New Session
         </Button>
+        }
 
         {liveSessionId !== null && liveSessionId !== undefined &&
         <Button shadow type="success" id="btn-new-session" onClick={enterLiveSession}>
@@ -60,7 +63,7 @@ const Home = () => {
         }
 
         <Button shadow type="secondary" id="btn-new-session" onClick={sendMsg}>
-            Send Message
+            Ping Message
         </Button>
         </>
     );

@@ -12,8 +12,10 @@ export const joinWaitQueue = async () => {
         "Content-Type": "application/json",
       },
     });
-    if (response.redirected) 
-      window.location.href = response.url;
+    if (response.status === 302) {
+      console.log('response redirected');
+      window.location.href = (await response.json()).url;
+    }
     const queue: Queue = await response.json();
     return queue;
   } catch (e) {
@@ -31,8 +33,10 @@ export const getLiveSession = async () => {
         "Content-Type": "application/json",
       },
     });
-    if (response.redirected) 
-      window.location.href = response.url;
+    if (response.status === 302) {
+      console.log('response redirected');
+      window.location.href = (await response.json()).url;
+    }
     const s: Session = await response.json();
     console.log(s);
     return s;

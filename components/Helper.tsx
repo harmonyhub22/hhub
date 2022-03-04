@@ -10,9 +10,9 @@ export const getCurrentMember = async () => {
                 "Content-Type": "application/json",
             }
         });
-        if (response.redirected) {
+        if (response.status === 302) {
             console.log('response redirected');
-            window.location.href = response.url;
+            window.location.href = (await response.json()).url;
         }
         const member: Member = await response.json();
         return member;
