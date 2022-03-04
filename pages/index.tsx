@@ -4,8 +4,9 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
 import { ReactMediaRecorder } from "react-media-recorder";
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import * as Tone from 'tone'
+import { Player } from 'tone'
 
 function ShowPalette() {
 }
@@ -74,49 +75,111 @@ function RecordButton() {
 }
 
 
-var paletteNums = ["drums", "piano", "bass", "guitar"];
-var paletteNumsStates = [1, 1, 1, 1]
-
-function Drum1() {
-  paletteNumsStates[0] = 1;
-}
-function Drum2() {
-  paletteNumsStates[0] = 2;
-}
-function Piano1() {
-  paletteNumsStates[1] = 1;
-}
-function Piano2() {
-  paletteNumsStates[1] = 2;
-}
-function Bass1() {
-  paletteNumsStates[2] = 1;
-}
-function Bass2() {
-  paletteNumsStates[2] = 2;
-}
-function Guitar1() {
-  paletteNumsStates[3] = 1;
-}
-function Guitar2() {
-  paletteNumsStates[3] = 2;
-}
-function PlaySong() {
-  const player1 = new Tone.Player("drums" + paletteNumsStates[0] + ".mp3").toDestination();
-  const player2 = new Tone.Player("piano" + paletteNumsStates[1] + ".mp3").toDestination();
-  const player3 = new Tone.Player("bass" + paletteNumsStates[2] + ".mp3").toDestination();
-  const player4 = new Tone.Player("guitar" + paletteNumsStates[3] + ".mp3").toDestination();
-  Tone.loaded().then(() => {
-    player1.start();
-    player2.start();
-    player3.start();
-    player4.start();
-  });
-}
-
-
-
 const Home: NextPage = () => {
+
+  var paletteNums = ["drums", "piano", "bass", "guitar"];
+  var paletteNumsStates = [1, 1, 1, 1];
+  var _stopSong = false;
+  useEffect(() => {
+    var player = new Tone.Player("drums" + paletteNumsStates[0] + ".mp3").toDestination();
+  });
+
+
+  function Drum1() {
+    paletteNumsStates[0] = 1;
+    const player = new Tone.Player("drums" + paletteNumsStates[0] + ".mp3").toDestination();
+    if (_stopSong == false) {
+      Tone.loaded().then(() => {
+        player.start();
+      });
+    }
+  }
+  function Drum2() {
+    paletteNumsStates[0] = 2;
+    const player = new Tone.Player("drums" + paletteNumsStates[0] + ".mp3").toDestination();
+    if (_stopSong == false) {
+      Tone.loaded().then(() => {
+        player.start();
+      });
+    }
+  }
+  function Piano1() {
+    paletteNumsStates[1] = 1;
+    const player = new Tone.Player("piano" + paletteNumsStates[1] + ".mp3").toDestination();
+    if (_stopSong == false) {
+      Tone.loaded().then(() => {
+        player.start();
+      });
+    }
+  }
+  function Piano2() {
+    paletteNumsStates[1] = 2;
+    const player = new Tone.Player("piano" + paletteNumsStates[1] + ".mp3").toDestination();
+    if (_stopSong == false) {
+      Tone.loaded().then(() => {
+        player.start();
+      });
+    }
+  }
+  function Bass1() {
+    paletteNumsStates[2] = 1;
+    const player = new Tone.Player("bass" + paletteNumsStates[2] + ".mp3").toDestination();
+    if (_stopSong == false) {
+      Tone.loaded().then(() => {
+        player.start();
+      });
+    }
+  }
+  function Bass2() {
+    paletteNumsStates[2] = 2;
+    const player = new Tone.Player("bass" + paletteNumsStates[2] + ".mp3").toDestination();
+    if (_stopSong == false) {
+      Tone.loaded().then(() => {
+        player.start();
+      });
+    }
+  }
+  function Guitar1() {
+    paletteNumsStates[3] = 1;
+    const player = new Tone.Player("guitar" + paletteNumsStates[3] + ".mp3").toDestination();
+    if (_stopSong == false) {
+      Tone.loaded().then(() => {
+        player.start();
+      });
+    }
+  }
+  function Guitar2() {
+    paletteNumsStates[3] = 2;
+    const player = new Tone.Player("guitar" + paletteNumsStates[3] + ".mp3").toDestination();
+    if (_stopSong == false) {
+      Tone.loaded().then(() => {
+        player.start();
+      });
+    }
+  }
+  function PlaySong() {
+    var player1 = new Tone.Player("drums" + paletteNumsStates[0] + ".mp3").toDestination();
+    var player2 = new Tone.Player("piano" + paletteNumsStates[1] + ".mp3").toDestination();
+    var player3 = new Tone.Player("bass" + paletteNumsStates[2] + ".mp3").toDestination();
+    var player4 = new Tone.Player("guitar" + paletteNumsStates[3] + ".mp3").toDestination();
+    if (_stopSong == false) {
+      Tone.loaded().then(() => {
+        player1.start();
+        player2.start();
+        player3.start();
+        player4.start();
+      });
+    }
+  }
+
+  function StopSong() {
+    if (_stopSong == false) {
+      _stopSong = true;
+    } else {
+      _stopSong = false;
+    }
+  }
+  
 
   
 
@@ -206,7 +269,7 @@ const Home: NextPage = () => {
                 <button onClick={PlaySong}>Play</button>
               </td>
               <td>
-                <button>SAVE</button>
+                <button onClick={StopSong}>STOP</button>
               </td>
             </tr>
           </tfoot>
@@ -250,12 +313,12 @@ const Home: NextPage = () => {
             <tr>
               <td>
                 <div className="table-palette-buttonframe">
-                  <button className="button-palette" role="button" onClick={Bass1}>Guitar1</button>
+                  <button className="button-palette" role="button" onClick={Guitar1}>Guitar1</button>
                 </div>
               </td>
               <td>
                 <div className="table-palette-buttonframe">
-                  <button className="button-palette" role="button" onClick={Bass2}>Guitar2</button>
+                  <button className="button-palette" role="button" onClick={Guitar2}>Guitar2</button>
                 </div>
               </td>
             </tr>
