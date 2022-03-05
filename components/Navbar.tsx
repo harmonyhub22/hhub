@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import Link from 'next/link';
 import { SidebarData } from './NavbarData';
 import styles from "./Navbar.module.css";
 import { IconContext } from 'react-icons';
+import { MemberContext } from '../context/member';
+import * as CgIcons from "react-icons/cg";
 
 const Navbar = () => {
   const [sidebar, setSidebar] = useState(false)
   const showSidebar = () => setSidebar(!sidebar)
+
+  const member = useContext(MemberContext);
+
   return (
     <>
       <IconContext.Provider value={{ color: "black" }}>
@@ -35,6 +40,25 @@ const Navbar = () => {
                   </li>
                 );
               })}
+              {(member?.memberId ?? undefined) === undefined ? (
+                <li key={SidebarData.length} className={SidebarData[0].cName}>
+                  <CgIcons.CgLogIn />
+                  <Link href={"/login"} passHref>
+                    <span className={styles.navbar_item_label}>
+                      {"Login"}
+                    </span>
+                  </Link>
+                </li>
+              ) : (
+                <li key={SidebarData.length} className={SidebarData[0].cName}>
+                  <CgIcons.CgLogOut />
+                  <Link href={"/logout"} passHref>
+                    <span className={styles.navbar_item_label}>
+                      {"Logout"}
+                    </span>
+                  </Link>
+                </li>
+              )}
             </ul>
           </nav>
         </div>
