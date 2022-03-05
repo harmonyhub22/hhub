@@ -5,6 +5,8 @@ import Navbar from "../components/Navbar";
 import { getLiveSession } from "../components/Session";
 import { SocketContext } from "../context/socket";
 
+import * as Tone from "tone";
+
 const Home = () => {
   const [liveSessionId, setLiveSessionId] = useState<string>();
   const router = useRouter();
