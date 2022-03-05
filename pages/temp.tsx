@@ -311,198 +311,7 @@ function Session() {
 
       <br></br>
 
-      <table className="table-palette">
-        <thead>
-          <tr>
-            <th>Palette:</th>
-            <th className="table-palette-th2">ROCK</th>
-          </tr>
-        </thead>
-        <tfoot>
-          <tr>
-            <td>
-              <button onClick={PlaySong}>Play</button>
-            </td>
-            <td>
-              <button onClick={StopSong}>STOP</button>
-            </td>
-          </tr>
-        </tfoot>
-        <tbody>
-          <tr>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button
-                  className="button-palette"
-                  role="button"
-                  onClick={Drum1}
-                >
-                  Drums1
-                </button>
-              </div>
-            </td>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button
-                  className="button-palette"
-                  role="button"
-                  onClick={Drum2}
-                >
-                  Drums2
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button
-                  className="button-palette"
-                  role="button"
-                  onClick={Piano1}
-                >
-                  Piano1
-                </button>
-              </div>
-            </td>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button
-                  className="button-palette"
-                  role="button"
-                  onClick={Piano2}
-                >
-                  Piano2
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button
-                  className="button-palette"
-                  role="button"
-                  onClick={Bass1}
-                >
-                  Bass1
-                </button>
-              </div>
-            </td>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button
-                  className="button-palette"
-                  role="button"
-                  onClick={Bass2}
-                >
-                  Bass2
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button
-                  className="button-palette"
-                  role="button"
-                  onClick={Guitar1}
-                >
-                  Guitar1
-                </button>
-              </div>
-            </td>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button
-                  className="button-palette"
-                  role="button"
-                  onClick={Guitar2}
-                >
-                  Guitar2
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <br></br>
-      <button onClick={RecordButton}>Record</button>
-      <br></br>
-      <button onClick={ToneButton0}>C</button>
-      <button onClick={ToneButton1}>C#</button>
-      <button onClick={ToneButton2}>D</button>
-      <button onClick={ToneButton3}>D#</button>
-      <button onClick={ToneButton4}>E</button>
-      <br></br>
-      <br></br>
-      <button onClick={ToneButtonN1}>Kick</button>
-      <button onClick={ToneButtonN2}>High Hat</button>
-      <button onClick={ToneButtonN3}>Snare</button>
-      <button onClick={ToneButtonN4}>Clap</button>
-
-      <br></br>
-      <button className="button-palette" role="button">
-        Piano
-      </button>
-
-      <br></br>
-      <br></br>
-
-      <table className="table-palette">
-        <thead>
-          <tr>
-            <th>Palette:</th>
-            <th className="table-palette-th2">ROCK</th>
-          </tr>
-        </thead>
-        <tfoot>
-          <tr>
-            <td>
-              <button>RESET</button>
-            </td>
-            <td>
-              <button>SAVE</button>
-            </td>
-          </tr>
-        </tfoot>
-        <tbody>
-          <tr>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button className="button-palette" role="button">
-                  Piano
-                </button>
-              </div>
-            </td>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button className="button-palette" role="button">
-                  Overdriven Guitar
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button className="button-palette" role="button">
-                  Rock Drums
-                </button>
-              </div>
-            </td>
-            <td>
-              <div className="table-palette-buttonframe">
-                <button className="button-palette" role="button">
-                  Bass Guitar
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      
       {/* <Text h1>Session Page</Text>
       <Grid.Container gap={1} justify="flex-end" height="100px">
         <audio controls id="">
@@ -532,7 +341,198 @@ function Session() {
         <Drawer.Title>Pallete</Drawer.Title>
         <Drawer.Subtitle>Pallete will go here</Drawer.Subtitle>
         <Drawer.Content>
-          <p>Some content contained within the drawer.</p>
+          <table className="table-palette">
+          <thead>
+            <tr>
+              <th>Palette:</th>
+              <th className="table-palette-th2">ROCK</th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <td>
+                <button onClick={PlaySong}>Play</button>
+              </td>
+              <td>
+                <button onClick={StopSong}>STOP</button>
+              </td>
+            </tr>
+          </tfoot>
+          <tbody>
+            <tr>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button
+                    className="button-palette"
+                    role="button"
+                    onClick={Drum1}
+                  >
+                    Drums1
+                  </button>
+                </div>
+              </td>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button
+                    className="button-palette"
+                    role="button"
+                    onClick={Drum2}
+                  >
+                    Drums2
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button
+                    className="button-palette"
+                    role="button"
+                    onClick={Piano1}
+                  >
+                    Piano1
+                  </button>
+                </div>
+              </td>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button
+                    className="button-palette"
+                    role="button"
+                    onClick={Piano2}
+                  >
+                    Piano2
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button
+                    className="button-palette"
+                    role="button"
+                    onClick={Bass1}
+                  >
+                    Bass1
+                  </button>
+                </div>
+              </td>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button
+                    className="button-palette"
+                    role="button"
+                    onClick={Bass2}
+                  >
+                    Bass2
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button
+                    className="button-palette"
+                    role="button"
+                    onClick={Guitar1}
+                  >
+                    Guitar1
+                  </button>
+                </div>
+              </td>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button
+                    className="button-palette"
+                    role="button"
+                    onClick={Guitar2}
+                  >
+                    Guitar2
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <br></br>
+        <button onClick={RecordButton}>Record</button>
+        <br></br>
+        <button onClick={ToneButton0}>C</button>
+        <button onClick={ToneButton1}>C#</button>
+        <button onClick={ToneButton2}>D</button>
+        <button onClick={ToneButton3}>D#</button>
+        <button onClick={ToneButton4}>E</button>
+        <br></br>
+        <br></br>
+        <button onClick={ToneButtonN1}>Kick</button>
+        <button onClick={ToneButtonN2}>High Hat</button>
+        <button onClick={ToneButtonN3}>Snare</button>
+        <button onClick={ToneButtonN4}>Clap</button>
+
+        <br></br>
+        <button className="button-palette" role="button">
+          Piano
+        </button>
+
+        <br></br>
+        <br></br>
+
+        <table className="table-palette">
+          <thead>
+            <tr>
+              <th>Palette:</th>
+              <th className="table-palette-th2">ROCK</th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <td>
+                <button>RESET</button>
+              </td>
+              <td>
+                <button>SAVE</button>
+              </td>
+            </tr>
+          </tfoot>
+          <tbody>
+            <tr>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">
+                    Piano
+                  </button>
+                </div>
+              </td>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">
+                    Overdriven Guitar
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">
+                    Rock Drums
+                  </button>
+                </div>
+              </td>
+              <td>
+                <div className="table-palette-buttonframe">
+                  <button className="button-palette" role="button">
+                    Bass Guitar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         </Drawer.Content>
       </Drawer>
 
@@ -555,6 +555,7 @@ function Session() {
         </Button>
         <Button auto onClick={() => setShowPallete(true)} scale={1}>
           Show Pallete
+          
         </Button>
         <Button onClick={addLayer}>Submit Layer</Button>
       </Page.Footer>
