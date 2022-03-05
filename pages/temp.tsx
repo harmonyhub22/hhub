@@ -21,6 +21,7 @@ import moment from "moment";
 import Head from "next/head";
 import * as Tone from "tone";
 import { Player } from "tone";
+import Layer from "../interfaces/models/Layer";
 
 function Session() {
   const [response, setResponse] = useState("");
@@ -30,7 +31,7 @@ function Session() {
   //   const router = useRouter();
   const [layers, setLayers] = useState([]);
   const [rows, setRows] = useState([]);
-  const [selectedSound, setSelectedSound] = useState();
+  const [selectedPattern, setSelectedPattern] = useState();
 
   //   const sessionId = router.query.id;
 
@@ -62,6 +63,21 @@ function Session() {
       start_time: moment().add(2, "hour"),
       end_time: moment().add(3, "hour"),
     },
+  ];
+
+  const presetPatterns = [
+    { name: "Drum1" },
+    { name: "Drum2" },
+    { name: "Drum3" },
+    { name: "Piano1" },
+    { name: "Piano2" },
+    { name: "Piano3" },
+    { name: "Bass1" },
+    { name: "Bass2" },
+    { name: "Bass3" },
+    { name: "Guitar1" },
+    { name: "Guitar2" },
+    { name: "Guitar3" }
   ];
 
   var _stopSong = false;
@@ -143,7 +159,7 @@ function Session() {
     const player = new Tone.Player(
       "drums" + paletteNumsStates[0] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
@@ -155,7 +171,7 @@ function Session() {
     const player = new Tone.Player(
       "drums" + paletteNumsStates[0] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
@@ -167,7 +183,7 @@ function Session() {
     const player = new Tone.Player(
       "drums" + paletteNumsStates[0] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
@@ -179,7 +195,7 @@ function Session() {
     const player = new Tone.Player(
       "piano" + paletteNumsStates[1] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
@@ -191,7 +207,7 @@ function Session() {
     const player = new Tone.Player(
       "piano" + paletteNumsStates[1] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
@@ -203,7 +219,7 @@ function Session() {
     const player = new Tone.Player(
       "piano" + paletteNumsStates[1] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
@@ -215,7 +231,7 @@ function Session() {
     const player = new Tone.Player(
       "bass" + paletteNumsStates[2] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
@@ -227,7 +243,7 @@ function Session() {
     const player = new Tone.Player(
       "bass" + paletteNumsStates[2] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
@@ -239,7 +255,7 @@ function Session() {
     const player = new Tone.Player(
       "bass" + paletteNumsStates[2] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
@@ -251,7 +267,7 @@ function Session() {
     const player = new Tone.Player(
       "guitar" + paletteNumsStates[3] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
@@ -263,7 +279,7 @@ function Session() {
     const player = new Tone.Player(
       "guitar" + paletteNumsStates[3] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
@@ -275,10 +291,54 @@ function Session() {
     const player = new Tone.Player(
       "guitar" + paletteNumsStates[3] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player.start();
       });
+    }
+  }
+
+  const handlePatternClick = (name) => {
+    setSelectedPattern(name);
+    switch (name) {
+        case "Drum1":
+            Drum1();
+            break;
+        case "Drum2":
+            Drum2();
+            break;
+        case "Drum3":
+            Drum3();
+            break;
+        case "Bass1":
+            Bass1();
+            break;
+        case "Bass2":
+            Bass2();
+            break;
+        case "Bass3":
+            Bass3();
+            break;
+        case "Guitar1":
+            Guitar1();
+            break;
+        case "Guitar2":
+            Guitar2();
+            break;
+        case "Guitar3":
+            Guitar3();
+            break;
+        case "Piano1":
+            Piano1();
+            break;
+        case "Piano2":
+            Piano2();
+            break;
+        case "Piano3":
+            Piano3();
+            break;
+        default:
+            break;
     }
   }
 
@@ -295,7 +355,7 @@ function Session() {
     var player4 = new Tone.Player(
       "guitar" + paletteNumsStates[3] + ".mp3"
     ).toDestination();
-    if (_stopSong == false) {
+    if (!_stopSong) {
       Tone.loaded().then(() => {
         player1.start();
         player2.start();
@@ -306,7 +366,7 @@ function Session() {
   }
 
   function StopSong() {
-    if (_stopSong == false) {
+    if (!_stopSong) {
       _stopSong = true;
     } else {
       _stopSong = false;
@@ -325,6 +385,22 @@ function Session() {
   //     socket.emit("join", data);
   //   };
 
+  const paletteCell = (instrument) => {
+      return (
+        <td>
+            <div className="table-palette-buttonframe">
+            <button
+                className="button-palette"
+                role="button"
+                onClick={instrument}
+            >
+                instrument
+            </button>
+            </div>
+        </td>
+      );
+  }
+
   useEffect(() => {
     // var player = new Tone.Player("drums" + paletteNumsStates[0] + ".mp3").toDestination();
     // startSession();
@@ -334,6 +410,14 @@ function Session() {
   }, []);
 
   const addLayer = () => {
+    const newLayer: Layer = {
+        startTime: 0,
+        endTime: ,
+        numRepeats: ,
+        userId: ,
+        file: 
+    }
+
     // because we cant send json data and audio data at the same time, we must do 2 API calls
     // POST request to make new layer with metadata
     const response = await fetch(config.server_url, {
@@ -341,11 +425,13 @@ function Session() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(),
+      // send the start time, end time, number of repeats, user id, and session id
+      body: JSON.stringify(newLayer),
     });
 
     // PUT request to this layer to actually send the audio file
 
+    
     // set layers state
 
     alert("added");
@@ -433,7 +519,6 @@ function Session() {
         placement="right"
       >
         <Drawer.Title>Your Sound Pallete</Drawer.Title>
-        {/* <Drawer.Subtitle>Pallete will go here</Drawer.Subtitle> */}
         <Drawer.Content>
           <table className="table-palette">
             <thead>
@@ -454,144 +539,24 @@ function Session() {
             </tfoot>
             <tbody>
               <tr>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Drum1}
-                    >
-                      Drums1
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Drum2}
-                    >
-                      Drums2
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Drum3}
-                    >
-                      Drums3
-                    </button>
-                  </div>
-                </td>
+                {paletteCell("Drum1")}
+                {paletteCell("Drum2")}
+                {paletteCell("Drum3")}
               </tr>
               <tr>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Piano1}
-                    >
-                      Piano1
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Piano2}
-                    >
-                      Piano2
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Piano3}
-                    >
-                      Piano3
-                    </button>
-                  </div>
-                </td>
+                {paletteCell("Piano1")}
+                {paletteCell("Piano2")}
+                {paletteCell("Piano3")}
               </tr>
               <tr>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Bass1}
-                    >
-                      Bass1
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Bass2}
-                    >
-                      Bass2
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Bass3}
-                    >
-                      Bass3
-                    </button>
-                  </div>
-                </td>
+                {paletteCell("Bass1")}
+                {paletteCell("Bass2")}
+                {paletteCell("Bass3")}
               </tr>
               <tr>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Guitar1}
-                    >
-                      Guitar1
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Guitar2}
-                    >
-                      Guitar2
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-palette-buttonframe">
-                    <button
-                      className="button-palette"
-                      role="button"
-                      onClick={Guitar3}
-                    >
-                      Guitar3
-                    </button>
-                  </div>
-                </td>
+                {paletteCell("Guitar1")}
+                {paletteCell("Guitar2")}
+                {paletteCell("Guitar3")}
               </tr>
             </tbody>
           </table>
