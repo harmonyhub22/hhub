@@ -451,6 +451,24 @@ function Session() {
     );
   };
 
+  //LAYER SONG MP3 NAMES
+  var layerTitles = ["drums1", "piano1"];
+  var layerPlayer = 1;
+  function playLayer() {
+    const player = new Tone.Player("layer" + layerPlayer + ".mp3").toDestination();
+    Tone.loaded().then(() => {
+      player.start();
+    });
+  }
+  function FocusLayer1() { //USE TO PICK THE LAYER THAT WILL PLAY
+    layerPlayer = 1;
+    playLayer();
+  }
+  function FocusLayer2() {
+    layerPlayer = 2;
+    playLayer();
+  }
+
   return (
     <Page>
       {/* <div id="PaletteList" className="palette-list">
@@ -615,6 +633,10 @@ function Session() {
           </table>
         </Drawer.Content>
       </Drawer>
+
+      <br></br>
+      <Button auto ghost px={0.6} onClick={FocusLayer1}>Play Layer 1</Button>
+      <Button auto ghost px={0.6} onClick={FocusLayer2}>Play Layer 2</Button>
 
       <Modal {...bindings}>
         <Modal.Title>Finishing Song</Modal.Title>
