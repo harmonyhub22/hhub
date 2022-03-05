@@ -1,9 +1,14 @@
-import { Button, Page, Text } from '@geist-ui/core';
-import { useRouter } from 'next/router'
-import Navbar from '../components/Navbar';
+import { Button, Page, Text } from "@geist-ui/core";
+import { useRouter } from "next/router";
+import Navbar from "../components/Navbar";
 
 const Home = () => {
-  const Router = useRouter()
+  const router = useRouter();
+  const enterSession2 = async () => {
+    router.push({
+      pathname: "/temp",
+    });
+  };
   return (
     // <div className={styles.container}>
     //   <main className={styles.main}>
@@ -14,12 +19,20 @@ const Home = () => {
     //   </main>
     // </div>
     <div>
-        <Navbar/>
+      <Navbar />
       <div>
-          <h1>Harmony Hub</h1>
+        <h1>Harmony Hub</h1>
       </div>
       <Button shadow type="secondary" id="btn-new-session">
         New Session
+      </Button>
+      <Button
+        shadow
+        type="secondary"
+        id="btn-new-session"
+        onClick={enterSession2}
+      >
+        New Session (temp)
       </Button>
     </div>
   );
