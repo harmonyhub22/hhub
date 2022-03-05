@@ -44,10 +44,10 @@ const Home = () => {
     }, []);
 
     return (
-        <>
-        <Navbar/>
+      <>
+        <Navbar />
         <div>
-            <h1>Harmony Hub</h1>
+          <h1>Harmony Hub</h1>
         </div>
         
         {(liveSessionId === null || liveSessionId === undefined) &&
@@ -65,7 +65,7 @@ const Home = () => {
         <Button shadow type="secondary" id="btn-new-session" onClick={sendMsg}>
             Ping Message
         </Button>
-        </>
+      </>
     );
 };
 
