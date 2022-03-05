@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import {
   Button,
@@ -16,30 +16,22 @@ import { io } from "socket.io-client";
 import { config } from "../../components/config";
 import { saveAs } from "file-saver";
 import { getCurrentMember } from '../../components/Helper';
+import { SocketContext } from "../../context/socket";
 
 function Session() {
   const [response, setResponse] = useState("");
-  const [socket, setSocket] = useState(io);
   const { visible, setVisible, bindings } = useModal();
   const [showPallete, setShowPallete] = React.useState(false);
   const router = useRouter();
 
+  const socket = useContext(SocketContext);
+
   const sessionId = router.query.id;
   
   // put the user in their web socket room (room # = session ID)
-  const startSession = async () => {
-    const newSocket = io("http://localhost:5000/api");
-    setSocket(newSocket);
-    const member = await getCurrentMember();
-    const data = {
-        'fullName': member.firstname + ' ' + member.lastname,
-        'sessionId': sessionId
-    };
-    socket.emit('join', data);
-  }
 
   useEffect(() => {
-    startSession();
+    // 
   }, []);
 
   const addLayer = () => {
