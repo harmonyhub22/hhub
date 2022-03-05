@@ -1,40 +1,79 @@
-import { Button, Page, Text } from "@geist-ui/core";
+import React, { useState, useEffect, useContext } from "react";
+import { Button } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
+import { getLiveSession } from "../components/Session";
+import { SocketContext } from "../context/socket";
 
 const Home = () => {
+  const [liveSessionId, setLiveSessionId] = useState<string>();
   const router = useRouter();
-  const enterSession2 = async () => {
+
+  const socket = useContext(SocketContext);
+
+  // match with partner, and then route to session page with new session id
+  const enterQueue = async () => {
     router.push({
-      pathname: "/temp",
+      pathname: "/queue",
     });
   };
+
+  const checkLiveSession = async () => {
+    const liveSession = await getLiveSession();
+    if (liveSession === null || liveSession === undefined) return;
+    setLiveSessionId(liveSession.sessionId);
+  };
+
+  const enterLiveSession = async () => {
+    if (liveSessionId === null || liveSessionId === undefined) return;
+    socket.emit("join-session", { sessionId: liveSessionId });
+    router.push({
+      pathname: "/sessions/" + liveSessionId,
+      query: { id: liveSessionId },
+    });
+  };
+
+  const sendMsg = () => {
+    socket.emit("message", "test message");
+  };
+
+  useEffect(() => {
+    checkLiveSession();
+  }, []);
+
   return (
-    // <div className={styles.container}>
-    //   <main className={styles.main}>
-    //     <a href="http://localhost:3001/session" className={styles.card}>
-    //       <h2>New Song</h2>
-    //       <p>Match with a friend and enter a song session!</p>
-    //     </a>
-    //   </main>
-    // </div>
-    <div>
+    <>
       <Navbar />
       <div>
         <h1>Harmony Hub</h1>
       </div>
-      <Button shadow type="secondary" id="btn-new-session">
-        New Session
+
+      {(liveSessionId === null || liveSessionId === undefined) && (
+        <Button
+          shadow
+          type="secondary"
+          id="btn-new-session"
+          onClick={enterQueue}
+        >
+          Join a New Session
+        </Button>
+      )}
+
+      {liveSessionId !== null && liveSessionId !== undefined && (
+        <Button
+          shadow
+          type="success"
+          id="btn-new-session"
+          onClick={enterLiveSession}
+        >
+          Join your Live Session
+        </Button>
+      )}
+
+      <Button shadow type="secondary" id="btn-new-session" onClick={sendMsg}>
+        Ping Message
       </Button>
-      <Button
-        shadow
-        type="secondary"
-        id="btn-new-session"
-        onClick={enterSession2}
-      >
-        New Session (temp)
-      </Button>
-    </div>
+    </>
   );
 };
 

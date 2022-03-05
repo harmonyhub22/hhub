@@ -1,41 +1,39 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
+import { useContext, useEffect, useState } from "react";
 import { joinWaitQueue } from "../components/Session";
-import { config } from "../components/config";
-import { io } from "socket.io-client";
-import { createSocket } from "../components/socket";
+import { SocketContext } from "../context/socket";
+import SessionMade from "../interfaces/socket-data/session_made";
 
 const Queue = (): React.ReactNode => {
-  const [socket, setSocket] = useState(io);
-  const [joinedTime, setJoinedTime] = useState();
-  const [sessionId, setSessionId] = useState();
+  const [joinedTime, setJoinedTime] = useState<Date>();
   const router = useRouter();
 
-  const joinQueue = async () => {
-    // now join a session by connecting to the web socket
-    if (!socket) {
-      const newSocket = createSocket();
-      newSocket.on('session_made', (data) => {
-        setSessionId(data.sessionId);
-        router.push({
-            pathname: "/sessions/" + sessionId,
-            query: { id: sessionId }
-        });
-      }); 
-      setSocket(newSocket);
-    }
-  
-    const queueResponse = await joinWaitQueue();
-    console.log(queueResponse);
-    setJoinedTime(queueResponse.timeEntered);
-  }
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
+    const moveToSession = (data:SessionMade) => {
+      console.log(data);
+      router.push({
+          pathname: "/sessions/" + data.sessionId,
+          query: { id: data.sessionId }
+      });
+    };
+    const joinQueue = async () => {
+      socket.on('session_made', moveToSession);
+      const queue = await joinWaitQueue();
+      console.log(queue);
+      if (queue === null || queue === undefined)
+        return;
+      setJoinedTime(queue.timeEntered);
+    };
     joinQueue();
-  }, []);
+    return () => {
+      // socket.off('session_made', moveToSession); // destroy hooks
+    };
+  }, [router, socket]);
 
-  return (<>
+  return (
+    <>
       <h1>Queue Loading Page</h1>
       <p>Join at time: {joinedTime}</p>
     </>
