@@ -13,69 +13,85 @@ import {
   Table,
 } from "@geist-ui/core";
 // import { io } from "socket.io-client";
-// import { config } from "../../components/config";
-import { saveAs } from "file-saver";
+import { config } from "../components/config";
+//import { saveAs } from "file-saver";
 // import { getCurrentMember } from "../../components/Helper";
-import Timeline from "react-calendar-timeline";
+import Timeline from "../components/timeline/_timeline";
 import moment from "moment";
-import Head from "next/head";
 
 function Session() {
   const [response, setResponse] = useState("");
-//   const [socket, setSocket] = useState(io);
+  //   const [socket, setSocket] = useState(io);
   const { visible, setVisible, bindings } = useModal();
   const [showPallete, setShowPallete] = React.useState(false);
-//   const router = useRouter();
+  //   const router = useRouter();
+  const [layers, setLayers] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [selectedSound, setSelectedSound] = useState();
 
-//   const sessionId = router.query.id;
+  //   const sessionId = router.query.id;
 
-    // groups represent our layers 
-    const groups = [
-      { id: 1, title: "layer 1" },
-      { id: 2, title: "layer 2" },
-    ];
+  // groups represent our layers
+  const rows = [
+    { id: 1, title: "Player 1 layer" },
+    { id: 2, title: "Player 2 layer" },
+  ];
 
-    const items = [
-      {
-        id: 1,
-        group: 1,
-        title: "item 1",
-        start_time: moment(),
-        end_time: moment().add(1, "hour"),
-      },
-      {
-        id: 2,
-        group: 2,
-        title: "item 2",
-        start_time: moment().add(-0.5, "hour"),
-        end_time: moment().add(0.5, "hour"),
-      },
-      {
-        id: 3,
-        group: 1,
-        title: "item 3",
-        start_time: moment().add(2, "hour"),
-        end_time: moment().add(3, "hour"),
-      },
-    ];
+  const layers = [
+    {
+      id: 1,
+      group: 1,
+      title: "item 1",
+      start_time: moment(),
+      end_time: moment().add(1, "hour"),
+    },
+    {
+      id: 2,
+      group: 2,
+      title: "item 2",
+      start_time: moment().add(-0.5, "hour"),
+      end_time: moment().add(0.5, "hour"),
+    },
+    {
+      id: 3,
+      group: 1,
+      title: "item 3",
+      start_time: moment().add(2, "hour"),
+      end_time: moment().add(3, "hour"),
+    },
+  ];
 
   // put the user in their web socket room (room # = session ID)
-//   const startSession = async () => {
-//     const newSocket = io("http://localhost:5000/api");
-//     setSocket(newSocket);
-//     const member = await getCurrentMember();
-//     const data = {
-//       fullName: member.firstname + " " + member.lastname,
-//       sessionId: sessionId,
-//     };
-//     socket.emit("join", data);
-//   };
+  //   const startSession = async () => {
+  //     const newSocket = io("http://localhost:5000/api");
+  //     setSocket(newSocket);
+  //     const member = await getCurrentMember();
+  //     const data = {
+  //       fullName: member.firstname + " " + member.lastname,
+  //       sessionId: sessionId,
+  //     };
+  //     socket.emit("join", data);
+  //   };
 
   useEffect(() => {
     // startSession();
   }, []);
 
   const addLayer = () => {
+    // because we cant send json data and audio data at the same time, we must do 2 API calls
+    // POST request to make new layer with metadata
+    const response = await fetch(config.server_url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(),
+    });
+
+    // PUT request to this layer to actually send the audio file
+
+    // set layers state
+
     alert("added");
     // socket.emit("addlayer", {
     //   data: "im a layer",
@@ -87,11 +103,11 @@ function Session() {
     // TODO: make backend request to process the finished song (send all of the layers)
   };
 
-  const saveFile = () => {
-    saveAs(
-      "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3"
-    );
-  };
+  //   const saveFile = () => {
+  //     saveAs(
+  //       "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3"
+  //     );
+  //   };
 
   return (
     <Page>
@@ -103,53 +119,45 @@ function Session() {
             type="audio/mpeg"
           ></source>
         </audio>
+        <Button onClick={addLayer}>Submit Layer</Button>
+        <Button auto onClick={() => setVisible(true)}>
+          Finish Song
+        </Button>
+        <Modal {...bindings}>
+          <Modal.Title>Finishing Song</Modal.Title>
+          <Modal.Content>
+            <p>Would you like to leave or download the song</p>
+          </Modal.Content>
+          <Modal.Action passive onClick={() => setVisible(false)}>
+            Leave
+          </Modal.Action>
+          <Modal.Action passive onClick={() => saveFile()}>
+            Download
+          </Modal.Action>
+        </Modal>
+        <Button auto onClick={() => setShowPallete(true)} scale={1}>
+          Show Pallete
+        </Button>
+        <Drawer
+          visible={showPallete}
+          onClose={() => setShowPallete(false)}
+          placement="right"
+        >
+          <Drawer.Title>Pallete</Drawer.Title>
+          <Drawer.Subtitle>Pallete will go here</Drawer.Subtitle>
+          <Drawer.Content>
+            <p>Some content contained within the drawer.</p>
+          </Drawer.Content>
+        </Drawer>
       </Grid.Container> */}
-      <Head>
-          <h3>Your song session! Add a layer to your song with your partner!</h3>
-      </Head>
       <div>
         <Timeline
-          groups={groups}
-          items={items}
+          rows={rows}
+          layers={layers}
           defaultTimeStart={moment().add(-12, "hour")}
           defaultTimeEnd={moment().add(12, "hour")}
         />
       </div>
-
-      <Drawer
-        visible={showPallete}
-        onClose={() => setShowPallete(false)}
-        placement="right"
-      >
-        <Drawer.Title>Pallete</Drawer.Title>
-        <Drawer.Subtitle>Pallete will go here</Drawer.Subtitle>
-        <Drawer.Content>
-          <p>Some content contained within the drawer.</p>
-        </Drawer.Content>
-      </Drawer>
-
-      <Modal {...bindings}>
-        <Modal.Title>Finishing Song</Modal.Title>
-        <Modal.Content>
-          <p>Would you like to leave or download the song</p>
-        </Modal.Content>
-        <Modal.Action passive onClick={() => setVisible(false)}>
-          Leave
-        </Modal.Action>
-        <Modal.Action passive onClick={() => saveFile()}>
-          Download
-        </Modal.Action>
-      </Modal>
-
-      <Page.Footer>
-        <Button auto onClick={() => setVisible(true)} type="success">
-          Finish Song
-        </Button>
-        <Button auto onClick={() => setShowPallete(true)} scale={1}>
-          Show Pallete
-        </Button>
-        <Button onClick={addLayer}>Submit Layer</Button>
-      </Page.Footer>
     </Page>
   );
 }
