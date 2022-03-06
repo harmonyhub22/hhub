@@ -2,10 +2,10 @@ import * as Tone from "tone";
 import { Player } from "tone";
 
 var stopSong = false;
-var paletteNums = ["drums", "piano", "bass", "guitar"];
+var paletteNums = ["Drums", "pPano", "Bass", "Guitar"];
 var paletteNumsStates = [1, 1, 1, 1];
 var layerPlayer = 1;
-var layerTitles = ["drums1", "piano1"];
+var layerTitles = ["Drums1", "Piano1"];
 
 // Here are the files tonePlayer can be called with:
 // ToneButton0 -> piano_middle_C.mp3
@@ -28,7 +28,7 @@ export function tonePlayer(soundFile) {
 export function Drum1() {
   paletteNumsStates[0] = 1;
   const player = new Tone.Player(
-    "../../drums" + paletteNumsStates[0] + ".mp3"
+    "../../Drums" + paletteNumsStates[0] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -40,7 +40,7 @@ export function Drum1() {
 export function Drum2() {
   paletteNumsStates[0] = 2;
   const player = new Tone.Player(
-    "../../drums" + paletteNumsStates[0] + ".mp3"
+    "../../Drums" + paletteNumsStates[0] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -52,7 +52,7 @@ export function Drum2() {
 export function Drum3() {
   paletteNumsStates[0] = 3;
   const player = new Tone.Player(
-    "../../drums" + paletteNumsStates[0] + ".mp3"
+    "../../Drums" + paletteNumsStates[0] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -64,7 +64,7 @@ export function Drum3() {
 export function Piano1() {
   paletteNumsStates[1] = 1;
   const player = new Tone.Player(
-    "../../piano" + paletteNumsStates[1] + ".mp3"
+    "../../Piano" + paletteNumsStates[1] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -76,7 +76,7 @@ export function Piano1() {
 export function Piano2() {
   paletteNumsStates[1] = 2;
   const player = new Tone.Player(
-    "../../piano" + paletteNumsStates[1] + ".mp3"
+    "../../Piano" + paletteNumsStates[1] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -88,7 +88,7 @@ export function Piano2() {
 export function Piano3() {
   paletteNumsStates[1] = 3;
   const player = new Tone.Player(
-    "../../piano" + paletteNumsStates[1] + ".mp3"
+    "../../Piano" + paletteNumsStates[1] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -100,7 +100,7 @@ export function Piano3() {
 export function Bass1() {
   paletteNumsStates[2] = 1;
   const player = new Tone.Player(
-    "../../bass" + paletteNumsStates[2] + ".mp3"
+    "../../Bass" + paletteNumsStates[2] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -112,7 +112,7 @@ export function Bass1() {
 export function Bass2() {
   paletteNumsStates[2] = 2;
   const player = new Tone.Player(
-    "../../bass" + paletteNumsStates[2] + ".mp3"
+    "../../Bass" + paletteNumsStates[2] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -124,7 +124,7 @@ export function Bass2() {
 export function Bass3() {
   paletteNumsStates[2] = 3;
   const player = new Tone.Player(
-    "../../bass" + paletteNumsStates[2] + ".mp3"
+    "../../Bass" + paletteNumsStates[2] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -136,7 +136,7 @@ export function Bass3() {
 export function Guitar1() {
   paletteNumsStates[3] = 1;
   const player = new Tone.Player(
-    "../../guitar" + paletteNumsStates[3] + ".mp3"
+    "../../Guitar" + paletteNumsStates[3] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -148,7 +148,7 @@ export function Guitar1() {
 export function Guitar2() {
   paletteNumsStates[3] = 2;
   const player = new Tone.Player(
-    "../../guitar" + paletteNumsStates[3] + ".mp3"
+    "../../Guitar" + paletteNumsStates[3] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -160,7 +160,7 @@ export function Guitar2() {
 export function Guitar3() {
   paletteNumsStates[3] = 3;
   const player = new Tone.Player(
-    "../../guitar" + paletteNumsStates[3] + ".mp3"
+    "../../Guitar" + paletteNumsStates[3] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {
@@ -171,16 +171,16 @@ export function Guitar3() {
 
 export function playSong() {
   var player1 = new Tone.Player(
-    "../../drums" + paletteNumsStates[0] + ".mp3"
+    "../../Drums" + paletteNumsStates[0] + ".mp3"
   ).toDestination();
   var player2 = new Tone.Player(
-    "../../piano" + paletteNumsStates[1] + ".mp3"
+    "../../Piano" + paletteNumsStates[1] + ".mp3"
   ).toDestination();
   var player3 = new Tone.Player(
-    "../../bass" + paletteNumsStates[2] + ".mp3"
+    "../../Bass" + paletteNumsStates[2] + ".mp3"
   ).toDestination();
   var player4 = new Tone.Player(
-    "../../guitar" + paletteNumsStates[3] + ".mp3"
+    "../../Guitar" + paletteNumsStates[3] + ".mp3"
   ).toDestination();
   if (!stopSong) {
     Tone.loaded().then(() => {

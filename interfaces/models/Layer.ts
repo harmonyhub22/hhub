@@ -1,7 +1,6 @@
 export default interface Layer {
     startTime: number;
     endTime: number;
-    numRepeats: number;
-    userId: string
-    file: string
+    repeatCount: number;
+    file: string;
 }

@@ -15,46 +15,64 @@ a {
   box-sizing: border-box;
 }
 
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,
+th {
+  border: 3px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
 table.table-pianoroll {
   width: 400px;
   height: 200px;
 }
 
 table.table-palette {
-  background-image: linear-gradient(#320F48 0, #0c0d0d 100%);
+  background-image: linear-gradient(#320f48 0, #0c0d0d 100%);
   width: 400px;
   text-align: center;
   border-radius: 50px;
   border-collapse: collapse;
 }
-table.table-palette td, table.table-palette th {
+table.table-palette td,
+table.table-palette th {
   padding: 5px 5px;
 }
 table.table-palette tbody td {
   font-size: 12px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 table.table-palette thead {
-  background-image: linear-gradient(92.83deg, #C563C5 0, #7718B5 100%);
+  background-image: linear-gradient(92.83deg, #c563c5 0, #7718b5 100%);
 }
 table.table-palette thead th:nth-child(odd) {
   font-size: 30px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #ffffff;
   border-radius: 50px 0px 0px 0px;
 }
 table.table-palette thead th:nth-child(even) {
-  background-image: linear-gradient(92.83deg, #320F48 0, #320F48 100%);
+  background-image: linear-gradient(92.83deg, #320f48 0, #320f48 100%);
   font-size: 30px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #ffffff;
   border-radius: 0px 50px 0px 0px;
 }
 table.table-palette tfoot {
   font-size: 30px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 5px 5px;
   justify-content: center;
   border-radius: 50px 50px 50px 50px;
@@ -70,16 +88,14 @@ table.table-palette tfoot {
   display: flex;
   justify-content: center;
   /* background-image: linear-gradient(92.83deg, #92499C 0, #6C1478 100%); */
-  border: solid #320F48 2px;
+  border: solid #320f48 2px;
   border-width: 2px;
   font-size: 30px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #ffffff;
 
   border-radius: 5px;
 }
-
-
 
 .button-palette {
   align-items: center;
@@ -94,7 +110,7 @@ table.table-palette tfoot {
   display: inline-block;
   flex-direction: row;
   flex-shrink: 0;
-  font-family: Eina01,sans-serif;
+  font-family: Eina01, sans-serif;
   font-size: 16px;
   font-weight: 800;
   justify-content: center;
@@ -117,13 +133,10 @@ table.table-palette tfoot {
   z-index: 0;
 }
 
-
-
-
-
 @media (min-width: 768px) {
   .button-palette {
-    width: 100px; height: 100px
+    width: 100px;
+    height: 100px;
   }
 }
 
@@ -133,7 +146,7 @@ table.table-palette tfoot {
 }
 
 .button-palette:before {
-  background-image: linear-gradient(92.83deg, #C563C5 0, #7718B5 100%);
+  background-image: linear-gradient(92.83deg, #c563c5 0, #7718b5 100%);
   content: "";
   display: block;
   height: 100%;
@@ -147,7 +160,7 @@ table.table-palette tfoot {
 
 .button-palette:after {
   background-color: initial;
-  background-image: linear-gradient(#320F48 0, #0c0d0d 100%);
+  background-image: linear-gradient(#320f48 0, #0c0d0d 100%);
   bottom: 4px;
   content: "";
   display: block;
@@ -161,7 +174,7 @@ table.table-palette tfoot {
 }
 
 .button-palette:hover:not(:disabled):before {
-  background: linear-gradient(92.83deg, #C563C5 0%, #7718B5 100%);
+  background: linear-gradient(92.83deg, #c563c5 0%, #7718b5 100%);
 }
 
 .button-palette:hover:not(:disabled):after {
@@ -178,11 +191,16 @@ table.table-palette tfoot {
 }
 
 .button-palette:active:not(:disabled):before {
-  background-image: linear-gradient(0deg, rgba(0, 0, 0, .2), rgba(0, 0, 0, .2)), linear-gradient(92.83deg, #C563C5 0, #7718B5 100%);
+  background-image: linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2)
+    ),
+    linear-gradient(92.83deg, #c563c5 0, #7718b5 100%);
 }
 
 .button-palette:active:not(:disabled):after {
-  background-image: linear-gradient(#320F48 0, #0c0d0d 100%);
+  background-image: linear-gradient(#320f48 0, #0c0d0d 100%);
   bottom: 4px;
   left: 4px;
   right: 4px;
@@ -191,9 +209,8 @@ table.table-palette tfoot {
 
 .button-palette:disabled {
   cursor: default;
-  opacity: .24;
+  opacity: 0.24;
 }
-
 
 .palette-list {
   height: 100%;
@@ -201,7 +218,7 @@ table.table-palette tfoot {
   position: fixed;
   z-index: 1;
   top: 0;
-  right:0;
+  right: 0;
   background-color: #111;
   overflow-x: hidden;
   transition: 0.5s;
@@ -218,7 +235,7 @@ table.table-palette tfoot {
 }
 .palette-list a:hover {
   color: #f1f1f1;
-  background-color: #320F48;
+  background-color: #320f48;
 }
 
 $item-color: white;

@@ -47,8 +47,13 @@ function Session() {
   const [response, setResponse] = useState("");
   const { visible, setVisible, bindings } = useModal();
   const [showPallete, setShowPallete] = React.useState(false);
-  const [selectedPattern, setSelectedPattern] = useState();
-  const [numRepeats, setNumRepeats] = useState();
+  const [selectedPattern, setSelectedPattern] = useState("");
+  const [numRepeats, setNumRepeats] = useState(0);
+  const [startMeasure, setStartMeasure] = useState(1);
+  const [maxMeasuresNeeded, setMaxMeasuresNeeded] = useState(1);
+  const [songLength, setSongLength] = useState();
+  var tableHeaders = [<th>M1</th>];
+  var tableRows = [];
 
   const router = useRouter();
   
@@ -56,38 +61,30 @@ function Session() {
   const player = useContext(MemberContext);
   const sessionId = router.query.id;
   
-  
-  //   const [layers, setLayers] = useState([]);
-  //   const [rows, setRows] = useState([]);
+  const [layers, setLayers] = useState([]);
 
-  const rows = [
-    { id: 1, title: "Player 1 layer" },
-    { id: 2, title: "Player 2 layer" },
-  ];
 
-  const layers = [
-    {
-      id: 1,
-      group: 1,
-      title: "item 1",
-      start_time: moment(),
-      end_time: moment().add(1, "hour"),
-    },
-    {
-      id: 2,
-      group: 2,
-      title: "item 2",
-      start_time: moment().add(-0.5, "hour"),
-      end_time: moment().add(0.5, "hour"),
-    },
-    {
-      id: 3,
-      group: 1,
-      title: "item 3",
-      start_time: moment().add(2, "hour"),
-      end_time: moment().add(3, "hour"),
-    },
-  ];
+//   const rows = [
+//     { id: 1, title: "Player 1 layer" },
+//     { id: 2, title: "Player 2 layer" },
+//   ];
+
+//   const layers = [
+//     {
+//       id: 1,
+//       group: 1,
+//       title: "item 1",
+//       start_time: moment(),
+//       end_time: moment().add(1, "hour"),
+//     },
+//     {
+//       id: 2,
+//       group: 2,
+//       title: "item 2",
+//       start_time: moment().add(-0.9, "hour"),
+//       end_time: moment().add(0.5, "hour"),
+//     },
+//   ];
 
   const presetPatterns = [
     { name: "Drum1" },
@@ -105,7 +102,7 @@ function Session() {
   ];
 
   const handlePatternClick = (name) => {
-    setSelectedPattern(name);
+    (selectedPattern === name) ? setSelectedPattern("") : setSelectedPattern(name)
     switch (name) {
       case "Drum1":
         Drum1();
@@ -152,11 +149,15 @@ function Session() {
       setNumRepeats(e.target.value);
   }
 
+  const startMeasureBoxHandler = (e) => {
+      setStartMeasure(e.target.value);
+  }
+
   const paletteCell = (instrumentFunc, instrumentName) => {
     return (
       <td>
         <div className="table-palette-buttonframe">
-          <button className="button-palette" role="button" onClick={instrumentFunc}>
+          <button className="button-palette" role="button" onClick={handlePatternClick(instrumentName)}>
             {instrumentName}
           </button>
         </div>
@@ -164,39 +165,111 @@ function Session() {
     );
   };
 
-//   useEffect(() => {
-//   }, []);
+  useEffect(() => {
+
+  }, []);
 
   const addLayer = async () => {
-    const newLayer: Layer = {
-        startTime: 0,
-        endTime: 10,
-        numRepeats: 1,
-        userId: '2',
-        file: 'hi'
-    };
-
-    const dataToEmit = {
-        layer: newLayer,
-        sessionId: sessionId
+    if (!selectedPattern) {
+        alert("Please seclect a palette pattern to use!");
     }
-    socket.emit("add_layer", dataToEmit);
+    else {
+        const dataToEmit = {
+            sessionId: sessionId
+        }
+        socket.emit("add_layer", dataToEmit);
 
-    // because we cant send json data and audio data at the same time, we must do 2 API calls
-    // POST request to make new layer with metadata
-    // const response = await fetch(config.server_url, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   // send the start time, end time, number of repeats, user id, and session id
-    //   body: JSON.stringify(newLayer),
-    // });
+        // each of Will's patterns is 4 measures = .7 seconds
+        // therefore, there are .7/4 = .175 seconds per measure
+        const startTime = startMeasure * .175;
+        const endTime = startTime + (.7 * (numRepeats + 1));
+        console.log("DEBUG: startTime = " + startTime)
+        console.log("DEBUG: endTime = " + endTime)
+        
+        // because we cant send json data and audio data at the same time, we must do 2 API calls (POST and PUT)
+        // POST request to make new layer with metadata
+        // const postData = {
+        //   startTime: startTime,
+        //   endTime: endTime,
+        //   repeatCount: numRepeats,
+        // };
+        // const postResponse = await fetch(config.server_url + "api/session/" + sessionId + "/layers", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     "MEMBERID": player.memberId
+        //   },
+        //   body: JSON.stringify(postData),
+        // });
+        // const layer = await postResponse.json();
+        // const layerId = layer.layerId.toString();
+        
+        // PUT request to this layer to actually send the audio file
+        // const layerFormData = new FormData();
+        // //layerFormData.append('file', fileFromInput);
+        // const putResponse = await fetch(
+        //   config.server_url + "api/session/" + sessionId + "/layers/" + layerId,
+        //   {
+        //     method: "PUT",
+        //     headers: {
+        //       "Content-Type": "application/x-www-form-urlencoded",
+        //       MEMBERID: player.memberId,
+        //     },
+        //     // body: ot sure what to put for body
+        //     body: layerFormData,
+        //   }
+        // );
+        
+        let totalLayers = layers;
+        const newLayer:Layer = {
+            startTime: startTime,
+            endTime: endTime,
+            repeatCount: numRepeats,
+            file: "../../" + selectedPattern + ".mp3",
+        }
+        totalLayers.push(newLayer);
+        setLayers(totalLayers);
+        
+        const measuresNeeded = startMeasure + (4 * (numRepeats + 1));
+        console.log("DEBUG: measures needed = " + measuresNeeded)
+        if (measuresNeeded > maxMeasuresNeeded) {
+            setMaxMeasuresNeeded(measuresNeeded);
+        }
 
-    // PUT request to this layer to actually send the audio file
+        tableHeaders = [];
+        for (let i = 1; i <= maxMeasuresNeeded; i++) {
+            tableHeaders.push(<th>M{i}</th>);
+        }
 
-    
-    // set layers state
+        // tableRows = [];
+        // for (let layer in totalLayers) {
+        //     tableRows.push([
+        //         <tr>
+        //             <td aria-colspan={maxMeasuresNeeded}>
+        //                 <audio controls style="width: 50px; margin-left: 0px;">
+        //                     <source src={layer.file} type="audio/mp3">
+        //                 </audio>
+        //             </td>
+        //         </tr>
+        //     ]);
+        // }
+
+        tableRows = totalLayers.map((layer, i) => {
+            return (
+                <tr>
+                    <td aria-colspan={maxMeasuresNeeded}>
+                        <audio controls style="width: 50px; margin-left: 0px;">
+                            <source src={layer.file} type="audio/mp3">
+                        </audio>
+                    </td>
+                </tr>
+            );
+        });
+
+        setSelectedPattern("");
+        setNumRepeats(1);
+        setStartMeasure(1);
+    }
   };
 
   const finishSong = () => {
@@ -215,14 +288,19 @@ function Session() {
     <Page>
       <Head>
         <h3>Your song session! Add a layer to your song with your partner!</h3>
+        <p>Song BPM: 130</p>
       </Head>
       <div>
-        <Timeline
+        {/* <Timeline
           groups={rows}
           items={layers}
           defaultTimeStart={moment().add(-12, "hour")}
           defaultTimeEnd={moment().add(12, "hour")}
-        />
+        /> */}
+        <table>
+            {tableHeaders}
+            {tableRows}
+        </table>
       </div>
 
       <Drawer
@@ -330,10 +408,18 @@ function Session() {
           <div id="layer-settings-section">
             <Drawer.Title>Layer settings</Drawer.Title>
             <h5>Number of repeats</h5>
+            <p>(0 means it will play once)</p>
             <Input
               value={numRepeats}
               onChange={numRepeatsBoxHandler}
-              placeholder="Enter a number"
+              placeholder="Enter a number, like 0, 4, or 16..."
+            />
+            <h5>Start measure</h5>
+            <p>(The beginning of the song is measure 0)</p>
+            <Input
+              value={startMeasure}
+              onChange={startMeasureBoxHandler}
+              placeholder="Enter a number, like 0, 2, or 8..."
             />
           </div>
         </Drawer.Content>
