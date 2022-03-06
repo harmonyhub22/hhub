@@ -20,9 +20,10 @@ const Login = (): React.ReactNode => {
             console.log('login failed');
             return;
         }
-        router.push({
-            pathname: "/",
-        });
+        // router.push({
+        //     pathname: "/",
+        // });
+        window.location.href = window.location.origin;
     }
   
     return (
