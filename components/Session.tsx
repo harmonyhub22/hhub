@@ -19,10 +19,9 @@ export const joinWaitQueue = async () => {
     const queue: Queue = await response.json();
     return queue;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
-
 
 export const getLiveSession = async () => {
   try {
@@ -41,6 +40,6 @@ export const getLiveSession = async () => {
     console.log(s);
     return s;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };

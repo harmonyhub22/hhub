@@ -417,6 +417,7 @@ function Session() {
         userId: ,
         file: 
     }
+    }
 
     // because we cant send json data and audio data at the same time, we must do 2 API calls
     // POST request to make new layer with metadata
