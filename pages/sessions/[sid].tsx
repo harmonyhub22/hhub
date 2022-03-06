@@ -11,7 +11,27 @@ import {
   GeistProvider,
   CssBaseline,
   Table,
+  ButtonDropdown,
+  Input
 } from "@geist-ui/core";
+import {
+  Drum1,
+  Drum2,
+  Drum3,
+  Piano1,
+  Piano2,
+  Piano3,
+  Guitar1,
+  Guitar2,
+  Guitar3,
+  Bass1,
+  Bass2,
+  Bass3,
+  PlaySong,
+  StopSong,
+//   FocusLayer1,
+//   FocusLayer2,
+} from "../../components/palette/buttons";
 // import { io } from "socket.io-client";
 import { config } from "../../components/config";
 import { saveAs } from "file-saver";
@@ -19,22 +39,26 @@ import { saveAs } from "file-saver";
 import Timeline from "../../components/timeline/_timeline";
 import moment from "moment";
 import Head from "next/head";
-import * as Tone from "tone";
-import { Player } from "tone";
 import Layer from "../../interfaces/models/Layer";
-import { getCurrentMember } from "../../components/Helper";
+import { MemberContext } from "../../context/member";
 import { SocketContext } from "../../context/socket";
 
 function Session() {
   const [response, setResponse] = useState("");
   const { visible, setVisible, bindings } = useModal();
   const [showPallete, setShowPallete] = React.useState(false);
-  const router = useRouter();
-  const socket = useContext(SocketContext);
-  const sessionId = router.query.id;
-//   const [layers, setLayers] = useState([]);
-//   const [rows, setRows] = useState([]);
   const [selectedPattern, setSelectedPattern] = useState();
+  const [numRepeats, setNumRepeats] = useState();
+
+  const router = useRouter();
+  
+  const socket = useContext(SocketContext);
+  const player = useContext(MemberContext);
+  const sessionId = router.query.id;
+  
+  
+  //   const [layers, setLayers] = useState([]);
+  //   const [rows, setRows] = useState([]);
 
   const rows = [
     { id: 1, title: "Player 1 layer" },
@@ -80,226 +104,6 @@ function Session() {
     { name: "Guitar3" },
   ];
 
-  var _stopSong = false;
-  var paletteNums = ["drums", "piano", "bass", "guitar"];
-  var paletteNumsStates = [1, 1, 1, 1];
-  var layerPlayer = 1;
-  var layerTitles = ["drums1", "piano1"];
-
-  function ToneButton0() {
-    const player = new Tone.Player("../piano_middle_C.mp3").toDestination();
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-
-  function ToneButton1() {
-    const player = new Tone.Player("../piano_C_sharp.mp3").toDestination();
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-
-  function ToneButton2() {
-    const player = new Tone.Player("../piano_D.mp3").toDestination();
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-
-  function ToneButton3() {
-    const player = new Tone.Player("../piano_D_sharp.mp3").toDestination();
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-
-  function ToneButton4() {
-    const player = new Tone.Player("../piano_E.mp3").toDestination();
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-
-  function ToneButtonN1() {
-    const player = new Tone.Player("../kick.mp3").toDestination();
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-
-  function ToneButtonN2() {
-    const player = new Tone.Player("../highhat.mp3").toDestination();
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-
-  function ToneButtonN3() {
-    const player = new Tone.Player("../snare.mp3").toDestination();
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-
-  function ToneButtonN4() {
-    const player = new Tone.Player("../clap.mp3").toDestination();
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-
-  function RecordButton() {
-    const player = new Tone.Player("../metronome.mp3").toDestination();
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-
-  function Drum1() {
-    paletteNumsStates[0] = 1;
-    const player = new Tone.Player(
-      "../drums" + paletteNumsStates[0] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
-  function Drum2() {
-    paletteNumsStates[0] = 2;
-    const player = new Tone.Player(
-      "../drums" + paletteNumsStates[0] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
-  function Drum3() {
-    paletteNumsStates[0] = 3;
-    const player = new Tone.Player(
-      "../drums" + paletteNumsStates[0] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
-  function Piano1() {
-    paletteNumsStates[1] = 1;
-    const player = new Tone.Player(
-      "../piano" + paletteNumsStates[1] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
-  function Piano2() {
-    paletteNumsStates[1] = 2;
-    const player = new Tone.Player(
-      "../piano" + paletteNumsStates[1] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
-  function Piano3() {
-    paletteNumsStates[1] = 3;
-    const player = new Tone.Player(
-      "../piano" + paletteNumsStates[1] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
-  function Bass1() {
-    paletteNumsStates[2] = 1;
-    const player = new Tone.Player(
-      "../bass" + paletteNumsStates[2] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
-  function Bass2() {
-    paletteNumsStates[2] = 2;
-    const player = new Tone.Player(
-      "bass" + paletteNumsStates[2] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
-  function Bass3() {
-    paletteNumsStates[2] = 3;
-    const player = new Tone.Player(
-      "../bass" + paletteNumsStates[2] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
-  function Guitar1() {
-    paletteNumsStates[3] = 1;
-    const player = new Tone.Player(
-      "../guitar" + paletteNumsStates[3] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
-  function Guitar2() {
-    paletteNumsStates[3] = 2;
-    const player = new Tone.Player(
-      "../guitar" + paletteNumsStates[3] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
-  function Guitar3() {
-    paletteNumsStates[3] = 3;
-    const player = new Tone.Player(
-      "../guitar" + paletteNumsStates[3] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player.start();
-      });
-    }
-  }
-
   const handlePatternClick = (name) => {
     setSelectedPattern(name);
     switch (name) {
@@ -344,52 +148,8 @@ function Session() {
     }
   }
 
-  function playLayer() {
-    const player = new Tone.Player("layer" + layerPlayer + ".mp3").toDestination();
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-
-  function FocusLayer1() { //USE TO PICK THE LAYER THAT WILL PLAY
-    layerPlayer = 1;
-    playLayer();
-  }
-
-  function FocusLayer2() {
-    layerPlayer = 2;
-    playLayer();
-  }
-
-  function PlaySong() {
-    var player1 = new Tone.Player(
-      "../drums" + paletteNumsStates[0] + ".mp3"
-    ).toDestination();
-    var player2 = new Tone.Player(
-      "../piano" + paletteNumsStates[1] + ".mp3"
-    ).toDestination();
-    var player3 = new Tone.Player(
-      "../bass" + paletteNumsStates[2] + ".mp3"
-    ).toDestination();
-    var player4 = new Tone.Player(
-      "../guitar" + paletteNumsStates[3] + ".mp3"
-    ).toDestination();
-    if (!_stopSong) {
-      Tone.loaded().then(() => {
-        player1.start();
-        player2.start();
-        player3.start();
-        player4.start();
-      });
-    }
-  }
-
-  function StopSong() {
-    if (!_stopSong) {
-      _stopSong = true;
-    } else {
-      _stopSong = false;
-    }
+  const numRepeatsBoxHandler = (e) => {
+      setNumRepeats(e.target.value);
   }
 
   const paletteCell = (instrumentFunc, instrumentName) => {
@@ -404,14 +164,10 @@ function Session() {
     );
   };
 
-  useEffect(() => {
-    var player = new Tone.Player(
-      "../drums" + paletteNumsStates[0] + ".mp3"
-    ).toDestination();
-  }, []);
+//   useEffect(() => {
+//   }, []);
 
   const addLayer = async () => {
-    alert("added");
     const newLayer: Layer = {
         startTime: 0,
         endTime: 10,
@@ -420,18 +176,22 @@ function Session() {
         file: 'hi'
     };
 
-    socket.emit("add_layer");
+    const dataToEmit = {
+        layer: newLayer,
+        sessionId: sessionId
+    }
+    socket.emit("add_layer", dataToEmit);
 
     // because we cant send json data and audio data at the same time, we must do 2 API calls
     // POST request to make new layer with metadata
-    const response = await fetch(config.server_url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // send the start time, end time, number of repeats, user id, and session id
-      body: JSON.stringify(newLayer),
-    });
+    // const response = await fetch(config.server_url, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   // send the start time, end time, number of repeats, user id, and session id
+    //   body: JSON.stringify(newLayer),
+    // });
 
     // PUT request to this layer to actually send the audio file
 
@@ -442,6 +202,7 @@ function Session() {
   const finishSong = () => {
     alert("TODO");
     // TODO: make backend request to process the finished song (send all of the layers)
+    socket.emit("finished");
   };
 
   const saveFile = () => {
@@ -511,7 +272,7 @@ function Session() {
               </tr>
             </tbody>
           </table>
-
+          <br />
           <table className="table-palette">
             <thead>
               <tr>
@@ -564,16 +325,27 @@ function Session() {
               </tr>
             </tbody>
           </table>
+          <br />
+
+          <div id="layer-settings-section">
+            <Drawer.Title>Layer settings</Drawer.Title>
+            <h5>Number of repeats</h5>
+            <Input
+              value={numRepeats}
+              onChange={numRepeatsBoxHandler}
+              placeholder="Enter a number"
+            />
+          </div>
         </Drawer.Content>
       </Drawer>
 
       <br></br>
-      <Button auto ghost px={0.6} onClick={FocusLayer1}>
+      {/* <Button auto ghost px={0.6} onClick={FocusLayer1}>
         Play Layer 1
       </Button>
       <Button auto ghost px={0.6} onClick={FocusLayer2}>
         Play Layer 2
-      </Button>
+      </Button> */}
 
       <Modal {...bindings}>
         <Modal.Title>Finishing Song</Modal.Title>

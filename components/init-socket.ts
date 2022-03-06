@@ -1,28 +1,32 @@
 import { io } from "socket.io-client";
 import { config } from "./config";
 
-export const createSocket = (memberId:string) => {
+export const createSocket = (memberId: string) => {
   console.log(config.server_url);
-  const socket = io(config.socket_url + '', {
+  const socket = io(config.socket_url + "", {
     query: {
-      'memberId': memberId,
-    }
+      memberId: memberId,
+    },
   });
-  socket.on('connect', () => {
-      console.log('connected!');
+  socket.on("connect", () => {
+    console.log("connected!");
   });
 
   socket.on("disconnect", () => {
     console.log("disconnected!");
   });
 
-  socket.on('message', (msg) => {
+  socket.on("message", (msg) => {
     console.log(msg);
   });
-  
-  socket.on("error", (error) => {
-    console.log('error connecting!!')
+
+  socket.on("layer_being_added", (data) => {
+    console.log("here, we would notify the other user that their partner submitted a layer");
   });
 
-  return socket
+  socket.on("error", (error) => {
+    console.log("error connecting!!");
+  });
+
+  return socket;
 };

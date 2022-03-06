@@ -1,4 +1,4 @@
-export default interface Memeber {
+export default interface Member {
     memberId: string;
     email: string;
     firstname: string;
