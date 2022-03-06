@@ -22,6 +22,8 @@ import Head from "next/head";
 import * as Tone from "tone";
 import { Player } from "tone";
 import Layer from "../interfaces/models/Layer";
+import { getCurrentMember } from '../../components/Helper';
+import { SocketContext } from "../../context/socket";
 
 function Session() {
   const [response, setResponse] = useState("");
@@ -373,18 +375,6 @@ function Session() {
     }
   }
 
-  // put the user in their web socket room (room # = session ID)
-  //   const startSession = async () => {
-  //     const newSocket = io("http://localhost:5000/api");
-  //     setSocket(newSocket);
-  //     const member = await getCurrentMember();
-  //     const data = {
-  //       fullName: member.firstname + " " + member.lastname,
-  //       sessionId: sessionId,
-  //     };
-  //     socket.emit("join", data);
-  //   };
-
   const paletteCell = (instrument) => {
       return (
         <td>
@@ -455,16 +445,19 @@ function Session() {
   //LAYER SONG MP3 NAMES
   var layerTitles = ["drums1", "piano1"];
   var layerPlayer = 1;
+
   function playLayer() {
     const player = new Tone.Player("layer" + layerPlayer + ".mp3").toDestination();
     Tone.loaded().then(() => {
       player.start();
     });
   }
+
   function FocusLayer1() { //USE TO PICK THE LAYER THAT WILL PLAY
     layerPlayer = 1;
     playLayer();
   }
+
   function FocusLayer2() {
     layerPlayer = 2;
     playLayer();
@@ -478,48 +471,7 @@ function Session() {
           <a href="#" onClick={ShowPalette}>Lo-Fi</a>
           <a href="#" onClick={ShowPalette}>Hip-Hop</a>
         </div> */}
-
       <br></br>
-
-      {/* <Text h1>Session Page</Text>
-      <Grid.Container gap={1} justify="flex-end" height="100px">
-        <audio controls id="">
-          <source
-            src="https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3"
-            type="audio/mpeg"
-          ></source>
-        </audio>
-        <Button onClick={addLayer}>Submit Layer</Button>
-        <Button auto onClick={() => setVisible(true)}>
-          Finish Song
-        </Button>
-        <Modal {...bindings}>
-          <Modal.Title>Finishing Song</Modal.Title>
-          <Modal.Content>
-            <p>Would you like to leave or download the song</p>
-          </Modal.Content>
-          <Modal.Action passive onClick={() => setVisible(false)}>
-            Leave
-          </Modal.Action>
-          <Modal.Action passive onClick={() => saveFile()}>
-            Download
-          </Modal.Action>
-        </Modal>
-        <Button auto onClick={() => setShowPallete(true)} scale={1}>
-          Show Pallete
-        </Button>
-        <Drawer
-          visible={showPallete}
-          onClose={() => setShowPallete(false)}
-          placement="right"
-        >
-          <Drawer.Title>Pallete</Drawer.Title>
-          <Drawer.Subtitle>Pallete will go here</Drawer.Subtitle>
-          <Drawer.Content>
-            <p>Some content contained within the drawer.</p>
-          </Drawer.Content>
-        </Drawer>
-      </Grid.Container> */}
       <Head>
         <h3>Your song session! Add a layer to your song with your partner!</h3>
       </Head>
