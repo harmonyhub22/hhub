@@ -1,3 +1,5 @@
+import * as Tone from "tone";
+import { Player } from "tone";
 import React, { Component, useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import {
@@ -12,7 +14,7 @@ import {
   CssBaseline,
   Table,
   ButtonDropdown,
-  Input
+  Input,
 } from "@geist-ui/core";
 import {
   Drum1,
@@ -29,17 +31,17 @@ import {
   Bass3,
   PlaySong,
   StopSong,
-//   FocusLayer1,
-//   FocusLayer2,
-} from "../../components/palette/buttons";
-// import { io } from "socket.io-client";
-import { config } from "../../components/config";
+  //   FocusLayer1,
+  //   FocusLayer2,
+} from "../components/palette/buttons";
+import { io } from "socket.io-client";
+import { config } from "../components/config";
 import { saveAs } from "file-saver";
-// import { getCurrentMember } from "../../components/Helper";
-import Timeline from "../../components/timeline/_timeline";
+// import { getCurrentMember } from "../components/Helper";
+import Timeline from "../components/timeline/_timeline";
 import moment from "moment";
 import Head from "next/head";
-import Layer from "../../interfaces/models/Layer";
+import Layer from "../interfaces/models/Layer";
 import { MemberContext } from "../../context/member";
 import { SocketContext } from "../../context/socket";
 
@@ -56,14 +58,12 @@ function Session() {
   var tableRows = [];
 
   const router = useRouter();
-  
+
   const socket = useContext(SocketContext);
   const player = useContext(MemberContext);
   const sessionId = router.query.id;
-  
-  const [layers, setLayers] = useState([]);
 
-  var paletteNumsStates = [1, 1, 1, 1];
+  const [layers, setLayers] = useState([]);
 
   const presetPatterns = [
     { name: "Drum1" },
@@ -81,7 +81,9 @@ function Session() {
   ];
 
   const handlePatternClick = (name) => {
-    (selectedPattern === name) ? setSelectedPattern("") : setSelectedPattern(name)
+    selectedPattern === name
+      ? setSelectedPattern("")
+      : setSelectedPattern(name);
     switch (name) {
       case "Drum1":
         Drum1();
@@ -122,21 +124,25 @@ function Session() {
       default:
         break;
     }
-  }
+  };
 
   const numRepeatsBoxHandler = (e) => {
-      setNumRepeats(e.target.value);
-  }
+    setNumRepeats(e.target.value);
+  };
 
   const startMeasureBoxHandler = (e) => {
-      setStartMeasure(e.target.value);
-  }
+    setStartMeasure(e.target.value);
+  };
 
   const paletteCell = (instrumentFunc, instrumentName) => {
     return (
       <td>
         <div className="table-palette-buttonframe">
-          <button className="button-palette" role="button" onClick={handlePatternClick(instrumentName)}>
+          <button
+            className="button-palette"
+            role="button"
+            onClick={handlePatternClick(instrumentName)}
+          >
             {instrumentName}
           </button>
         </div>
@@ -152,104 +158,90 @@ function Session() {
 
   const addLayer = async () => {
     if (!selectedPattern) {
-        alert("Please seclect a palette pattern to use!");
-    }
-    else {
-        const dataToEmit = {
-            sessionId: sessionId
-        }
-        socket.emit("add_layer", dataToEmit);
+      alert("Please seclect a palette pattern to use!");
+    } else {
+      const dataToEmit = {
+        sessionId: sessionId,
+      };
+      socket.emit("add_layer", dataToEmit);
 
-        // each of Will's patterns is 4 measures = .7 seconds
-        // therefore, there are .7/4 = .175 seconds per measure
-        const startTime = startMeasure * .175;
-        const endTime = startTime + (.7 * (numRepeats + 1));
-        console.log("DEBUG: startTime = " + startTime)
-        console.log("DEBUG: endTime = " + endTime)
-        
-        // because we cant send json data and audio data at the same time, we must do 2 API calls (POST and PUT)
-        // POST request to make new layer with metadata
-        // const postData = {
-        //   startTime: startTime,
-        //   endTime: endTime,
-        //   repeatCount: numRepeats,
-        // };
-        // const postResponse = await fetch(config.server_url + "api/session/" + sessionId + "/layers", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     "MEMBERID": player.memberId
-        //   },
-        //   body: JSON.stringify(postData),
-        // });
-        // const layer = await postResponse.json();
-        // const layerId = layer.layerId.toString();
-        
-        // PUT request to this layer to actually send the audio file
-        // const layerFormData = new FormData();
-        // //layerFormData.append('file', fileFromInput);
-        // const putResponse = await fetch(
-        //   config.server_url + "api/session/" + sessionId + "/layers/" + layerId,
-        //   {
-        //     method: "PUT",
-        //     headers: {
-        //       "Content-Type": "application/x-www-form-urlencoded",
-        //       MEMBERID: player.memberId,
-        //     },
-        //     // body: ot sure what to put for body
-        //     body: layerFormData,
-        //   }
-        // );
-        
-        let totalLayers = layers;
-        const newLayer:Layer = {
-            startTime: startTime,
-            endTime: endTime,
-            repeatCount: numRepeats,
-            file: "../../" + selectedPattern + ".mp3",
-        }
-        totalLayers.push(newLayer);
-        setLayers(totalLayers);
-        
-        const measuresNeeded = startMeasure + (4 * (numRepeats + 1));
-        console.log("DEBUG: measures needed = " + measuresNeeded)
-        if (measuresNeeded > maxMeasuresNeeded) {
-            setMaxMeasuresNeeded(measuresNeeded);
-        }
+      // each of Will's patterns is 4 measures = .7 seconds
+      // therefore, there are .7/4 = .175 seconds per measure
+      const startTime = startMeasure * 0.175;
+      const endTime = startTime + 0.7 * (numRepeats + 1);
+      console.log("DEBUG: startTime = " + startTime);
+      console.log("DEBUG: endTime = " + endTime);
 
-        tableHeaders = [];
-        for (let i = 1; i <= maxMeasuresNeeded; i++) {
-            tableHeaders.push(<th>M{i}</th>);
-        }
+      // because we cant send json data and audio data at the same time, we must do 2 API calls (POST and PUT)
+      // POST request to make new layer with metadata
+      // const postData = {
+      //   startTime: startTime,
+      //   endTime: endTime,
+      //   repeatCount: numRepeats,
+      // };
+      // const postResponse = await fetch(config.server_url + "api/session/" + sessionId + "/layers", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "MEMBERID": player.memberId
+      //   },
+      //   body: JSON.stringify(postData),
+      // });
+      // const layer = await postResponse.json();
+      // const layerId = layer.layerId.toString();
 
-        // tableRows = [];
-        // for (let layer in totalLayers) {
-        //     tableRows.push([
-        //         <tr>
-        //             <td aria-colspan={maxMeasuresNeeded}>
-        //                 <audio controls style="width: 50px; margin-left: 0px;">
-        //                     <source src={layer.file} type="audio/mp3">
-        //                 </audio>
-        //             </td>
-        //         </tr>
-        //     ]);
-        // }
+      // PUT request to this layer to actually send the audio file
+      // const layerFormData = new FormData();
+      // //layerFormData.append('file', fileFromInput);
+      // const putResponse = await fetch(
+      //   config.server_url + "api/session/" + sessionId + "/layers/" + layerId,
+      //   {
+      //     method: "PUT",
+      //     headers: {
+      //       "Content-Type": "application/x-www-form-urlencoded",
+      //       MEMBERID: player.memberId,
+      //     },
+      //     // body: ot sure what to put for body
+      //     body: layerFormData,
+      //   }
+      // );
 
-        tableRows = totalLayers.map((layer, i) => {
-            return (
-                <tr>
-                    <td aria-colspan={maxMeasuresNeeded}>
-                        <audio controls style="width: 50px; margin-left: 0px;">
-                            <source src={layer.file} type="audio/mp3"/>
-                        </audio>
-                    </td>
-                </tr>
-            );
-        });
+      let totalLayers = layers;
+      const newLayer: Layer = {
+        startTime: startTime,
+        endTime: endTime,
+        repeatCount: numRepeats,
+        file: "../" + selectedPattern + ".mp3",
+      };
+      totalLayers.push(newLayer);
+      setLayers(totalLayers);
 
-        setSelectedPattern("");
-        setNumRepeats(0);
-        setStartMeasure(0);
+      const measuresNeeded = startMeasure + 4 * (numRepeats + 1);
+      console.log("DEBUG: measures needed = " + measuresNeeded);
+      if (measuresNeeded > maxMeasuresNeeded) {
+        setMaxMeasuresNeeded(measuresNeeded);
+      }
+
+      tableHeaders = [];
+      for (let i = 1; i <= maxMeasuresNeeded; i++) {
+        tableHeaders.push(<th>M{i}</th>);
+      }
+
+      tableRows = totalLayers.map((layer, i) => {
+        return (
+          <tr key={"layer_" + i}>
+            <td aria-colspan={maxMeasuresNeeded}>
+              <audio controls style="width: 50px; margin-left: 0px;">
+                <source src={layer.file} type="audio/mp3" />
+              </audio>
+            </td>
+          </tr>
+        );
+      });
+
+      setSelectedPattern("");
+      setNumRepeats(0);
+      setStartMeasure(0);
     }
   };
 
@@ -279,8 +271,8 @@ function Session() {
           defaultTimeEnd={moment().add(12, "hour")}
         /> */}
         <table>
-            {tableHeaders}
-            {tableRows}
+          {tableHeaders}
+          {tableRows}
         </table>
       </div>
 
@@ -301,10 +293,10 @@ function Session() {
             <tfoot>
               <tr>
                 <td>
-                  <button onClick={PlaySong}>Play</button>
+                  <button onClick={playSong}>Play</button>
                 </td>
                 <td>
-                  <button onClick={StopSong}>Mute</button>
+                  <button onClick={stopSong}>Mute</button>
                 </td>
               </tr>
             </tfoot>
