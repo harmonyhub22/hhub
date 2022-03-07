@@ -27,25 +27,24 @@ import { MemberContext } from "../../context/member";
 import { SocketContext } from "../../context/socket";
 import Crunker from "crunker";
 import { buffer } from "stream/consumers";
+
 function Session() {
-  const [response, setResponse] = useState("");
   const { visible, setVisible, bindings } = useModal();
   const [showPallete, setShowPallete] = React.useState(false);
   const [selectedPattern, setSelectedPattern] = useState("");
+  // TODO: change these to one data object { numRepeats: , startMeasure: , maxMeasuresNeeded: }
   const [numRepeats, setNumRepeats] = useState(0);
   const [startMeasure, setStartMeasure] = useState(0);
   const [maxMeasuresNeeded, setMaxMeasuresNeeded] = useState(1);
+
+
   const [songLength, setSongLength] = useState();
+
+  // shouldn't store jsx elements
   const [tableHeaders, setTableHeaders] = useState<JSX.Element | null>([
     <th>M1</th>,
   ]);
-  const [tableRows, setTableRows] = useState<JSX.Element | null>(
-    <tr>
-      <td>
-        <p>Create your first layer!</p>
-      </td>
-    </tr>
-  );
+  const [tableRows, setTableRows] = useState([]);
 
   const router = useRouter();
   const allLayers :Array<Layer> = []
@@ -57,68 +56,19 @@ function Session() {
   const [layers, setLayers] = useState(allLayers);
   const [buffs, setbuffers] = useState(buffers);
 
-  const presetPatterns = [
-    { name: "Drum1" },
-    { name: "Drum2" },
-    { name: "Drum3" },
-    { name: "Piano1" },
-    { name: "Piano2" },
-    { name: "Piano3" },
-    { name: "Bass1" },
-    { name: "Bass2" },
-    { name: "Bass3" },
-    { name: "Guitar1" },
-    { name: "Guitar2" },
-    { name: "Guitar3" },
-  ];
+  const presetPatterns = ["Drum1","Drum2","Drum3","Piano1","Piano2","Piano3","Bass1","Bass2","Bass3","Guitar1","Guitar2","Guitar3"];
 
-  const handlePatternClick = (name) => {
+  const [players, setPlayers] = useState({})
+
+  const handlePatternClick = (name:string) => {
     selectedPattern === name
       ? setSelectedPattern("")
       : setSelectedPattern(name);
-    switch (name) {
-      case "Drum1":
-        Drum1();
-        break;
-      case "Drum2":
-        Drum2();
-        break;
-      case "Drum3":
-        Drum3();
-        break;
-      case "Bass1":
-        Bass1();
-        break;
-      case "Bass2":
-        Bass2();
-        break;
-      case "Bass3":
-        Bass3();
-        break;
-      case "Guitar1":
-        Guitar1();
-        break;
-      case "Guitar2":
-        Guitar2();
-        break;
-      case "Guitar3":
-        Guitar3();
-        break;
-      case "Piano1":
-        Piano1();
-        break;
-      case "Piano2":
-        Piano2();
-        break;
-      case "Piano3":
-        Piano3();
-        break;
-      default:
-        break;
-    }
+    const player = players[name];
+    player.play();
   };
 
-  const numRepeatsBoxHandler = (e) => {
+  const numRepeatsBoxHandler = (e:any) => {
     let converted = parseInt(e.target.value);
     // setting the cap at 256 repeats for now
     if (!converted || converted < 0 || converted > 256) {
@@ -130,7 +80,7 @@ function Session() {
     }
   };
 
-  const startMeasureBoxHandler = (e) => {
+  const startMeasureBoxHandler = (e:any) => {
     let converted = parseInt(e.target.value);
     // user should enter a start measure which is within the current measures of the song
     if (!converted || converted < 0 || converted > maxMeasuresNeeded) {
@@ -142,7 +92,7 @@ function Session() {
     }
   };
 
-  const paletteCell = (instrumentFunc, instrumentName) => {
+  const paletteCell = (instrumentFunc:any, instrumentName:string) => {
     return (
       <td>
         <div className="table-palette-buttonframe">
@@ -227,7 +177,7 @@ function Session() {
       for (let i = 1; i <= maxMeasuresNeeded; i++) {
         items.push(<th key={"header_" + i}>M{i}</th>);
       }
-      setTableHeaders(items);
+      setTableHeaders(items); // bad
 
       let rows = [];
       rows = totalLayers.map((layer, i) => {
@@ -243,7 +193,7 @@ function Session() {
           </tr>
         );
       });
-      setTableRows(rows);
+      setTableRows(rows); // bad
 
       setSelectedPattern("");
       setNumRepeats(0);
@@ -282,7 +232,7 @@ function Session() {
     let repeats : Array<number> = []
     
     allLayers?.map(async (layer) => {
-      let buffer = await crunker.fetchAudio(layer.file).then((buffer)=>crunker.padAudio(buffer[0],0,layer.startTime))
+      let buffer = await crunker.fetchAudio(layer.file).then((buffer:any)=>crunker.padAudio(buffer[0],0,layer.startTime))
       mp3s.push(buffer)
       setbuffers(mp3s)
       }
@@ -304,69 +254,69 @@ function Session() {
     );
   };
 
-  var drum1Player = null;
-  var drum2Player = null;
-  var drum3Player = null;
-  var piano1Player = null;
-  var piano2Player = null;
-  var piano3Player = null;
-  var guitar1Player = null;
-  var guitar2Player = null;
-  var guitar3Player = null;
-  var bass1Player = null;
-  var bass2Player = null;
-  var bass3Player = null;
-
+  const startPlayers = () => {
+    const tempPlayers:any = {};
+    presetPatterns.map((pattern) => {
+      const player = new Tone.Player(pattern.name).toDestination();
+      Tone.loaded().then(() => {
+        tempPlayers[pattern.name] = player;
+      });
+    });
+    setPlayers(tempPlayers);
+  };
+  /*
   const Drum1 = () => {
-    drum1Player = new Tone.Player("../Drum1.mp3").toDestination();
+    const drum1Player = new Tone.Player("../Drum1.mp3").toDestination();
     Tone.loaded().then(() => {
       drum1Player.start();
     });
+    players['Drum1'] = drumPlayer;
+    setPlayers(players)
   };
   const Drum2 = () => {
-    drum2Player = new Tone.Player("../Drum2.mp3").toDestination();
+    const drum2Player = new Tone.Player("../Drum2.mp3").toDestination();
     Tone.loaded().then(() => {
       drum2Player.start();
     });
   };
   const Drum3 = () => {
-    drum3Player = new Tone.Player("../Drum3.mp3").toDestination();
+    const drum3Player = new Tone.Player("../Drum3.mp3").toDestination();
     Tone.loaded().then(() => {
       drum3Player.start();
     });
   };
   const Piano1 = () => {
-    piano1Player = new Tone.Player("../Piano1.mp3").toDestination();
+    const piano1Player = new Tone.Player("../Piano1.mp3").toDestination();
     Tone.loaded().then(() => {
       piano1Player.start();
     });
   };
   const Piano2 = () => {
-    piano2Player = new Tone.Player("../Piano2.mp3").toDestination();
+    const piano2Player = new Tone.Player("../Piano2.mp3").toDestination();
     Tone.loaded().then(() => {
       piano2Player.start();
     });
   };
   const Piano3 = () => {
-    piano3Player = new Tone.Player("../Piano3.mp3").toDestination();
+    const piano3Player = new Tone.Player("../Piano3.mp3").toDestination();
     Tone.loaded().then(() => {
       piano3Player.start();
     });
   };
   const Bass1 = () => {
-    bass1Player = new Tone.Player("../Bass1.mp3").toDestination();
+    const bass1Player = new Tone.Player("../Bass1.mp3").toDestination();
     Tone.loaded().then(() => {
       bass1Player.start();
     });
   };
   const Bass2 = () => {
-    bass2Player = new Tone.Player("../Bass2.mp3").toDestination();
+    const bass2Player = new Tone.Player("../Bass2.mp3").toDestination();
     Tone.loaded().then(() => {
       bass2Player.start();
     });
   };
   const Bass3 = () => {
-    bass3Player = new Tone.Player("../Bass3.mp3").toDestination();
+    const bass3Player = new Tone.Player("../Bass3.mp3").toDestination();
     Tone.loaded().then(() => {
       bass3Player.start();
     });
@@ -389,6 +339,7 @@ function Session() {
       guitar3Player.start();
     });
   };
+  */
 
   useEffect(() => {}, []);
 
@@ -402,7 +353,14 @@ function Session() {
         <table id="session-timeline">
           <tbody>
             <tr>{tableHeaders}</tr>
-            {tableRows}
+            {(tableRows?.length ?? 0) === 0 ?
+            (<tr>
+              <td>
+                <p>Create your first layer!</p>
+              </td>
+            </tr>) : (tableRows.map((row) => {
+              
+            }))}
           </tbody>
         </table>
       </div>
@@ -432,26 +390,15 @@ function Session() {
               </tr>
             </tfoot> */}
             <tbody>
-              <tr>
-                {paletteCell(Drum1, "Drum1")}
-                {paletteCell(Drum2, "Drum2")}
-                {paletteCell(Drum3, "Drum3")}
-              </tr>
-              <tr>
-                {paletteCell(Piano1, "Piano1")}
-                {paletteCell(Piano2, "Piano2")}
-                {paletteCell(Piano3, "Piano3")}
-              </tr>
-              <tr>
-                {paletteCell(Bass1, "Bass1")}
-                {paletteCell(Bass2, "Bass2")}
-                {paletteCell(Bass3, "Bass3")}
-              </tr>
-              <tr>
-                {paletteCell(Guitar1, "Guitar1")}
-                {paletteCell(Guitar2, "Guitar2")}
-                {paletteCell(Guitar3, "Guitar3")}
-              </tr>
+              {for (let i = 3; i < presetPatterns.length; i+=3) {
+                return (
+                  <tr>
+                    {paletteCell(players[presetPatterns[i-1]], presetPatterns[i])}
+                    {paletteCell(players[presetPatterns[i-2]], presetPatterns[i])}
+                    {paletteCell(players[presetPatterns[i-3]], presetPatterns[i])}
+                  </tr>
+                )
+              }}
             </tbody>
           </table>
           <br />
@@ -514,14 +461,14 @@ function Session() {
             <h5>Number of repeats</h5>
             <p>(0 means it will play once)</p>
             <Input
-              value={numRepeats}
+              value={numRepeats.toString()}
               onChange={numRepeatsBoxHandler}
               placeholder="Enter a number, like 0, 4, or 16..."
             />
             <h5>Start measure</h5>
             <p>(The beginning of the song is measure 0)</p>
             <Input
-              value={startMeasure}
+              value={startMeasure.toString()}
               onChange={startMeasureBoxHandler}
               placeholder="Enter a number, like 0, 2, or 8..."
             />
