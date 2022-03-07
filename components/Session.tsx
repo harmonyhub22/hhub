@@ -23,7 +23,6 @@ export const joinWaitQueue = async () => {
   }
 };
 
-
 export const getLiveSession = async () => {
   try {
     const response = await fetch(config.server_url + "api/session/live", {

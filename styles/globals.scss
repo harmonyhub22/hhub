@@ -1,0 +1,402 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#session-timeline {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  td,
+  th {
+    border: 3px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+}
+
+#session-timeline-div {
+    overflow-x: scroll;
+}
+
+table.table-pianoroll {
+  width: 400px;
+  height: 200px;
+}
+
+table.table-palette {
+  background-image: linear-gradient(#320f48 0, #0c0d0d 100%);
+  width: 400px;
+  text-align: center;
+  border-radius: 50px;
+  border-collapse: collapse;
+}
+table.table-palette td,
+table.table-palette th {
+  padding: 5px 5px;
+}
+table.table-palette tbody td {
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffffff;
+}
+table.table-palette thead {
+  background-image: linear-gradient(92.83deg, #c563c5 0, #7718b5 100%);
+}
+table.table-palette thead th:nth-child(odd) {
+  font-size: 30px;
+  font-weight: bold;
+  color: #ffffff;
+  border-radius: 50px 0px 0px 0px;
+}
+table.table-palette thead th:nth-child(even) {
+  background-image: linear-gradient(92.83deg, #320f48 0, #320f48 100%);
+  font-size: 30px;
+  font-weight: bold;
+  color: #ffffff;
+  border-radius: 0px 50px 0px 0px;
+}
+table.table-palette tfoot {
+  font-size: 30px;
+  font-weight: bold;
+  color: #ffffff;
+  padding: 5px 5px;
+  justify-content: center;
+  border-radius: 50px 50px 50px 50px;
+}
+
+.table-palette-buttonframe {
+  width: 75%;
+  height: 25%;
+  top: 25%;
+  margin: 0 auto;
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  /* background-image: linear-gradient(92.83deg, #92499C 0, #6C1478 100%); */
+  border: solid #320f48 2px;
+  border-width: 2px;
+  font-size: 30px;
+  font-weight: bold;
+  color: #ffffff;
+
+  border-radius: 5px;
+}
+
+.button-palette {
+  align-items: center;
+  appearance: none;
+  background-clip: padding-box;
+  background-color: initial;
+  background-image: none;
+  border-style: none;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  flex-direction: row;
+  flex-shrink: 0;
+  font-family: Eina01, sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  justify-content: center;
+  line-height: 24px;
+  margin: 0;
+  min-height: 64px;
+  outline: none;
+  overflow: visible;
+  pointer-events: auto;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  width: auto;
+  word-break: keep-all;
+  z-index: 0;
+}
+
+@media (min-width: 768px) {
+  .button-palette {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+.button-palette:before,
+.button-palette:after {
+  border-radius: 50%;
+}
+
+.button-palette:before {
+  background-image: linear-gradient(92.83deg, #c563c5 0, #7718b5 100%);
+  content: "";
+  display: block;
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: -2;
+}
+
+.button-palette:after {
+  background-color: initial;
+  background-image: linear-gradient(#320f48 0, #0c0d0d 100%);
+  bottom: 4px;
+  content: "";
+  display: block;
+  left: 4px;
+  overflow: hidden;
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  transition: all 100ms ease-out;
+  z-index: -1;
+}
+
+.button-palette:hover:not(:disabled):before {
+  background: linear-gradient(92.83deg, #c563c5 0%, #7718b5 100%);
+}
+
+.button-palette:hover:not(:disabled):after {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  transition-timing-function: ease-in;
+  opacity: 0;
+}
+
+.button-palette:active:not(:disabled) {
+  color: #ccc;
+}
+
+.button-palette:active:not(:disabled):before {
+  background-image: linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2)
+    ),
+    linear-gradient(92.83deg, #c563c5 0, #7718b5 100%);
+}
+
+.button-palette:active:not(:disabled):after {
+  background-image: linear-gradient(#320f48 0, #0c0d0d 100%);
+  bottom: 4px;
+  left: 4px;
+  right: 4px;
+  top: 4px;
+}
+
+.button-palette:disabled {
+  cursor: default;
+  opacity: 0.24;
+}
+
+.palette-list {
+  height: 100%;
+  width: 250px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 15%;
+}
+.palette-list a {
+  background-color: #111;
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+.palette-list a:hover {
+  color: #f1f1f1;
+  background-color: #320f48;
+}
+
+$item-color: white;
+$item-background: #2196f3;
+$item-border: 1px solid #1a6fb3;
+$item-selected-color: white;
+$item-selected-background: #ffc107;
+$item-selected-border: 1px solid #ff9800;
+
+$row-background-even: transparent;
+$row-background-odd: rgba(0, 0, 0, 0.05);
+
+$border-color: #bbb;
+$border-width: 1px;
+$thick-border-width: 2px;
+$sidebar-color: #5c3294;
+$sidebar-background-color: #23b1b6;
+$list-item-padding: 0 4px;
+$weekend: rgba(250, 246, 225, 0.5);
+
+.react-calendar-timeline {
+  * {
+    box-sizing: border-box;
+  }
+
+  .rct-outer {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .rct-scroll {
+    display: inline-block;
+    white-space: normal; // was set to nowrap in .rct-outer
+    vertical-align: top;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    -ms-touch-action: none;
+    touch-action: none;
+  }
+
+  .rct-item {
+    &:hover {
+      z-index: 88;
+    }
+
+    .rct-item-content {
+      position: sticky;
+      position: -webkit-sticky;
+      left: 0px;
+      overflow: hidden;
+      display: inline-block;
+      border-radius: 2px;
+      padding: 0 6px;
+      height: 100%;
+    }
+  }
+
+  .rct-sidebar {
+    overflow: hidden;
+    white-space: normal; // was set to nowrap in .rct-outer
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    box-sizing: border-box;
+    border-right: $border-width solid $border-color;
+
+    &.rct-sidebar-right {
+      border-right: 0;
+      border-left: $border-width solid $border-color;
+    }
+
+    .rct-sidebar-row {
+      padding: $list-item-padding;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      box-sizing: border-box;
+      margin: 0;
+      border-bottom: $border-width solid $border-color;
+
+      &.rct-sidebar-row-odd {
+        background: $row-background-odd;
+      }
+      &.rct-sidebar-row-even {
+        background: $row-background-even;
+      }
+    }
+  }
+
+  // TODO: rename or remove once we make breaking change to rename vertical lines
+  // to columns
+  .rct-vertical-lines {
+    .rct-vl {
+      position: absolute;
+      border-left: 1px solid $border-color;
+      z-index: 30;
+      &.rct-vl-first {
+        border-left-width: 2px;
+      }
+      &.rct-day-6,
+      &.rct-day-0 {
+        background: $weekend;
+      }
+    }
+  }
+
+  .rct-horizontal-lines {
+    -webkit-user-select: none;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    user-select: none;
+
+    .rct-hl-even,
+    .rct-hl-odd {
+      border-bottom: $border-width solid $border-color;
+      box-sizing: border-box;
+      z-index: 40;
+    }
+    .rct-hl-odd {
+      background: $row-background-odd;
+    }
+    .rct-hl-even {
+      background: $row-background-even;
+    }
+  }
+
+  .rct-cursor-line {
+    position: absolute;
+    width: 2px;
+    background: $item-background;
+    z-index: 51;
+  }
+
+  .rct-dateHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border-bottom: 1px solid #bbb;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: rgb(240, 240, 240);
+    border-left: 2px solid #bbb;
+  }
+
+  .rct-dateHeader-primary {
+    background-color: initial;
+    border-left: 1px solid #bbb;
+    border-right: 1px solid #bbb;
+    color: #fff;
+  }
+
+  .rct-header-root {
+    background: #267051;
+    border-bottom: 1px solid #bbb;
+  }
+
+  .rct-calendar-header {
+    border: 1px solid #bbb;
+  }
+}
