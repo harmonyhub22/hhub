@@ -29,19 +29,19 @@ import {
   Bass1,
   Bass2,
   Bass3,
-  PlaySong,
+  playSong,
   StopSong,
   //   FocusLayer1,
   //   FocusLayer2,
-} from "../components/palette/buttons";
+} from "../../components/palette/buttons";
 import { io } from "socket.io-client";
-import { config } from "../components/config";
+import { config } from "../../components/config";
 import { saveAs } from "file-saver";
 // import { getCurrentMember } from "../components/Helper";
-import Timeline from "../components/timeline/_timeline";
+import Timeline from "../../components/timeline/_timeline";
 import moment from "moment";
 import Head from "next/head";
-import Layer from "../interfaces/models/Layer";
+import Layer from "../../interfaces/models/Layer";
 import { MemberContext } from "../../context/member";
 import { SocketContext } from "../../context/socket";
 
@@ -296,7 +296,7 @@ function Session() {
                   <button onClick={playSong}>Play</button>
                 </td>
                 <td>
-                  <button onClick={stopSong}>Mute</button>
+                  <button onClick={StopSong}>Mute</button>
                 </td>
               </tr>
             </tfoot>
