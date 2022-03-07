@@ -49,7 +49,7 @@ function Session() {
   const [showPallete, setShowPallete] = React.useState(false);
   const [selectedPattern, setSelectedPattern] = useState("");
   const [numRepeats, setNumRepeats] = useState(0);
-  const [startMeasure, setStartMeasure] = useState(1);
+  const [startMeasure, setStartMeasure] = useState(0);
   const [maxMeasuresNeeded, setMaxMeasuresNeeded] = useState(1);
   const [songLength, setSongLength] = useState();
   var tableHeaders = [<th>M1</th>];
@@ -63,28 +63,7 @@ function Session() {
   
   const [layers, setLayers] = useState([]);
 
-
-//   const rows = [
-//     { id: 1, title: "Player 1 layer" },
-//     { id: 2, title: "Player 2 layer" },
-//   ];
-
-//   const layers = [
-//     {
-//       id: 1,
-//       group: 1,
-//       title: "item 1",
-//       start_time: moment(),
-//       end_time: moment().add(1, "hour"),
-//     },
-//     {
-//       id: 2,
-//       group: 2,
-//       title: "item 2",
-//       start_time: moment().add(-0.9, "hour"),
-//       end_time: moment().add(0.5, "hour"),
-//     },
-//   ];
+  var paletteNumsStates = [1, 1, 1, 1];
 
   const presetPatterns = [
     { name: "Drum1" },
@@ -166,7 +145,9 @@ function Session() {
   };
 
   useEffect(() => {
-
+    var player = new Tone.Player(
+      "../drums" + paletteNumsStates[0] + ".mp3"
+    ).toDestination();
   }, []);
 
   const addLayer = async () => {
@@ -259,7 +240,7 @@ function Session() {
                 <tr>
                     <td aria-colspan={maxMeasuresNeeded}>
                         <audio controls style="width: 50px; margin-left: 0px;">
-                            <source src={layer.file} type="audio/mp3">
+                            <source src={layer.file} type="audio/mp3"/>
                         </audio>
                     </td>
                 </tr>
@@ -267,8 +248,8 @@ function Session() {
         });
 
         setSelectedPattern("");
-        setNumRepeats(1);
-        setStartMeasure(1);
+        setNumRepeats(0);
+        setStartMeasure(0);
     }
   };
 
