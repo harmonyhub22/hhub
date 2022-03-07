@@ -277,8 +277,6 @@ function Session() {
     let crunker = new Crunker();
     let cleararr  :Array<AudioBuffer> = []
     let allLayers = layers
-    // console.log(allLayers)
-    // let files: Array<string> = []
     let mp3s = buffs
     let start: Array<number> = []
     let repeats : Array<number> = []
@@ -289,7 +287,6 @@ function Session() {
       setbuffers(mp3s)
       }
     )
-    console.log(buffs)
     let t = crunker.mergeAudio(buffs)
     let output = crunker.export(t, 'audio/mp3')
     crunker.download(output.blob)
