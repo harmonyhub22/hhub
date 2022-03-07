@@ -2,7 +2,7 @@ import * as Tone from "tone";
 import { Player } from "tone";
 
 var stopSong = false;
-var paletteNums = ["Drums", "pPano", "Bass", "Guitar"];
+var paletteNums = ["Drums", "Piano", "Bass", "Guitar"];
 var paletteNumsStates = [1, 1, 1, 1];
 var layerPlayer = 1;
 var layerTitles = ["Drums1", "Piano1"];
@@ -18,158 +18,32 @@ var layerTitles = ["Drums1", "Piano1"];
 // ToneButtonN3 -> snare.mp3
 // ToneButtonN4 -> clap.mp3
 // RecordButton -> metronome.mp3
-export function tonePlayer(soundFile) {
+function TonePlayer(soundFile) {
   const player = new Tone.Player("../../" + soundFile).toDestination();
   Tone.loaded().then(() => {
     player.start();
   });
 }
 
-export function Drum1() {
-  paletteNumsStates[0] = 1;
-  const player = new Tone.Player(
-    "../../Drums" + paletteNumsStates[0] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
+// function Drum1(drum1Player) {
+//   Tone.loaded().then(() => {
+//     drum1Player.start();
+//   });
+// };
 
-export function Drum2() {
-  paletteNumsStates[0] = 2;
-  const player = new Tone.Player(
-    "../../Drums" + paletteNumsStates[0] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
+// function Drum2(drum2Player) {
+//   Tone.loaded().then(() => {
+//     drum2Player.start();
+//   });
+// };
 
-export function Drum3() {
-  paletteNumsStates[0] = 3;
-  const player = new Tone.Player(
-    "../../Drums" + paletteNumsStates[0] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
+// function Drum3(drum3Player) {
+//   Tone.loaded().then(() => {
+//     drum3Player.start();
+//   });
+// };
 
-export function Piano1() {
-  paletteNumsStates[1] = 1;
-  const player = new Tone.Player(
-    "../../Piano" + paletteNumsStates[1] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
-
-export function Piano2() {
-  paletteNumsStates[1] = 2;
-  const player = new Tone.Player(
-    "../../Piano" + paletteNumsStates[1] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
-
-export function Piano3() {
-  paletteNumsStates[1] = 3;
-  const player = new Tone.Player(
-    "../../Piano" + paletteNumsStates[1] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
-
-export function Bass1() {
-  paletteNumsStates[2] = 1;
-  const player = new Tone.Player(
-    "../../Bass" + paletteNumsStates[2] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
-
-export function Bass2() {
-  paletteNumsStates[2] = 2;
-  const player = new Tone.Player(
-    "../../Bass" + paletteNumsStates[2] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
-
-export function Bass3() {
-  paletteNumsStates[2] = 3;
-  const player = new Tone.Player(
-    "../../Bass" + paletteNumsStates[2] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
-
-export function Guitar1() {
-  paletteNumsStates[3] = 1;
-  const player = new Tone.Player(
-    "../../Guitar" + paletteNumsStates[3] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
-
-export function Guitar2() {
-  paletteNumsStates[3] = 2;
-  const player = new Tone.Player(
-    "../../Guitar" + paletteNumsStates[3] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
-
-export function Guitar3() {
-  paletteNumsStates[3] = 3;
-  const player = new Tone.Player(
-    "../../Guitar" + paletteNumsStates[3] + ".mp3"
-  ).toDestination();
-  if (!stopSong) {
-    Tone.loaded().then(() => {
-      player.start();
-    });
-  }
-}
-
-export function playSong() {
+function PlaySong() {
   var player1 = new Tone.Player(
     "../../Drums" + paletteNumsStates[0] + ".mp3"
   ).toDestination();
@@ -190,18 +64,25 @@ export function playSong() {
       player4.start();
     });
   }
+}
 
-  function StopSong() {
+function StopSong() {
     if (!stopSong) {
       stopSong = true;
     } else {
       stopSong = false;
     }
-  }
 }
 
+export {
+  PlaySong,
+  StopSong,
+  TonePlayer
+};
+
+
 // USE TO PICK THE LAYER THAT WILL PLAY
-// export function FocusLayer1() {
+// function FocusLayer1() {
 //     layerPlayer = 1;
 //     const player = new Tone.Player("../../layer" + layerPlayer + ".mp3").toDestination();
 //     Tone.loaded().then(() => {
@@ -209,7 +90,7 @@ export function playSong() {
 //     });
 // }
 
-// export function FocusLayer2() {
+// function FocusLayer2() {
 //     layerPlayer = 2;
 //     const player = new Tone.Player("../../layer" + layerPlayer + ".mp3").toDestination();
 //     Tone.loaded().then(() => {

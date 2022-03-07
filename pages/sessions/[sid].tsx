@@ -1,5 +1,5 @@
-import * as Tone from "tone";
 import { Player } from "tone";
+import * as Tone from "tone";
 import React, { Component, useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import {
@@ -17,19 +17,7 @@ import {
   Input,
 } from "@geist-ui/core";
 import {
-  Drum1,
-  Drum2,
-  Drum3,
-  Piano1,
-  Piano2,
-  Piano3,
-  Guitar1,
-  Guitar2,
-  Guitar3,
-  Bass1,
-  Bass2,
-  Bass3,
-  playSong,
+  PlaySong,
   StopSong,
   //   FocusLayer1,
   //   FocusLayer2,
@@ -81,9 +69,10 @@ function Session() {
   ];
 
   const handlePatternClick = (name) => {
-    selectedPattern === name
-      ? setSelectedPattern("")
-      : setSelectedPattern(name);
+    // selectedPattern === name
+    //   ? setSelectedPattern("")
+    //   : setSelectedPattern(name);
+    console.log("playing");
     switch (name) {
       case "Drum1":
         Drum1();
@@ -141,7 +130,7 @@ function Session() {
           <button
             className="button-palette"
             role="button"
-            onClick={handlePatternClick(instrumentName)}
+            onClick={() => handlePatternClick(instrumentName)}
           >
             {instrumentName}
           </button>
@@ -149,12 +138,6 @@ function Session() {
       </td>
     );
   };
-
-  useEffect(() => {
-    var player = new Tone.Player(
-      "../drums" + paletteNumsStates[0] + ".mp3"
-    ).toDestination();
-  }, []);
 
   const addLayer = async () => {
     if (!selectedPattern) {
@@ -257,6 +240,96 @@ function Session() {
     );
   };
 
+  var drum1Player = null;
+  var drum2Player = null;
+  var drum3Player = null;
+  var piano1Player = null;
+  var piano2Player = null;
+  var piano3Player = null;
+  var guitar1Player = null;
+  var guitar2Player = null;
+  var guitar3Player = null;
+  var bass1Player = null;
+  var bass2Player = null;
+  var bass3Player = null;
+
+  const Drum1 = () => {
+    drum1Player = new Tone.Player("../Drums1.mp3").toDestination();
+    Tone.loaded().then(() => {
+      drum1Player.start();
+    });
+  };
+  const Drum2 = () => {
+    drum2Player = new Tone.Player("../Drums2.mp3").toDestination();
+    Tone.loaded().then(() => {
+      drum2Player.start();
+    });
+  };
+  const Drum3 = () => {
+    drum3Player = new Tone.Player("../Drums3.mp3").toDestination(); 
+    Tone.loaded().then(() => {
+      drum3Player.start();
+    });
+  };
+  const Piano1 = () => {
+    piano1Player = new Tone.Player("../Piano1.mp3").toDestination();
+    Tone.loaded().then(() => {
+      piano1Player.start();
+    });
+  };
+  const Piano2 = () => {
+    piano2Player = new Tone.Player("../Piano2.mp3").toDestination();
+    Tone.loaded().then(() => {
+      piano2Player.start();
+    });
+  };
+  const Piano3 = () => {
+    piano3Player = new Tone.Player("../Piano3.mp3").toDestination();
+    Tone.loaded().then(() => {
+      piano3Player.start();
+    });
+  };
+  const Bass1 = () => {
+      console.log("running bass 1");
+      bass1Player = new Tone.Player("../Bass1.mp3").toDestination();
+      Tone.loaded().then(() => {
+        bass1Player.start();
+      });
+  }
+  const Bass2 = () => {
+      bass2Player = new Tone.Player("../Bass2.mp3").toDestination();
+      Tone.loaded().then(() => {
+        bass2Player.start();
+      });
+  }
+  const Bass3 = () => {
+    bass3Player = new Tone.Player("../Bass3.mp3").toDestination();
+    Tone.loaded().then(() => {
+      bass3Player.start();
+    });
+  };
+  const Guitar1 = () => {
+    guitar1Player = new Tone.Player("../Guitar1.mp3").toDestination();
+    Tone.loaded().then(() => {
+      guitar1Player.start();
+    });
+  };
+  const Guitar2 = () => {
+    guitar2Player = new Tone.Player("../Guitar2.mp3").toDestination();
+    Tone.loaded().then(() => {
+      guitar2Player.start();
+    });
+  };
+  const Guitar3 = () => {
+    guitar3Player = new Tone.Player("../Guitar3.mp3").toDestination();
+    Tone.loaded().then(() => {
+      guitar3Player.start();
+    });
+  };
+
+  useEffect(() => {
+  }, []);
+
   return (
     <Page>
       <Head>
@@ -290,16 +363,16 @@ function Session() {
                 <th className="table-palette-th2">ROCK</th>
               </tr>
             </thead>
-            <tfoot>
+            {/* <tfoot>
               <tr>
                 <td>
-                  <button onClick={playSong}>Play</button>
+                  <button onClick={PlaySong}>Play</button>
                 </td>
                 <td>
                   <button onClick={StopSong}>Mute</button>
                 </td>
               </tr>
-            </tfoot>
+            </tfoot> */}
             <tbody>
               <tr>
                 {paletteCell(Drum1, "Drum1")}
