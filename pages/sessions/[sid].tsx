@@ -19,14 +19,10 @@ import {
 import {
   PlaySong,
   StopSong,
-  //   FocusLayer1,
-  //   FocusLayer2,
 } from "../../components/palette/buttons";
 import { io } from "socket.io-client";
 import { config } from "../../components/config";
 import { saveAs } from "file-saver";
-// import { getCurrentMember } from "../components/Helper";
-import Timeline from "../../components/timeline/_timeline";
 import moment from "moment";
 import Head from "next/head";
 import Layer from "../../interfaces/models/Layer";
@@ -42,8 +38,14 @@ function Session() {
   const [startMeasure, setStartMeasure] = useState(0);
   const [maxMeasuresNeeded, setMaxMeasuresNeeded] = useState(1);
   const [songLength, setSongLength] = useState();
-  var tableHeaders = [<th>M1</th>];
-  var tableRows = [];
+  const [tableHeaders, setTableHeaders] = useState<JSX.Element | null>([<th>M1</th>]);
+  const [tableRows, setTableRows] = useState<JSX.Element | null>((
+      <tr>
+          <td>
+              <p>Create your first layer!</p>
+          </td>
+      </tr>
+  ));
 
   const router = useRouter();
 
@@ -69,9 +71,9 @@ function Session() {
   ];
 
   const handlePatternClick = (name) => {
-    // selectedPattern === name
-    //   ? setSelectedPattern("")
-    //   : setSelectedPattern(name);
+    selectedPattern === name
+      ? setSelectedPattern("")
+      : setSelectedPattern(name);
     console.log("playing");
     switch (name) {
       case "Drum1":
@@ -189,6 +191,7 @@ function Session() {
       //   }
       // );
 
+      console.log(layers);
       let totalLayers = layers;
       const newLayer: Layer = {
         startTime: startTime,
@@ -196,6 +199,7 @@ function Session() {
         repeatCount: numRepeats,
         file: "../" + selectedPattern + ".mp3",
       };
+      //console.log(newLayer);
       totalLayers.push(newLayer);
       setLayers(totalLayers);
 
@@ -205,22 +209,31 @@ function Session() {
         setMaxMeasuresNeeded(measuresNeeded);
       }
 
-      tableHeaders = [];
+      let items = [];
       for (let i = 1; i <= maxMeasuresNeeded; i++) {
-        tableHeaders.push(<th>M{i}</th>);
+        items.push(<th>M{i}</th>);
       }
+      setTableHeaders(items);
+      //console.log(tableHeaders);
 
-      tableRows = totalLayers.map((layer, i) => {
+      items = [];
+      items = totalLayers.map((layer, i) => {
         return (
           <tr key={"layer_" + i}>
-            <td aria-colspan={maxMeasuresNeeded}>
-              <audio controls style="width: 50px; margin-left: 0px;">
-                <source src={layer.file} type="audio/mp3" />
-              </audio>
+            <td colspan={maxMeasuresNeeded}>
+              <audio
+                controls
+                // style="width: 50px; margin-left: 0px;"
+                src={layer.file}
+               ></audio>
+                {/* <source src={layer.file} type="audio/mp3" />
+              </audio> */}
             </td>
           </tr>
         );
       });
+      setTableRows(items);
+      //console.log(tableRows);
 
       setSelectedPattern("");
       setNumRepeats(0);
@@ -254,19 +267,19 @@ function Session() {
   var bass3Player = null;
 
   const Drum1 = () => {
-    drum1Player = new Tone.Player("../Drums1.mp3").toDestination();
+    drum1Player = new Tone.Player("../Drum1.mp3").toDestination();
     Tone.loaded().then(() => {
       drum1Player.start();
     });
   };
   const Drum2 = () => {
-    drum2Player = new Tone.Player("../Drums2.mp3").toDestination();
+    drum2Player = new Tone.Player("../Drum2.mp3").toDestination();
     Tone.loaded().then(() => {
       drum2Player.start();
     });
   };
   const Drum3 = () => {
-    drum3Player = new Tone.Player("../Drums3.mp3").toDestination(); 
+    drum3Player = new Tone.Player("../Drum3.mp3").toDestination(); 
     Tone.loaded().then(() => {
       drum3Player.start();
     });
@@ -344,8 +357,12 @@ function Session() {
           defaultTimeEnd={moment().add(12, "hour")}
         /> */}
         <table>
-          {tableHeaders}
-          {tableRows}
+            <tbody>
+                <tr>
+                    {tableHeaders}
+                </tr>
+                {tableRows}
+            </tbody>
         </table>
       </div>
 
