@@ -25,7 +25,8 @@ import Head from "next/head";
 import Layer from "../../interfaces/models/Layer";
 import { MemberContext } from "../../context/member";
 import { SocketContext } from "../../context/socket";
-
+import Crunker from "crunker";
+import { buffer } from "stream/consumers";
 function Session() {
   const [response, setResponse] = useState("");
   const { visible, setVisible, bindings } = useModal();
@@ -47,12 +48,14 @@ function Session() {
   );
 
   const router = useRouter();
-
+  const allLayers :Array<Layer> = []
+  const buffers :Array<AudioBuffer> = []
   const socket = useContext(SocketContext);
   const player = useContext(MemberContext);
   const sessionId = router.query.id;
 
-  const [layers, setLayers] = useState([]);
+  const [layers, setLayers] = useState(allLayers);
+  const [buffs, setbuffers] = useState(buffers);
 
   const presetPatterns = [
     { name: "Drum1" },
@@ -210,7 +213,9 @@ function Session() {
         repeatCount: numRepeats,
         file: "../" + selectedPattern + ".mp3",
       };
+      
       totalLayers.push(newLayer);
+      allLayers.push(newLayer);
       setLayers(totalLayers);
 
       const measuresNeeded = startMeasure + 4 * (numRepeats + 1);
@@ -266,9 +271,33 @@ function Session() {
   };
 
 
-  const finishSong = () => {
+  const finishSong = async () => {
     alert("TODO");
     // TODO: make backend request to process the finished song (send all of the layers)
+    let crunker = new Crunker();
+    let cleararr  :Array<AudioBuffer> = []
+    let allLayers = layers
+    // console.log(allLayers)
+    // let files: Array<string> = []
+    let mp3s = buffs
+    let start: Array<number> = []
+    let repeats : Array<number> = []
+    
+    allLayers?.map(async (layer) => {
+      let buffer = await crunker.fetchAudio(layer.file).then((buffer)=>crunker.padAudio(buffer[0],0,layer.startTime))
+      mp3s.push(buffer)
+      setbuffers(mp3s)
+      }
+    )
+    console.log(buffs)
+    let t = crunker.mergeAudio(buffs)
+    let output = crunker.export(t, 'audio/mp3')
+    crunker.download(output.blob)
+    mp3s = [];
+    setbuffers([]);
+
+    
+
     socket.emit("finished");
   };
 
@@ -519,7 +548,7 @@ function Session() {
         <Modal.Action passive onClick={() => setVisible(false)}>
           Leave
         </Modal.Action>
-        <Modal.Action passive onClick={() => saveFile()}>
+        <Modal.Action passive onClick={() => finishSong()}>
           Download
         </Modal.Action>
       </Modal>

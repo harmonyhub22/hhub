@@ -18,7 +18,7 @@ var layerTitles = ["Drums1", "Piano1"];
 // ToneButtonN3 -> snare.mp3
 // ToneButtonN4 -> clap.mp3
 // RecordButton -> metronome.mp3
-function TonePlayer(soundFile) {
+function TonePlayer(soundFile:string) {
   const player = new Tone.Player("../../" + soundFile).toDestination();
   Tone.loaded().then(() => {
     player.start();
