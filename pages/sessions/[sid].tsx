@@ -16,10 +16,7 @@ import {
   ButtonDropdown,
   Input,
 } from "@geist-ui/core";
-import {
-  PlaySong,
-  StopSong,
-} from "../../components/palette/buttons";
+import { PlaySong, StopSong } from "../../components/palette/buttons";
 import { io } from "socket.io-client";
 import { config } from "../../components/config";
 import { saveAs } from "file-saver";
@@ -38,14 +35,16 @@ function Session() {
   const [startMeasure, setStartMeasure] = useState(0);
   const [maxMeasuresNeeded, setMaxMeasuresNeeded] = useState(1);
   const [songLength, setSongLength] = useState();
-  const [tableHeaders, setTableHeaders] = useState<JSX.Element | null>([<th>M1</th>]);
-  const [tableRows, setTableRows] = useState<JSX.Element | null>((
-      <tr>
-          <td>
-              <p>Create your first layer!</p>
-          </td>
-      </tr>
-  ));
+  const [tableHeaders, setTableHeaders] = useState<JSX.Element | null>([
+    <th>M1</th>,
+  ]);
+  const [tableRows, setTableRows] = useState<JSX.Element | null>(
+    <tr>
+      <td>
+        <p>Create your first layer!</p>
+      </td>
+    </tr>
+  );
 
   const router = useRouter();
 
@@ -74,7 +73,6 @@ function Session() {
     selectedPattern === name
       ? setSelectedPattern("")
       : setSelectedPattern(name);
-    console.log("playing");
     switch (name) {
       case "Drum1":
         Drum1();
@@ -118,11 +116,27 @@ function Session() {
   };
 
   const numRepeatsBoxHandler = (e) => {
-    setNumRepeats(e.target.value);
+    let converted = parseInt(e.target.value);
+    // setting the cap at 256 repeats for now
+    if (!converted || converted < 0 || converted > 256) {
+      alert(
+        "Invalid value for number of repeats! Please enter a valid number."
+      );
+    } else {
+      setNumRepeats(converted);
+    }
   };
 
   const startMeasureBoxHandler = (e) => {
-    setStartMeasure(e.target.value);
+    let converted = parseInt(e.target.value);
+    // user should enter a start measure which is within the current measures of the song
+    if (!converted || converted < 0 || converted > maxMeasuresNeeded) {
+      alert(
+        "Invalid value for start measure! Please enter a valid number."
+      );
+    } else {
+      setStartMeasure(converted);
+    }
   };
 
   const paletteCell = (instrumentFunc, instrumentName) => {
@@ -154,8 +168,6 @@ function Session() {
       // therefore, there are .7/4 = .175 seconds per measure
       const startTime = startMeasure * 0.175;
       const endTime = startTime + 0.7 * (numRepeats + 1);
-      console.log("DEBUG: startTime = " + startTime);
-      console.log("DEBUG: endTime = " + endTime);
 
       // because we cant send json data and audio data at the same time, we must do 2 API calls (POST and PUT)
       // POST request to make new layer with metadata
@@ -191,7 +203,6 @@ function Session() {
       //   }
       // );
 
-      console.log(layers);
       let totalLayers = layers;
       const newLayer: Layer = {
         startTime: startTime,
@@ -199,47 +210,61 @@ function Session() {
         repeatCount: numRepeats,
         file: "../" + selectedPattern + ".mp3",
       };
-      //console.log(newLayer);
       totalLayers.push(newLayer);
       setLayers(totalLayers);
 
       const measuresNeeded = startMeasure + 4 * (numRepeats + 1);
-      console.log("DEBUG: measures needed = " + measuresNeeded);
       if (measuresNeeded > maxMeasuresNeeded) {
         setMaxMeasuresNeeded(measuresNeeded);
       }
 
       let items = [];
       for (let i = 1; i <= maxMeasuresNeeded; i++) {
-        items.push(<th>M{i}</th>);
+        items.push(<th key={"header_" + i}>M{i}</th>);
       }
       setTableHeaders(items);
-      //console.log(tableHeaders);
 
-      items = [];
-      items = totalLayers.map((layer, i) => {
+      let rows = [];
+      rows = totalLayers.map((layer, i) => {
         return (
           <tr key={"layer_" + i}>
-            <td colspan={maxMeasuresNeeded}>
+            <td colSpan={maxMeasuresNeeded}>
               <audio
                 controls
-                // style="width: 50px; margin-left: 0px;"
+                style={computeLayerStyle(layer.startTime, layer.endTime - layer.startTime)}
                 src={layer.file}
-               ></audio>
-                {/* <source src={layer.file} type="audio/mp3" />
-              </audio> */}
+              ></audio>
             </td>
           </tr>
         );
       });
-      setTableRows(items);
-      //console.log(tableRows);
+      setTableRows(rows);
 
       setSelectedPattern("");
       setNumRepeats(0);
       setStartMeasure(0);
     }
   };
+
+  // the left offset and width of the layer depends on the start time and ratio of layer duration to the entire song, respectively
+  const computeLayerStyle = (start:number, duration:number) => {
+      const layerStyle = {
+        width: "50px",
+        marginLeft: "0px",
+      };
+
+      let durationPerentage = duration / (maxMeasuresNeeded * .175) * 100;
+      layerStyle.width = durationPerentage.toString() + "%";
+      
+      // the percentage of left offset decreases as the # of columns in our table increases (since columns shrink as more are added)
+      let multiplier = 20;
+      if (maxMeasuresNeeded >= 5 && maxMeasuresNeeded < 10) multiplier = 10;
+      else if (maxMeasuresNeeded >= 10) multiplier = 5;
+      let leftOffset = start * multiplier;
+      layerStyle.marginLeft = leftOffset.toString() + "%";
+      return layerStyle;
+  };
+
 
   const finishSong = () => {
     alert("TODO");
@@ -279,7 +304,7 @@ function Session() {
     });
   };
   const Drum3 = () => {
-    drum3Player = new Tone.Player("../Drum3.mp3").toDestination(); 
+    drum3Player = new Tone.Player("../Drum3.mp3").toDestination();
     Tone.loaded().then(() => {
       drum3Player.start();
     });
@@ -303,18 +328,17 @@ function Session() {
     });
   };
   const Bass1 = () => {
-      console.log("running bass 1");
-      bass1Player = new Tone.Player("../Bass1.mp3").toDestination();
-      Tone.loaded().then(() => {
-        bass1Player.start();
-      });
-  }
+    bass1Player = new Tone.Player("../Bass1.mp3").toDestination();
+    Tone.loaded().then(() => {
+      bass1Player.start();
+    });
+  };
   const Bass2 = () => {
-      bass2Player = new Tone.Player("../Bass2.mp3").toDestination();
-      Tone.loaded().then(() => {
-        bass2Player.start();
-      });
-  }
+    bass2Player = new Tone.Player("../Bass2.mp3").toDestination();
+    Tone.loaded().then(() => {
+      bass2Player.start();
+    });
+  };
   const Bass3 = () => {
     bass3Player = new Tone.Player("../Bass3.mp3").toDestination();
     Tone.loaded().then(() => {
@@ -340,8 +364,7 @@ function Session() {
     });
   };
 
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <Page>
@@ -349,20 +372,12 @@ function Session() {
         <h3>Your song session! Add a layer to your song with your partner!</h3>
         <p>Song BPM: 130</p>
       </Head>
-      <div>
-        {/* <Timeline
-          groups={rows}
-          items={layers}
-          defaultTimeStart={moment().add(-12, "hour")}
-          defaultTimeEnd={moment().add(12, "hour")}
-        /> */}
-        <table>
-            <tbody>
-                <tr>
-                    {tableHeaders}
-                </tr>
-                {tableRows}
-            </tbody>
+      <div id="session-timeline-div">
+        <table id="session-timeline">
+          <tbody>
+            <tr>{tableHeaders}</tr>
+            {tableRows}
+          </tbody>
         </table>
       </div>
 
@@ -422,14 +437,14 @@ function Session() {
               </tr>
             </thead>
             <tfoot>
-              <tr>
+              {/* <tr>
                 <td>
                   <button>RESET</button>
                 </td>
                 <td>
                   <button>SAVE</button>
                 </td>
-              </tr>
+              </tr> */}
             </tfoot>
             <tbody>
               <tr>
