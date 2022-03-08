@@ -56,7 +56,7 @@ function Session() {
   const [layers, setLayers] = useState(allLayers);
   const [buffs, setbuffers] = useState(buffers);
 
-  const presetPatterns = ["Drum1","Drum2","Drum3","Piano1","Piano2","Piano3","Bass1","Bass2","Bass3","Guitar1","Guitar2","Guitar3"];
+  const presetPatterns = ["Drum1", "Drum2", "Drum3", "Piano1", "Piano2", "Piano3", "Bass1", "Bass2", "Bass3", "Guitar1", "Guitar2", "Guitar3"];
 
   const [players, setPlayers] = useState({})
 
@@ -92,7 +92,7 @@ function Session() {
     }
   };
 
-  const paletteCell = (instrumentFunc:any, instrumentName:string) => {
+  const paletteCell = (instrumentName:string) => {
     return (
       <td>
         <div className="table-palette-buttonframe">
@@ -222,7 +222,6 @@ function Session() {
 
 
   const finishSong = async () => {
-    alert("TODO");
     // TODO: make backend request to process the finished song (send all of the layers)
     let crunker = new Crunker();
     let cleararr  :Array<AudioBuffer> = []
@@ -243,8 +242,6 @@ function Session() {
     mp3s = [];
     setbuffers([]);
 
-    
-
     socket.emit("finished");
   };
 
@@ -257,12 +254,13 @@ function Session() {
   const startPlayers = () => {
     const tempPlayers:any = {};
     presetPatterns.map((pattern) => {
-      const player = new Tone.Player(pattern.name).toDestination();
+      const player = new Tone.Player("../" + pattern + ".mp3").toDestination();
       Tone.loaded().then(() => {
-        tempPlayers[pattern.name] = player;
+        tempPlayers[pattern] = player;
       });
     });
     setPlayers(tempPlayers);
+    // the problem here is that the players state isnt set by the time we click a palette button...look into componentDidMount...
   };
   /*
   const Drum1 = () => {
@@ -341,7 +339,9 @@ function Session() {
   };
   */
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+      startPlayers();
+  }, []);
 
   return (
     <Page>
@@ -358,9 +358,7 @@ function Session() {
               <td>
                 <p>Create your first layer!</p>
               </td>
-            </tr>) : (tableRows.map((row) => {
-              
-            }))}
+            </tr>) : tableRows}
           </tbody>
         </table>
       </div>
@@ -379,7 +377,24 @@ function Session() {
                 <th className="table-palette-th2">ROCK</th>
               </tr>
             </thead>
-            {/* <tfoot>
+            <tbody>
+              <tr>
+                {paletteCell(presetPatterns[0])}
+                {paletteCell(presetPatterns[1])}
+                {paletteCell(presetPatterns[2])}
+              </tr>
+              <tr>
+                {paletteCell(presetPatterns[3])}
+                {paletteCell(presetPatterns[4])}
+                {paletteCell(presetPatterns[5])}
+              </tr>
+              <tr>
+                {paletteCell(presetPatterns[6])}
+                {paletteCell(presetPatterns[7])}
+                {paletteCell(presetPatterns[8])}  
+              </tr>
+            </tbody>
+            <tfoot>
               <tr>
                 <td>
                   <button onClick={PlaySong}>Play</button>
@@ -388,18 +403,7 @@ function Session() {
                   <button onClick={StopSong}>Mute</button>
                 </td>
               </tr>
-            </tfoot> */}
-            <tbody>
-              {for (let i = 3; i < presetPatterns.length; i+=3) {
-                return (
-                  <tr>
-                    {paletteCell(players[presetPatterns[i-1]], presetPatterns[i])}
-                    {paletteCell(players[presetPatterns[i-2]], presetPatterns[i])}
-                    {paletteCell(players[presetPatterns[i-3]], presetPatterns[i])}
-                  </tr>
-                )
-              }}
-            </tbody>
+            </tfoot>
           </table>
           <br />
           <table className="table-palette">
@@ -409,16 +413,6 @@ function Session() {
                 <th className="table-palette-th2">ROCK</th>
               </tr>
             </thead>
-            <tfoot>
-              {/* <tr>
-                <td>
-                  <button>RESET</button>
-                </td>
-                <td>
-                  <button>SAVE</button>
-                </td>
-              </tr> */}
-            </tfoot>
             <tbody>
               <tr>
                 <td>
@@ -453,6 +447,16 @@ function Session() {
                 </td>
               </tr>
             </tbody>
+            <tfoot>
+              {/* <tr>
+                <td>
+                  <button>RESET</button>
+                </td>
+                <td>
+                  <button>SAVE</button>
+                </td>
+              </tr> */}
+            </tfoot>
           </table>
           <br />
 
