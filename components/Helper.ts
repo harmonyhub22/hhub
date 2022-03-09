@@ -59,3 +59,23 @@ export const logout = async () => {
         return null;
     }
 }
+
+export const getMemberById = async (memberId:string) => {
+    try {
+        const response = await fetch(config.server_url + 'api/members/' + memberId, {
+            method: "GET",
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+        if(!response.ok) {
+            throw new Error(await response.json());
+        }
+        const member: Member = await response.json();
+        return member;
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
