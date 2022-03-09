@@ -291,13 +291,19 @@ function Session() {
     let output = crunker.export(t, 'audio/mp3')
     crunker.download(output.blob)
     mp3s = [];
-    setbuffers([]);
-
-    
+    setbuffers([])
 
     socket.emit("finished");
   };
-
+  const loop = async(file:string,loopcount:number)=>{
+    let crunker = new Crunker();
+    let arr  :Array<AudioBuffer> = []
+    for (var i = 0; i < loopcount; i++) {
+      let temp = await crunker.fetchAudio(file)
+      arr.push(temp[0])
+    }
+    return crunker.concatAudio(arr)
+  }
   const saveFile = () => {
     saveAs(
       "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3"
