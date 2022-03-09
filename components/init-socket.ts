@@ -20,10 +20,6 @@ export const createSocket = (memberId: string) => {
     console.log(msg);
   });
 
-  socket.on("layer_being_added", (data) => {
-    console.log("here, we would notify the other user that their partner submitted a layer");
-  });
-
   socket.on("error", (error) => {
     console.log("error connecting!!");
   });

@@ -1,4 +1,5 @@
 export default interface Layer {
+    layerId: string,
     startTime: number;
     endTime: number;
     repeatCount: number;

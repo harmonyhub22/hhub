@@ -1,11 +1,12 @@
-const PaletteCell = (instrumentName:string, onClickFunc:any) => {
+const PaletteCell = (instrumentName:string, onClickFunc:any, border:string) => {
     return (
-      <td>
+      <td key={instrumentName}>
         <div className="table-palette-buttonframe">
           <button
             className="button-palette"
             role="button"
-            onClick={() => onClickFunc(instrumentName)}
+            style={{border: border}}
+            onClick={(e) => onClickFunc(instrumentName, e.target)}
           >
             {instrumentName}
           </button>

@@ -7,7 +7,6 @@ import {
   Modal,
   useModal,
 } from "@geist-ui/core";
-import { saveAs } from "file-saver";
 import Head from "next/head";
 import Layer from "../../interfaces/models/Layer";
 import { MemberContext } from "../../context/member";
@@ -15,9 +14,12 @@ import { SocketContext } from "../../context/socket";
 import Crunker from "crunker";
 import Palette from "../../components/ui/Palette";
 import Session from "../../interfaces/models/Session";
-import PaletteData from "../../interfaces/palette-data";
-import { getSession } from "../../components/Session";
-import SessionData from "../../interfaces/session-data";
+import PaletteData from "../../interfaces/palette_data";
+import { getLayerById, getSession, postLayer, postLayerRecording } from "../../components/Session";
+import SessionData from "../../interfaces/session_data";
+import LayerCreated from "../../interfaces/socket-data/layers_created";
+import LayersCreated from "../../interfaces/socket-data/layers_created";
+import Member from "../../interfaces/models/Member";
 
 function Session() {
   const { visible, setVisible, bindings } = useModal();
@@ -30,10 +32,21 @@ function Session() {
     measures: 1,
   });
   const [layers, setLayers] = useState<Layer[]>([]);
+  const [partner, setPartner] = useState<Member>();
 
   const router = useRouter();
   const member = useContext(MemberContext);
   const socket = useContext(SocketContext);
+
+  const partnerLayer = async (layerId:string) => {
+    if (session?.sessionId === undefined) return;
+    const layer: Layer | null = await getLayerById(session?.sessionId, layerId);
+    if (layer === null || layer === undefined) {
+      console.log('could not get partner layer');
+      return; 
+    }
+    setLayers([...layers, layer]);
+  };
 
   const getThisSession = async () => {
     console.log(router.query.sid);
@@ -41,6 +54,13 @@ function Session() {
     console.log(s);
     if (s === null || s === undefined) return;
     setSession(s);
+    setLayers(s.layers); // set the current layers
+    setPartner(s.member1.memberId === member.memberId ? s.member2 : s.member1); // set the partner
+    socket.on("layers_added", async (data:LayersCreated) => {
+      data.layerIds.map(async (layerId) => {
+        await partnerLayer(layerId);
+      });
+    });
   };
 
   useEffect(() => {
@@ -48,70 +68,57 @@ function Session() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const addLayer = async (paletteData:PaletteData) => {
+  const addLayer = async (paletteData:PaletteData, selectedPatterns:string[]) => {
     if (paletteData === null || paletteData === undefined)
       return;
     if (!paletteData.name) {
       alert("Please seclect a palette pattern to use!");
-    } else {
-      /*
-      const dataToEmit = {
-        sessionId: sessionId,
-      };
-      socket.emit("add_layer", dataToEmit);
-      */
-
-      // each of Will's patterns is 4 measures = .7 seconds
-      // therefore, there are .7/4 = .175 seconds per measure
-      const startTime = paletteData.startMeasure * 0.175;
-      const endTime = startTime + 0.7 * (paletteData.numRepeats + 1);
-
-      /*
-      // because we cant send json data and audio data at the same time, we must do 2 API calls (POST and PUT)
-      // POST request to make new layer with metadata
-      const postResponse = await fetch(config.server_url + "api/session/" + sessionId + "/layers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(postData),
-      });
-      const layer = await postResponse.json();
-      const layerId = layer.layerId.toString();
-
-      // PUT request to this layer to actually send the audio file
-      const layerFormData = new FormData();
-      layerFormData.append('file', fileFromInput);
-      const putResponse = await fetch(
-      config.server_url + "api/session/" + sessionId + "/layers/" + layerId,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            MEMBERID: player.memberId,
-          },
-          body: layerFormData,
-        }
-      );
-      */
-
-      const newLayer: Layer = {
-        memberId: member.memberId,
-        startTime: startTime,
-        endTime: endTime,
-        repeatCount: paletteData.numRepeats,
-        file: "../" + paletteData.name + ".mp3",
-        bucketUrl: '',
-      };
-
-      setLayers([...layers, newLayer]);
-
-      const measuresNeeded = paletteData.startMeasure + 4 * (paletteData.numRepeats + 1);
-      if (measuresNeeded > paletteData.maxMeasuresNeeded) {
-        sessionData.measures = measuresNeeded;
-        setSessionData(sessionData);
-      }
+      return;
     }
+    if (session?.sessionId === undefined) return;
+
+    // each of Will's patterns is 4 measures = .7 seconds
+    // therefore, there are .7/4 = .175 seconds per measure
+    const startTime = paletteData.startMeasure * 0.175;
+    const endTime = startTime + 0.7 * (paletteData.numRepeats + 1);
+    const layerData = {
+      startTime: startTime,
+      endTime: endTime,
+      repeatCount: paletteData.numRepeats,
+      file: '',
+    };
+
+    const newLayers: Layer[] = [];
+    selectedPatterns.forEach(async (patternName:string) => {
+
+      layerData.file = patternName;
+
+      const newLayer: Layer | null = await postLayer(session.sessionId, layerData);
+      if (newLayer === null) {
+        console.log('could not add layer');
+        alert('could not add layer');
+        return;
+      }
+      console.log(newLayer);
+
+      newLayers.push(newLayer);
+    });
+
+    setLayers([...layers, ...newLayers]);
+
+    // adjust the measures needed
+    const measuresNeeded = paletteData.startMeasure + 4 * (paletteData.numRepeats + 1);
+    if (measuresNeeded > paletteData.maxMeasuresNeeded) {
+      sessionData.measures = measuresNeeded;
+      setSessionData(sessionData);
+    }
+
+    // tell partner there's a new layer
+    const newLayerIds = newLayers.map((l) => l.layerId);
+    const dataToEmit = {
+      layerIds: newLayerIds,
+    };
+    socket.emit("add_layer", dataToEmit);
   };
 
   // the left offset and width of the layer depends on the start time and ratio of layer duration to the entire song, respectively
@@ -171,20 +178,23 @@ function Session() {
             <tr>
               {Array.from(Array(sessionData.measures), (_, i) => <th key={"M_" + i}>M{i}</th>)}
             </tr>
-            {((layers?.length ?? 0) === 0) ?
-              (layers.map((layer, i) => 
-                (
+            {((layers?.length ?? 0) !== 0) ?
+              (layers.map((layer, i) => {
+                return (
                   <tr key={"layer_" + i}>
                     <td colSpan={sessionData.measures}>
                       <audio
                         controls
                         style={computeLayerStyle(layer.startTime, layer.endTime - layer.startTime)}
-                        src={layer.file}
+                        src={((layer?.file?.length ?? 0)=== 0) ? layer.file : layer.bucketUrl}
                       ></audio>
+                      {layer.memberId === member.memberId ? 
+                      (member.firstname[0].toUpperCase() + member.lastname[0].toUpperCase()) :
+                      (partner !== undefined && partner.firstname[0].toUpperCase() + partner.lastname[0].toUpperCase())}
                     </td>
                   </tr>
-                )
-              )) :
+                ) 
+                })) :
               (<tr>
                 <td key={"first_layer"}>
                   <Button onClick={() => setShowPalette(true)}>Create your first layer!</Button>

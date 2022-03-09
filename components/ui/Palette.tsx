@@ -4,7 +4,7 @@ import {
   Drawer,
   Input,
 } from "@geist-ui/core";
-import PaletteData from "../../interfaces/palette-data";
+import PaletteData from "../../interfaces/palette_data";
 import { Players } from "tone";
 import * as Tone from "tone";
 import PaletteCell from "./Palette-Cell";
@@ -12,11 +12,13 @@ import { config } from "../config";
 
 const Palette = (genreName:string, addLayerFunc:any) => {
 
+  const selectedBorder = "solid #FFBF00 3px";
+
   const presetPatterns: string|any[] = config.sounds;
   
 
   const [players, setPlayers] = useState<Players>();
-  const [selectedPattern, setSelectedPattern] = useState("");
+  const [selectedPatterns, setSelectedPatterns] = useState<string[]>([]);
   const [paletteData, setPaletteData] = useState<PaletteData>({
     name: '',
     numRepeats: 0,
@@ -25,14 +27,40 @@ const Palette = (genreName:string, addLayerFunc:any) => {
     genreName: genreName,
   });
 
-  const handlePatternClick = (name:string) => {
-    console.log(name);
-    selectedPattern === name
-      ? setSelectedPattern("")
-      : setSelectedPattern(name);
-    if (players !== undefined) {
-      console.log('play');
+  const playLayer = () => {
+    if (players === undefined || players === null) return;
+    selectedPatterns.forEach((name) => {
       players.player(name).start();
+    });
+  };
+
+  const stopLayer = () => {
+    if (players === undefined || players === null) return;
+    players.stopAll();
+  };
+
+  const clearLayer = () => {
+    if (players === undefined || players === null) return;
+    players.stopAll();
+    setSelectedPatterns([]);
+    document.querySelectorAll<HTMLElement>(".button-palette").forEach((item) => {
+      item.style.border = "";
+    });
+  };
+
+  const handlePatternClick = (name:string, target:any) => {
+    if (players === undefined || players === null) return;
+    if (!selectedPatterns.includes(name)) {
+      target.style.border = selectedBorder;
+      setSelectedPatterns([...selectedPatterns, name]);
+      [...selectedPatterns, name].forEach((p) => {
+        players.player(p).start(0);
+      });
+    } else {
+      target.style.border = "";
+      const sp = selectedPatterns.splice(selectedPatterns.indexOf(name), 1);
+      setSelectedPatterns(sp);
+      players.player(name).stop();
     }
   };
 
@@ -83,8 +111,10 @@ const Palette = (genreName:string, addLayerFunc:any) => {
   for (let i = 0; i < presetPatterns.length; i+=3) {
     const paletteRow:any = [];
     presetPatterns.slice(i, i+3).map((name) => {
+      let border = "";
+      if (selectedPatterns.includes(name)) border = selectedBorder;
       paletteRow.push(<>
-        {i < presetPatterns.length && PaletteCell(name, handlePatternClick)}
+        {i < presetPatterns.length && PaletteCell(name, handlePatternClick, border)}
         </>
       );
     });
@@ -103,16 +133,19 @@ const Palette = (genreName:string, addLayerFunc:any) => {
         <tbody>
           {paletteRows}
         </tbody>
-        {/*<tfoot>
+        <tfoot>
           <tr>
             <td>
-              <button onClick={PlaySong}>Play</button>
+              <button onClick={playLayer}>Play All</button>
             </td>
             <td>
-              <button onClick={StopSong}>Mute</button>
+              <button onClick={stopLayer}>Stop</button>
+            </td>
+            <td>
+              <button onClick={clearLayer}>Clear</button>
             </td>
           </tr>
-        </tfoot>*/}
+        </tfoot>
       </table>
       <br />
 
@@ -132,7 +165,7 @@ const Palette = (genreName:string, addLayerFunc:any) => {
           onChange={startMeasureBoxHandler}
           placeholder="Enter a number, like 0, 2, or 8..."
         />
-        <Button onClick={() => addLayerFunc(paletteData)}>Submit Layer</Button>
+        <Button onClick={() => addLayerFunc(paletteData, selectedPatterns)}>Submit Layer</Button>
       </div>
     </>
   )
