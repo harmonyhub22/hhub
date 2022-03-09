@@ -3,4 +3,6 @@ export default interface Layer {
     endTime: number;
     repeatCount: number;
     file: string;
+    bucketUrl: string;
+    memberId: string;
 }

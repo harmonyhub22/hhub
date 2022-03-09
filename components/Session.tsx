@@ -43,3 +43,24 @@ export const getLiveSession = async () => {
     return null;
   }
 };
+
+export const getSession = async (sessionId:string) => {
+  try {
+    const response = await fetch(config.server_url + "api/session/" + sessionId, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if(!response.ok) {
+      throw new Error(await response.json());
+    }
+    const s: Session = await response.json();
+    console.log(s);
+    return s;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
