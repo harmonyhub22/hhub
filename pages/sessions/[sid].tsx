@@ -139,7 +139,15 @@ function Session() {
       layerStyle.marginLeft = leftOffset.toString() + "%";
       return layerStyle;
   };
-
+  const loop = async (file:string,loopcount:number)=>{
+    const crunker = new Crunker();
+    const arr:AudioBuffer[] = []
+    for (var i = 0; i < loopcount; i++) {
+      const temp = await crunker.fetchAudio(file)
+      arr.push(temp[0])
+    }
+    return crunker.concatAudio(arr)
+  }
 
   const finishSong = async () => {
     // TODO: make backend request to process the finished song (send all of the layers)
