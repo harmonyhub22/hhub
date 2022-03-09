@@ -212,7 +212,7 @@ function Session() {
       >
         <Drawer.Title>Your Sound Pallete</Drawer.Title>
         <Drawer.Content>
-          {Palette(session?.genre?.name || '', addLayer)}
+          {<Palette genreName={"alt"} />}
         </Drawer.Content>
       </Drawer>
 

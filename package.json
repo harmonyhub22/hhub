@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@geist-ui/core": "^2.3.4",
+    "@geist-ui/icons": "^1.0.1",
     "@types/uuid": "^8.3.4",
     "classnames": "^2.3.1",
     "create-react-context": "^0.3.0",
