@@ -220,7 +220,7 @@ function Session() {
       >
         <Drawer.Title>Your Sound Pallete</Drawer.Title>
         <Drawer.Content>
-          {<Palette genreName={"alt"} />}
+          <Palette genreName={"alt"} initials={`${member.firstname[0]}${member.lastname[0]}`}/>
         </Drawer.Content>
       </Drawer>
 

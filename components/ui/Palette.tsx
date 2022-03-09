@@ -5,15 +5,17 @@ import PaletteCell from "./Palette-Cell";
 import { config } from "../config";
 import React from "react";
 import { Mic, Music } from '@geist-ui/icons';
+import PaletteLayer from "./Palette-Layer";
 
 
 interface PaletteProps {
   genreName: string,
+  initials: string,
 };
 
 interface PaletteState {
-  stagingLayerSoundPath: string|null,
-  stagingLayerSoundBuffer: any,
+  stagingLayerSoundName: string|null,
+  stagingLayerSoundBuffer: AudioBuffer|null,
 };
 
 class Palette extends React.Component<PaletteProps, PaletteState> {
@@ -23,21 +25,34 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
   constructor(props:PaletteProps) {
     super(props);
     this.state = {
-      stagingLayerSoundPath: null,
+      stagingLayerSoundName: null,
       stagingLayerSoundBuffer: null,
     };
+    this.updateLayerSoundName = this.updateLayerSoundName.bind(this);
+    this.updateLayerSoundBuffer = this.updateLayerSoundBuffer.bind(this);
   }
 
-  updateLayerSoundPath (stagingLayerSoundPath:string) {
+  updateLayerSoundName (stagingLayerSoundName:string|null) {
+    console.log(this.state);
     this.setState({
-      stagingLayerSoundPath: stagingLayerSoundPath,
+      stagingLayerSoundName: stagingLayerSoundName,
     });
+    if (stagingLayerSoundName !== null) {
+      this.setState({
+        stagingLayerSoundBuffer: null,
+      });
+    }
   }
 
-  updateLayerSoundBuffer (stagingLayerSoundBuffer:any) {
+  updateLayerSoundBuffer (stagingLayerSoundBuffer:AudioBuffer|null) {
     this.setState({
       stagingLayerSoundBuffer: stagingLayerSoundBuffer,
     });
+    if (stagingLayerSoundBuffer !== null) {
+      this.setState({
+        stagingLayerSoundName: null,
+      });
+    }
   }
 
   initPaletteRows () {
@@ -46,13 +61,14 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
       const paletteRow:any = [];
       Palette.presetSounds.slice(i, i+3).map((name) => {
         paletteRow.push(<>
-          {i < Palette.presetSounds.length && <PaletteCell instrumentName={name} updateLayerStagingSound={this.updateLayerSoundPath} />}
+          {i < Palette.presetSounds.length && <PaletteCell instrumentName={name} 
+            updateLayerStagingSound={this.updateLayerSoundName} isSelected={name === this.state.stagingLayerSoundName ? true : false} />}
           </>
         );
       });
       paletteRows.push(<tr>{paletteRow}</tr>)
     }
-    return paletteRows;
+    return (<>{paletteRows}</>);
   };
 
   render() {
@@ -81,7 +97,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
       <div id="layer-settings-section">
         <Drawer.Title>New Layer</Drawer.Title>
         <p>Drag and Drop on the session to stage the layer</p>
-        {/*Create layer component*/}
+        <PaletteLayer initials={""} />
       </div>
     </>
   )};
