@@ -1,6 +1,8 @@
 import React, { useContext } from "react";
 import { useRouter } from "next/router";
-import { Page, Drawer, useModal, Button } from "@geist-ui/core";
+import { Button, Page, Drawer, Modal, useModal } from "@geist-ui/core";
+import Head from "next/head";
+import Layer from "../../interfaces/models/Layer";
 import { MemberContext } from "../../context/member";
 import { SocketContext } from "../../context/socket";
 import Palette from "../../components/ui/Palette";
