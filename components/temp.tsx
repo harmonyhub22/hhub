@@ -4,9 +4,9 @@ import { useDrag } from "react-dnd";
 export const Temp = ({ id, name }) => {
   const [{ isDragging }, dragRef] = useDrag({
     type: "layer",
-    item: { id, name },
+    item: { id: id },
     collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
+      isDragging: !!monitor.isDragging(),
     }),
   });
   return (
@@ -16,5 +16,3 @@ export const Temp = ({ id, name }) => {
     </div>
   );
 };
-
-export default Temp;
