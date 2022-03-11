@@ -218,9 +218,8 @@ function Session() {
         onClose={() => setShowPalette(false)}
         placement="right"
       >
-        <Drawer.Title>Your Sound Pallete</Drawer.Title>
         <Drawer.Content>
-          <Palette genreName={"alt"} initials={`${member.firstname[0]}${member.lastname[0]}`}/>
+          <Palette genreName={"alt"} initials={`${member.firstname[0]}${member.lastname[0]}`} />
         </Drawer.Content>
       </Drawer>
 

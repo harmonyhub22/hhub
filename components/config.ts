@@ -16,4 +16,7 @@ export const config = {
         'piano2',
         'piano3',
     ],
+    genres: [
+        'alternative'
+    ],
 }
