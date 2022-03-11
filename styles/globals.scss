@@ -261,6 +261,13 @@ table.table-palette tfoot {
   border-radius: 20px !important;
 }
 
+.palette-layer-wav {
+  width: 74%;
+  background-image: url('../public/images/wave.svg');
+  height: 67px;
+  background-size: contain;
+}
+
 $item-color: white;
 $item-background: #2196f3;
 $item-border: 1px solid #1a6fb3;
