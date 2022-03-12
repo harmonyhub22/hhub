@@ -10,7 +10,7 @@ import { MemberContext } from "../context/member";
 import { useRouter } from "next/router";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import "../components/temp.css";
+// import "../components/temp.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [member, setMember] = useState<Member>({} as Member);

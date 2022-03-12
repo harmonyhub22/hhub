@@ -13,7 +13,7 @@ export const joinWaitQueue = async () => {
         "Content-Type": "application/json",
       },
     });
-    if (!response.ok) {
+    if(!response.ok) {
       throw new Error(await response.json());
     }
     const queue: Queue = await response.json();
@@ -33,7 +33,7 @@ export const getLiveSession = async () => {
         "Content-Type": "application/json",
       },
     });
-    if (!response.ok) {
+    if(!response.ok) {
       throw new Error(await response.json());
     }
     const s: Session = await response.json();
@@ -45,19 +45,16 @@ export const getLiveSession = async () => {
   }
 };
 
-export const getSession = async (sessionId: string) => {
+export const getSession = async (sessionId:string) => {
   try {
-    const response = await fetch(
-      config.server_url + "api/session/" + sessionId,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (!response.ok) {
+    const response = await fetch(config.server_url + "api/session/" + sessionId, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if(!response.ok) {
       throw new Error(await response.json());
     }
     const s: Session = await response.json();
@@ -69,18 +66,15 @@ export const getSession = async (sessionId: string) => {
   }
 };
 
-export const postLayer = async (sessionId: string, layerData: any) => {
+export const postLayer = async (sessionId:string, layerData:any) => {
   try {
-    const response = await fetch(
-      config.server_url + "api/session/" + sessionId + "/layers",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(layerData),
-      }
-    );
+    const response = await fetch(config.server_url + "api/session/" + sessionId + "/layers", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(layerData),
+    });
     const l: Layer = await response.json();
     console.log(l);
     return l;
@@ -90,14 +84,9 @@ export const postLayer = async (sessionId: string, layerData: any) => {
   }
 };
 
-export const postLayerRecording = async (
-  sessionId: string,
-  layerId: string,
-  formData: FormData
-) => {
+export const postLayerRecording = async (sessionId:string, layerId:string, formData: FormData) => {
   try {
-    const response = await fetch(
-      config.server_url + "api/session/" + sessionId + "/layers/" + layerId,
+    const response = await fetch(config.server_url + "api/session/" + sessionId + "/layers/" + layerId,
       {
         method: "PUT",
         headers: {
@@ -115,19 +104,16 @@ export const postLayerRecording = async (
   }
 };
 
-export const getLayerById = async (sessionId: string, layerId: string) => {
+export const getLayerById = async (sessionId:string, layerId:string) => {
   try {
-    const response = await fetch(
-      config.server_url + "api/session/" + sessionId + "/layers/" + layerId,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (!response.ok) {
+    const response = await fetch(config.server_url + "api/session/" + sessionId + "/layers/" + layerId, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if(!response.ok) {
       throw new Error(await response.json());
     }
     const l: Layer = await response.json();
