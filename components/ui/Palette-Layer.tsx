@@ -8,7 +8,8 @@ interface PaletteLayerProps {
   stagingSoundName: string|null,
   stagingSoundBuffer: AudioBuffer|null,
   isDragging: boolean,
-  dragRef: any
+  dragRef: any,
+  showPalette: any
 };
 
 interface PaletteLayerState {
@@ -91,13 +92,14 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
     });
   };
 
+
   render() {
     return (
       <>
         {this.props.isDragging ? 
-        <p>Drag your layer onto the highlighted portion of the timeline!</p>
+        <p></p> // just show nothing here
         : 
-        <div className="palette-layer" ref={this.props.dragRef} style={{backgroundColor: this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor}}>
+        <div className="palette-layer" ref={this.props.dragRef} style={{backgroundColor: this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor}} onDragStart={() => this.props.showPalette(false)}>
           <div>
             <Button iconRight={this.state.tonePlayer === null ? <Moon/> : this.state.isPlaying ? 
               <PauseFill color={PaletteLayer.hasPlayerIconColor} /> : <PlayFill color={PaletteLayer.hasPlayerIconColor}/>} auto scale={2/3} px={0.6}
