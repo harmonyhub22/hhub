@@ -1,75 +1,90 @@
 import { Button, Text } from "@geist-ui/core";
-import { PlayFill, PauseFill } from '@geist-ui/icons'
+import { PlayFill, PauseFill, Moon } from '@geist-ui/icons'
 import React from "react";
 import * as Tone from "tone";
+import { Draggable } from "../Draggable";
 
 interface PaletteLayerProps {
-  initials: string,
+  stagingSoundName: string|null,
+  stagingSoundBuffer: AudioBuffer|null,
+  isDragging: boolean,
+  dragRef: any
 };
 
 interface PaletteLayerState {
   stagingSoundName: string|null,
-  stagingSoundBuffer: AudioBuffer|null,
   isPlaying: boolean,
-  pausedTime: number,
   playerDuration: number,
+  pauseTime: number,
   tonePlayer: any,
 };
 
 class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState> {
 
+  static hasPlayerColor: string = "#320f48";
+  static hasPlayerFontColor: string = "#DDDDDD";
+  static hasPlayerIconColor: string = "#c563c5";
+
   constructor(props:PaletteLayerProps) {
     super(props);
     this.state = {
       stagingSoundName: null,
-      stagingSoundBuffer: null,
       isPlaying: false,
-      pausedTime: 0,
+      pauseTime: 0,
       playerDuration: 0,
       tonePlayer: null,
     };
-    this.updateStagingSoundPath = this.updateStagingSoundPath.bind(this);
-    this.updateStagingSoundBuffer = this.updateStagingSoundBuffer.bind(this);
     this.handlePlayer = this.handlePlayer.bind(this);
+    this.createTonePlayer = this.createTonePlayer.bind(this);
   }
 
-  updateStagingSoundPath(soundName:String) {
-    if (this.state.tonePlayer) this.state.tonePlayer.dispose();
-    const tonePlayer = new Tone.Player("../../" + soundName + ".mp3").toDestination();
-    tonePlayer.sync();
-    this.setState({
-      stagingSoundName: soundName + "",
-      stagingSoundBuffer: null,
-      playerDuration: tonePlayer.toSeconds(),
-      tonePlayer: tonePlayer,
-      pausedTime: 0,
-      isPlaying: false,
-    });
-  };
+  componentDidMount() {
+    if (this.props.stagingSoundName !== null && this.state.tonePlayer === null) {
+      this.createTonePlayer(this.props.stagingSoundName, null);
+    } else if (this.props.stagingSoundBuffer !== null && this.state.tonePlayer === null) {
+      this.createTonePlayer(null, this.props.stagingSoundBuffer);
+    }
+  }
 
-  updateStagingSoundBuffer(soundBuffer:AudioBuffer) {
-    if (this.state.tonePlayer) this.state.tonePlayer.dispose();
-    const tonePlayer = new Tone.Player(soundBuffer);
+  createTonePlayer(name: string|null, buffer: AudioBuffer|null) {
+    if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
+    const tonePlayer = buffer !== null ? new Tone.Player(buffer).toDestination() : new Tone.Player('../../' + name + '.mp3').toDestination();
+    tonePlayer.onstop = () => {
+      let pt = this.state.tonePlayer.now();
+      if (pt === this.state.tonePlayer.toSeconds()) pt = 0;
+      this.setState({
+        isPlaying: false,
+        pauseTime: pt,
+      });
+    };
     this.setState({
-      stagingSoundBuffer: soundBuffer,
-      stagingSoundName: null,
-      playerDuration: tonePlayer.toSeconds(),
       tonePlayer: tonePlayer,
-      pausedTime: 0,
-      isPlaying: false,
+      playerDuration: tonePlayer.toSeconds(),
     });
+  }
+
+  componentDidUpdate(prevProps:PaletteLayerProps) {
+    if (this.props.stagingSoundName !== null && 
+      this.props.stagingSoundName !== prevProps.stagingSoundName) {
+      this.createTonePlayer(this.props.stagingSoundName, null);
+    } else if (this.props.stagingSoundBuffer !== null) {
+      this.createTonePlayer(null, this.props.stagingSoundBuffer)
+    } else if (this.props.stagingSoundBuffer === null && this.props.stagingSoundName === null
+        && (prevProps.stagingSoundBuffer !== null || prevProps.stagingSoundName !== null)) {
+      if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
+      this.setState({
+        tonePlayer: null,
+        playerDuration: 0,
+      });
+    }
   };
 
   handlePlayer() {
-    if (this.state.isPlaying) {
-      this.setState({
-        pausedTime: this.state.tonePlayer.now(),
-      });
-      console.log(this.state.tonePlayer.now());
+    if (this.state.tonePlayer === null) return;
+    if (this.state.tonePlayer.state === "started") {
       this.state.tonePlayer.stop();
     } else {
-      console.log(this.state.tonePlayer.now());
-      this.state.tonePlayer.start(0, this.state.pausedTime);
+      this.state.tonePlayer.start(0,1);
     }
     this.setState({
       isPlaying: !this.state.isPlaying,
@@ -79,24 +94,28 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
   render() {
     return (
       <>
-        <div className="palette-layer">
+        {this.props.isDragging ? 
+        <p>Drag your layer onto the highlighted portion of the timeline!</p>
+        : 
+        <div className="palette-layer" ref={this.props.dragRef} style={{backgroundColor: this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor}}>
           <div>
-            <Button onClick={this.handlePlayer}>
-              {this.state.isPlaying ? <PauseFill/> :<PlayFill/>}
-            </Button>
+            <Button iconRight={this.state.tonePlayer === null ? <Moon/> : this.state.isPlaying ? 
+              <PauseFill color={PaletteLayer.hasPlayerIconColor} /> : <PlayFill color={PaletteLayer.hasPlayerIconColor}/>} auto scale={2/3} px={0.6}
+              onClick={this.handlePlayer} className={"play-btn"} />
+          </div>
+          <div className="palette-layer-wav">
           </div>
           <div>
-            <span>something</span>
-          </div>
-          <div>
-            <Text blockquote my={0}>
-              {this.state.playerDuration}s
-            </Text>
+            {this.state.tonePlayer !== null && <Text my={0} style={{color: PaletteLayer.hasPlayerFontColor}}>
+              {this.state.playerDuration !== null ?
+                `${Math.floor(this.state.tonePlayer.sampleTime % 60)}.${Math.floor(this.state.tonePlayer.sampleTime / 60)}` : ""}
+            </Text>}
           </div>
         </div>
+        }
       </>
     )
   };
 }
 
-export default PaletteLayer;
+export default Draggable(PaletteLayer);
