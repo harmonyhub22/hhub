@@ -1,28 +1,29 @@
 import React, { useState } from "react";
 import { useDrop } from "react-dnd";
-import { Temp } from "./temp";
 
-const LAYERS = [
-  { id: 1, name: "dog" },
-  { id: 2, name: "cat" },
-  { id: 3, name: "fish" },
-  { id: 4, name: "hamster" },
-];
+interface TimeLineRowProps {
+  isOver: boolean,
+  dropRef: any,
+};
+
+class TimeLineRow extends React.Component<TimeLineRowProps> {
 
 export const TimeLineRow = () => {
-  const [basket, setBasket] = useState([]);
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: "layer",
-    drop: (item) => addItemToBoard(item.id),
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-    }),
-  }));
 
   const addItemToBoard = (id) => {
     const itemList = LAYERS.filter((item) => id === item.id);
     setBasket([itemList[0]]);
   };
+
+
+  constructor(props:TimeLineRowProps) {
+    super(props);
+    
+  }
+
+  render() {
+
+  }
 
   return (
     <React.Fragment>
