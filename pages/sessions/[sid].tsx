@@ -75,7 +75,7 @@ function Session() {
   ) => {
     if (paletteData === null || paletteData === undefined) return;
     if (!paletteData.name) {
-      alert("Please seclect a palette pattern to use!");
+      alert("Please select a palette pattern to use!");
       return;
     }
     if (session?.sessionId === undefined) return;
@@ -223,11 +223,10 @@ function Session() {
                 </td>
               </tr>
             )}
+
+            <TimeLineRow />
           </tbody>
         </table>
-      </div>
-      <div>
-        <TimeLineRow />
       </div>
 
       <Drawer
