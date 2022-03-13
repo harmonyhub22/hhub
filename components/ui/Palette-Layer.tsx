@@ -1,19 +1,20 @@
 import { Button, Text } from "@geist-ui/core";
-import { PlayFill, PauseFill, Moon } from '@geist-ui/icons'
+import { PlayFill, PauseFill, Moon, Mic, Music } from '@geist-ui/icons'
 import React from "react";
 import * as Tone from "tone";
 
 interface PaletteLayerProps {
   stagingSoundName: string|null,
   stagingSoundBuffer: AudioBuffer|null,
+  duration: number,
 };
 
 interface PaletteLayerState {
-  stagingSoundName: string|null,
   isPlaying: boolean,
-  playerDuration: number,
-  pauseTime: number,
+  timer: any,
   tonePlayer: any,
+  currentSeconds: number,
+  paused: boolean,
 };
 
 class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState> {
@@ -25,11 +26,11 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
   constructor(props:PaletteLayerProps) {
     super(props);
     this.state = {
-      stagingSoundName: null,
       isPlaying: false,
-      pauseTime: 0,
-      playerDuration: 0,
+      timer: null,
       tonePlayer: null,
+      currentSeconds: 0,
+      paused: false,
     };
     this.handlePlayer = this.handlePlayer.bind(this);
     this.createTonePlayer = this.createTonePlayer.bind(this);
@@ -47,16 +48,17 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
     if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
     const tonePlayer = buffer !== null ? new Tone.Player(buffer).toDestination() : new Tone.Player('../../' + name + '.mp3').toDestination();
     tonePlayer.onstop = () => {
-      let pt = this.state.tonePlayer.now();
-      if (pt === this.state.tonePlayer.toSeconds()) pt = 0;
-      this.setState({
-        isPlaying: false,
-        pauseTime: pt,
-      });
+      clearInterval(this.state.timer);
+      if (!this.state.paused) {
+        this.setState({
+          currentSeconds: 0,
+          paused: false,
+          isPlaying: false,
+        });
+      }
     };
     this.setState({
       tonePlayer: tonePlayer,
-      playerDuration: tonePlayer.toSeconds(),
     });
   }
 
@@ -71,7 +73,8 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
       if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
       this.setState({
         tonePlayer: null,
-        playerDuration: 0,
+        timer: null,
+        currentSeconds: 0,
       });
     }
   };
@@ -79,32 +82,48 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
   handlePlayer() {
     if (this.state.tonePlayer === null) return;
     if (this.state.tonePlayer.state === "started") {
+      this.setState({
+        paused: true,
+      });
       this.state.tonePlayer.stop();
     } else {
-      this.state.tonePlayer.start(0,1);
+      this.state.tonePlayer.start(0, this.state.currentSeconds);
+      const timer = setInterval(() => {
+        this.setState({
+          currentSeconds: this.state.currentSeconds + 0.1,
+        });
+      }, 100);
+      this.setState({
+        timer: timer,
+      });
     }
     this.setState({
       isPlaying: !this.state.isPlaying,
     });
   };
 
+  printSeconds(seconds:number) {
+    return `${Math.floor(seconds % 60)}.${Math.floor(seconds / 60)}`;
+  }
+
   render() {
     return (
       <>
-        <div className="palette-layer" style={{backgroundColor: this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor}}>
-          <div>
-            <Button iconRight={this.state.tonePlayer === null ? <Moon/> : this.state.isPlaying ? 
-              <PauseFill color={PaletteLayer.hasPlayerIconColor} /> : <PlayFill color={PaletteLayer.hasPlayerIconColor}/>} auto scale={2/3} px={0.6}
-              onClick={this.handlePlayer} className={"play-btn"} />
+        <div className="palette-layer" style={{backgroundColor: this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor, border: this.state.tonePlayer === null ? "1px solid #eaeaea" : "none"}}>
+          <div className="palette-layer-details">
+            <div>
+              <Button iconRight={this.state.tonePlayer === null ? <Moon/> : this.state.isPlaying ? 
+                <PauseFill color={PaletteLayer.hasPlayerIconColor} /> : <PlayFill color={PaletteLayer.hasPlayerIconColor}/>} auto scale={2/3} px={0.6}
+                onClick={this.handlePlayer} className="play-btn" />
+            </div>
+            <div className="palette-layer-wav">
+            </div>
+            <div>
+              {this.props.stagingSoundName === null ? <Mic color="white"/> : <Music color="white"/>}
+            </div>
           </div>
-          <div className="palette-layer-wav">
-          </div>
-          <div>
-            {this.state.tonePlayer !== null && <Text my={0} style={{color: PaletteLayer.hasPlayerFontColor}}>
-              {this.state.playerDuration !== null ?
-                `${Math.floor(this.state.tonePlayer.sampleTime % 60)}.${Math.floor(this.state.tonePlayer.sampleTime / 60)}` : ""}
-            </Text>}
-          </div>
+          {(this.state.isPlaying || this.state.paused) && <div className='palette-layer-progress' style={{width: `${(this.state.currentSeconds / this.props.duration) * 100}%`}}>
+          </div>}
         </div>
       </>
     )

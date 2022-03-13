@@ -6,6 +6,7 @@ interface PaletteCellProps {
   instrumentName: string,
   updateLayerStagingSound: any,
   isSelected: boolean,
+  duration: number,
 };
 
 interface PaletteCellState {
@@ -27,7 +28,6 @@ class PaletteCell extends React.Component<PaletteCellProps, PaletteCellState> {
     };
     this.onSoundClick = this.onSoundClick.bind(this);
     this.state.tonePlayer.onstop = () => {
-      console.log('stopping');
       this.setState({
         isPlaying: false,
       });
@@ -40,7 +40,7 @@ class PaletteCell extends React.Component<PaletteCellProps, PaletteCellState> {
       if (this.state.isSelected)
         this.props.updateLayerStagingSound(this.props.instrumentName); // unselect
       return;
-    } 
+    }
     if (this.state.isSelected) {
       this.props.updateLayerStagingSound(this.props.instrumentName); // unselect
       return;

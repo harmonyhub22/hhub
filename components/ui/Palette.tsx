@@ -21,7 +21,7 @@ interface PaletteState {
 
 class Palette extends React.Component<PaletteProps, PaletteState> {
 
-  static presetSounds: string[]|any[] = config.sounds;
+  static presetSounds: any = config.sounds;
   static genres: string[]|any[] = config.genres;
 
   constructor(props:PaletteProps) {
@@ -36,7 +36,6 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
   }
 
   updateLayerSoundName (stagingLayerSoundName:string|null) {
-    console.log(this.state.stagingLayerSoundName);
     if (this.state.stagingLayerSoundName === stagingLayerSoundName) {
       console.log('undo');
       this.setState({
@@ -48,7 +47,6 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
         stagingLayerSoundName: stagingLayerSoundName,
       });
     }
-    console.log(this.state.stagingLayerSoundName);
   }
 
   updateLayerSoundBuffer (stagingLayerSoundBuffer:AudioBuffer|null) {
@@ -78,11 +76,11 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
           </div>
           <br></br>
           <Grid.Container gap={2} justify="center" style={{maxWidth: 500}}>
-            {Palette.presetSounds.map((name) => {
+            {Object.keys(Palette.presetSounds).map((name:string) => {
               return(
               <Grid key={'palette-cell'+name}>
                 <PaletteCell instrumentName={name} updateLayerStagingSound={this.updateLayerSoundName}
-                              isSelected={this.state.stagingLayerSoundName === name} />
+                              isSelected={this.state.stagingLayerSoundName === name} duration={Palette.presetSounds[name]} />
               </Grid>)
               })
             }
@@ -97,7 +95,8 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
       <div style={{textAlign: "center"}}>
         <Drawer.Title>New Layer</Drawer.Title>
         <p>Drag and Drop on the session to stage the layer</p>
-        <PaletteLayer stagingSoundBuffer={this.state.stagingLayerSoundBuffer} stagingSoundName={this.state.stagingLayerSoundName}  />
+        <PaletteLayer stagingSoundBuffer={this.state.stagingLayerSoundBuffer} 
+          stagingSoundName={this.state.stagingLayerSoundName} duration={this.state.stagingLayerSoundName ? Palette.presetSounds[this.state.stagingLayerSoundName] : 0} />
       </div>
     </>
   )};
