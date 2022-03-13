@@ -5,6 +5,7 @@ import * as Tone from "tone";
 import { Draggable } from "../Draggable";
 
 interface PaletteLayerProps {
+  id: string,
   stagingSoundName: string|null,
   stagingSoundBuffer: AudioBuffer|null,
   isDragging: boolean,

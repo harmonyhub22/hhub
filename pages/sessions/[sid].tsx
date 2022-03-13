@@ -16,10 +16,9 @@ import {
   postLayerRecording,
 } from "../../components/Session";
 import SessionData from "../../interfaces/session_data";
-import LayerCreated from "../../interfaces/socket-data/layers_created";
 import LayersCreated from "../../interfaces/socket-data/layers_created";
 import Member from "../../interfaces/models/Member";
-import { TimeLineRow } from "../../components/TimeLineRow";
+import TimeLineRow from "../../components/TimeLineRow";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
@@ -224,7 +223,7 @@ function Session() {
               </tr>
             )}
 
-            <TimeLineRow />
+            <TimeLineRow maxWidth={300} />
           </tbody>
         </table>
       </div>

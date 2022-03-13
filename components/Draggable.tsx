@@ -5,7 +5,9 @@ export const Draggable = (Component: any) => {
   return (props: any) => {
     const [{ isDragging }, dragRef] = useDrag({
       type: "layer",
-      item: { id: 1 },  // access props, the item is the metadata of the layer
+      item: {
+        id: props.id,
+      },  // access props, the item is the metadata of the layer
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
       }),

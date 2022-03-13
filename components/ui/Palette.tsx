@@ -122,6 +122,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
           <Drawer.Title>New Layer</Drawer.Title>
           <p>Drag your layer onto the highlighted portion of the timeline!</p>
           <PaletteLayer
+            id={1}  // can we pass in metadata like this?
             stagingSoundBuffer={this.state.stagingLayerSoundBuffer}
             stagingSoundName={this.state.stagingLayerSoundName}
             showPalette={this.props.showPalette}
