@@ -46,6 +46,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
 
   createTonePlayer(name: string|null, buffer: AudioBuffer|null) {
     if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
+    if (this.state.timer !== null) clearInterval(this.state.timer);
     const tonePlayer = buffer !== null ? new Tone.Player(buffer).toDestination() : new Tone.Player('../../' + name + '.mp3').toDestination();
     tonePlayer.onstop = () => {
       clearInterval(this.state.timer);
@@ -59,22 +60,29 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
     };
     this.setState({
       tonePlayer: tonePlayer,
+      isPlaying: false,
+      currentSeconds: 0,
+      paused: false,
+      timer: null,
     });
   }
 
   componentDidUpdate(prevProps:PaletteLayerProps) {
-    if (this.props.stagingSoundName !== null && 
-      this.props.stagingSoundName !== prevProps.stagingSoundName) {
+    if (this.props.stagingSoundName !== null &&
+      this.props.stagingSoundName !== prevProps.stagingSoundName) { // set to name
       this.createTonePlayer(this.props.stagingSoundName, null);
-    } else if (this.props.stagingSoundBuffer !== null) {
+    } else if (this.props.stagingSoundBuffer !== null) { // set to recording
       this.createTonePlayer(null, this.props.stagingSoundBuffer)
     } else if (this.props.stagingSoundBuffer === null && this.props.stagingSoundName === null
-        && (prevProps.stagingSoundBuffer !== null || prevProps.stagingSoundName !== null)) {
+        && (prevProps.stagingSoundBuffer !== null || prevProps.stagingSoundName !== null)) { // remove name and recording
       if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
+      if (this.state.timer !== null) clearInterval(this.state.timer);
       this.setState({
         tonePlayer: null,
         timer: null,
         currentSeconds: 0,
+        paused: false,
+        isPlaying: false,
       });
     }
   };
@@ -95,16 +103,13 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
       }, 100);
       this.setState({
         timer: timer,
+        paused: false,
       });
     }
     this.setState({
       isPlaying: !this.state.isPlaying,
     });
   };
-
-  printSeconds(seconds:number) {
-    return `${Math.floor(seconds % 60)}.${Math.floor(seconds / 60)}`;
-  }
 
   render() {
     return (

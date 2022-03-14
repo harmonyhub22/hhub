@@ -244,6 +244,12 @@ table.table-palette tfoot {
   background-color: #320f48;
 }
 
+.palette-genre {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
 .palette-layer {
   display: flex;
   border-radius: 22px;

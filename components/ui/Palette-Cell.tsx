@@ -22,7 +22,7 @@ class PaletteCell extends React.Component<PaletteCellProps, PaletteCellState> {
   constructor(props:PaletteCellProps) {
     super(props);
     this.state = {
-      isSelected: false,
+      isSelected: this.props.isSelected,
       tonePlayer: new Tone.Player("../../" + this.props.instrumentName + ".mp3").toDestination(),
       isPlaying: false,
     };

@@ -16,33 +16,64 @@ interface PaletteProps {
 interface PaletteState {
   stagingLayerSoundName: string|null,
   stagingLayerSoundBuffer: AudioBuffer|null,
-  lastGenre: string,
+  stagingLayerSoundBufferId: string|null,
+  genre: string,
 };
 
 class Palette extends React.Component<PaletteProps, PaletteState> {
 
-  static presetSounds: any = config.sounds;
-  static genres: string[]|any[] = config.genres;
+  static sounds: any = config.sounds;
 
   constructor(props:PaletteProps) {
     super(props);
     this.state = {
       stagingLayerSoundName: null,
       stagingLayerSoundBuffer: null,
-      lastGenre: config.genres[0],
+      stagingLayerSoundBufferId: null,
+      genre: '',
     };
     this.updateLayerSoundName = this.updateLayerSoundName.bind(this);
     this.updateLayerSoundBuffer = this.updateLayerSoundBuffer.bind(this);
+    this.updatePaletteGenre = this.updatePaletteGenre.bind(this);
+  }
+
+  componentDidMount() {
+    const data = window.localStorage.getItem('palette-staging-layer') || null;
+    if (data === null) return;
+    const jsonData = JSON.parse(data);
+    this.setState({
+      stagingLayerSoundName: jsonData.name,
+      stagingLayerSoundBuffer: jsonData.buffer || null,
+      stagingLayerSoundBufferId: jsonData.id || null,
+      genre: jsonData.genre || Object.keys(config.sounds)[0],
+    });
+  }
+
+  componentDidUpdate(prevProps:PaletteProps, prevState:PaletteState) {
+    if (JSON.stringify(prevState) !== JSON.stringify(this.state)) {
+      const data = {
+        'name': this.state.stagingLayerSoundName,
+        'id': this.state.stagingLayerSoundBufferId,
+        'buffer': this.state.stagingLayerSoundBuffer,
+        'genre': this.state.genre,
+      };
+      window.localStorage.setItem('palette-staging-layer', JSON.stringify(data));
+    }
+  }
+
+  updatePaletteGenre(name:string) {
+    this.setState({
+      genre: name,
+      stagingLayerSoundName: null,
+    });
   }
 
   updateLayerSoundName (stagingLayerSoundName:string|null) {
     if (this.state.stagingLayerSoundName === stagingLayerSoundName) {
-      console.log('undo');
       this.setState({
         stagingLayerSoundName: null,
       });
     } else {
-      console.log('set');
       this.setState({
         stagingLayerSoundName: stagingLayerSoundName,
       });
@@ -66,25 +97,28 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
       <Drawer.Title>Sound Palette</Drawer.Title>
       <Tabs initialValue="1" align="center" leftSpace={0}>
         <Tabs.Item label={<><Music /> Sounds</>} value="1">
-          <div style={{textAlign: 'center'}}>
-            <Text scale={1.25} mb={0}>Genre</Text>
-            <Select placeholder="Choose one" initialValue='1'>
-              {Palette.genres.map((genreName, i) => {
-                return (<Select.Option key={`genre-option-${i}`} value={`${i}`}>{genreName}</Select.Option>)
+          {(Palette.sounds !== null && Palette.sounds !== undefined) && <div className="palette-genre">
+            <span>Genre</span>
+            <Select initialValue={this.state.genre} value={this.state.genre} onChange={(val) => {
+              if (typeof val === 'string') { this.updatePaletteGenre(val) }
+            }}>
+              {Object.keys(Palette.sounds).map((genre:string, i:number) => {
+                return (<Select.Option key={`genre-option-${i}`} value={`${genre}`}>{genre}</Select.Option>)
               })}
             </Select>
-          </div>
+          </div>}
           <br></br>
+          {(Palette.sounds[this.state.genre] !== null && Palette.sounds[this.state.genre] !== undefined) && 
           <Grid.Container gap={2} justify="center" style={{maxWidth: 500}}>
-            {Object.keys(Palette.presetSounds).map((name:string) => {
+            {Object.keys(Palette.sounds[this.state.genre]).map((name:string, i:number) => {
               return(
-              <Grid key={'palette-cell'+name}>
-                <PaletteCell instrumentName={name} updateLayerStagingSound={this.updateLayerSoundName}
-                              isSelected={this.state.stagingLayerSoundName === name} duration={Palette.presetSounds[name]} />
-              </Grid>)
+                <Grid key={`palette-cell-${this.state.genre}-${i}`}>
+                  <PaletteCell instrumentName={name} updateLayerStagingSound={this.updateLayerSoundName}
+                                isSelected={this.state.stagingLayerSoundName === name} duration={Palette.sounds[this.state.genre][name]} />
+                </Grid>)
               })
             }
-          </Grid.Container>
+          </Grid.Container>}
         </Tabs.Item>
         <Tabs.Item label={<><Mic/> Record</>} value="2">
           <span>Recording Section</span>
@@ -94,9 +128,11 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
 
       <div style={{textAlign: "center"}}>
         <Drawer.Title>New Layer</Drawer.Title>
-        <p>Drag and Drop on the session to stage the layer</p>
+        {(this.state.stagingLayerSoundBufferId === null && this.state.stagingLayerSoundName === null) ? 
+          <p>Choose a sound or make a recording</p> 
+          : <p>Drag and Drop on the session to stage the layer</p>}
         <PaletteLayer stagingSoundBuffer={this.state.stagingLayerSoundBuffer} 
-          stagingSoundName={this.state.stagingLayerSoundName} duration={this.state.stagingLayerSoundName ? Palette.presetSounds[this.state.stagingLayerSoundName] : 0} />
+          stagingSoundName={this.state.stagingLayerSoundName} duration={this.state.stagingLayerSoundName ? Palette.sounds[this.state.genre][this.state.stagingLayerSoundName] : 0} />
       </div>
     </>
   )};
