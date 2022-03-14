@@ -1,174 +1,141 @@
-import { useEffect, useState } from "react";
 import {
-  Button,
-  Drawer,
-  Input,
+  Drawer, Tabs, Grid, Select, Text
 } from "@geist-ui/core";
-import PaletteData from "../../interfaces/palette_data";
-import { Players } from "tone";
-import * as Tone from "tone";
 import PaletteCell from "./Palette-Cell";
 import { config } from "../config";
+import React from "react";
+import { Mic, Music } from '@geist-ui/icons';
+import PaletteLayer from "./Palette-Layer";
 
-const Palette = (genreName:string, addLayerFunc:any) => {
 
-  const selectedBorder = "solid #FFBF00 3px";
+interface PaletteProps {
+  genreName: string,
+  initials: string,
+};
 
-  const presetPatterns: string|any[] = config.sounds;
-  
+interface PaletteState {
+  stagingLayerSoundName: string|null,
+  stagingLayerSoundBuffer: AudioBuffer|null,
+  stagingLayerSoundBufferId: string|null,
+  genre: string,
+};
 
-  const [players, setPlayers] = useState<Players>();
-  const [selectedPatterns, setSelectedPatterns] = useState<string[]>([]);
-  const [paletteData, setPaletteData] = useState<PaletteData>({
-    name: '',
-    numRepeats: 0,
-    startMeasure: 0,
-    maxMeasuresNeeded: 0,
-    genreName: genreName,
-  });
+class Palette extends React.Component<PaletteProps, PaletteState> {
 
-  const playLayer = () => {
-    if (players === undefined || players === null) return;
-    selectedPatterns.forEach((name) => {
-      players.player(name).start();
-    });
-  };
+  static sounds: any = config.sounds;
 
-  const stopLayer = () => {
-    if (players === undefined || players === null) return;
-    players.stopAll();
-  };
-
-  const clearLayer = () => {
-    if (players === undefined || players === null) return;
-    players.stopAll();
-    setSelectedPatterns([]);
-    document.querySelectorAll<HTMLElement>(".button-palette").forEach((item) => {
-      item.style.border = "";
-    });
-  };
-
-  const handlePatternClick = (name:string, target:any) => {
-    if (players === undefined || players === null) return;
-    if (!selectedPatterns.includes(name)) {
-      target.style.border = selectedBorder;
-      setSelectedPatterns([...selectedPatterns, name]);
-      [...selectedPatterns, name].forEach((p) => {
-        players.player(p).start(0);
-      });
-    } else {
-      target.style.border = "";
-      const sp = selectedPatterns.splice(selectedPatterns.indexOf(name), 1);
-      setSelectedPatterns(sp);
-      players.player(name).stop();
-    }
-  };
-
-  const numRepeatsBoxHandler = (e:any) => {
-    let converted = parseInt(e.target.value);
-    // setting the cap at 256 repeats for now
-    if (!converted || converted < 0 || converted > 256) {
-      alert(
-        "Invalid value for number of repeats! Please enter a valid number."
-      );
-    } else {
-      paletteData.numRepeats = converted;
-      setPaletteData(paletteData);
-    }
-  };
-  
-  const startMeasureBoxHandler = (e:any) => {
-    let converted = parseInt(e.target.value);
-    // user should enter a start measure which is within the current measures of the song
-    if (!converted || converted < 0 || converted > paletteData.maxMeasuresNeeded) {
-      alert(
-        "Invalid value for start measure! Please enter a valid number."
-      );
-    } else {
-      paletteData.maxMeasuresNeeded = converted;
-      setPaletteData(paletteData);
-    }
-  };
-
-  // initialize all the players
-  const initPlayers = () => {
-    const tonePlayers = new Tone.Players();
-    presetPatterns.map((name) => {
-      tonePlayers.add(name, "../../" + name + ".mp3");
-    });
-    tonePlayers.toDestination();
-    setPlayers(tonePlayers);
-    // the problem here is that the players state isnt set by the time we click a palette button...look into componentDidMount...
-  };
-
-  useEffect(() => {
-    if (players === null || players === undefined || players.channelCount !== presetPatterns.length)
-      initPlayers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const paletteRows: any = [];
-  for (let i = 0; i < presetPatterns.length; i+=3) {
-    const paletteRow:any = [];
-    presetPatterns.slice(i, i+3).map((name) => {
-      let border = "";
-      if (selectedPatterns.includes(name)) border = selectedBorder;
-      paletteRow.push(<>
-        {i < presetPatterns.length && PaletteCell(name, handlePatternClick, border)}
-        </>
-      );
-    });
-    paletteRows.push(<tr>{paletteRow}</tr>)
+  constructor(props:PaletteProps) {
+    super(props);
+    this.state = {
+      stagingLayerSoundName: null,
+      stagingLayerSoundBuffer: null,
+      stagingLayerSoundBufferId: null,
+      genre: '',
+    };
+    this.updateLayerSoundName = this.updateLayerSoundName.bind(this);
+    this.updateLayerSoundBuffer = this.updateLayerSoundBuffer.bind(this);
+    this.updatePaletteGenre = this.updatePaletteGenre.bind(this);
   }
 
-  return (
+  componentDidMount() {
+    const data = window.localStorage.getItem('palette-staging-layer') || null;
+    if (data === null) return;
+    const jsonData = JSON.parse(data);
+    this.setState({
+      stagingLayerSoundName: jsonData.name,
+      stagingLayerSoundBuffer: jsonData.buffer || null,
+      stagingLayerSoundBufferId: jsonData.id || null,
+      genre: jsonData.genre || Object.keys(config.sounds)[0],
+    });
+  }
+
+  componentDidUpdate(prevProps:PaletteProps, prevState:PaletteState) {
+    if (JSON.stringify(prevState) !== JSON.stringify(this.state)) {
+      const data = {
+        'name': this.state.stagingLayerSoundName,
+        'id': this.state.stagingLayerSoundBufferId,
+        'buffer': this.state.stagingLayerSoundBuffer,
+        'genre': this.state.genre,
+      };
+      window.localStorage.setItem('palette-staging-layer', JSON.stringify(data));
+    }
+  }
+
+  updatePaletteGenre(name:string) {
+    this.setState({
+      genre: name,
+      stagingLayerSoundName: null,
+    });
+  }
+
+  updateLayerSoundName (stagingLayerSoundName:string|null) {
+    if (this.state.stagingLayerSoundName === stagingLayerSoundName) {
+      this.setState({
+        stagingLayerSoundName: null,
+      });
+    } else {
+      this.setState({
+        stagingLayerSoundName: stagingLayerSoundName,
+      });
+    }
+  }
+
+  updateLayerSoundBuffer (stagingLayerSoundBuffer:AudioBuffer|null) {
+    this.setState({
+      stagingLayerSoundBuffer: stagingLayerSoundBuffer,
+    });
+    if (stagingLayerSoundBuffer !== null) {
+      this.setState({
+        stagingLayerSoundName: null,
+      });
+    }
+  }
+
+  render() {
+    return (
     <>
-      <table className="table-palette">
-        <thead>
-          <tr>
-            <th>GENRE:</th>
-            <th className="table-palette-th2">{paletteData.genreName}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paletteRows}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td>
-              <button onClick={playLayer}>Play All</button>
-            </td>
-            <td>
-              <button onClick={stopLayer}>Stop</button>
-            </td>
-            <td>
-              <button onClick={clearLayer}>Clear</button>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+      <Drawer.Title>Sound Palette</Drawer.Title>
+      <Tabs initialValue="1" align="center" leftSpace={0}>
+        <Tabs.Item label={<><Music /> Sounds</>} value="1">
+          {(Palette.sounds !== null && Palette.sounds !== undefined) && <div className="palette-genre">
+            <span>Genre</span>
+            <Select initialValue={this.state.genre} value={this.state.genre} onChange={(val) => {
+              if (typeof val === 'string') { this.updatePaletteGenre(val) }
+            }}>
+              {Object.keys(Palette.sounds).map((genre:string, i:number) => {
+                return (<Select.Option key={`genre-option-${i}`} value={`${genre}`}>{genre}</Select.Option>)
+              })}
+            </Select>
+          </div>}
+          <br></br>
+          {(Palette.sounds[this.state.genre] !== null && Palette.sounds[this.state.genre] !== undefined) && 
+          <Grid.Container gap={2} justify="center" style={{maxWidth: 500}}>
+            {Object.keys(Palette.sounds[this.state.genre]).map((name:string, i:number) => {
+              return(
+                <Grid key={`palette-cell-${this.state.genre}-${i}`}>
+                  <PaletteCell instrumentName={name} updateLayerStagingSound={this.updateLayerSoundName}
+                                isSelected={this.state.stagingLayerSoundName === name} duration={Palette.sounds[this.state.genre][name]} />
+                </Grid>)
+              })
+            }
+          </Grid.Container>}
+        </Tabs.Item>
+        <Tabs.Item label={<><Mic/> Record</>} value="2">
+          <span>Recording Section</span>
+        </Tabs.Item>
+      </Tabs>
       <br />
 
-      <div id="layer-settings-section">
-        <Drawer.Title>Layer settings</Drawer.Title>
-        <h5>Number of repeats</h5>
-        <p>(0 means it will play once)</p>
-        <Input
-          value={paletteData.numRepeats.toString()}
-          onChange={numRepeatsBoxHandler}
-          placeholder="Enter a number, like 0, 4, or 16..."
-        />
-        <h5>Start measure</h5>
-        <p>(The beginning of the song is measure 0)</p>
-        <Input
-          value={paletteData.startMeasure.toString()}
-          onChange={startMeasureBoxHandler}
-          placeholder="Enter a number, like 0, 2, or 8..."
-        />
-        <Button onClick={() => addLayerFunc(paletteData, selectedPatterns)}>Submit Layer</Button>
+      <div style={{textAlign: "center"}}>
+        <Drawer.Title>New Layer</Drawer.Title>
+        {(this.state.stagingLayerSoundBufferId === null && this.state.stagingLayerSoundName === null) ? 
+          <p>Choose a sound or make a recording</p> 
+          : <p>Drag and Drop on the session to stage the layer</p>}
+        <PaletteLayer stagingSoundBuffer={this.state.stagingLayerSoundBuffer} 
+          stagingSoundName={this.state.stagingLayerSoundName} duration={this.state.stagingLayerSoundName ? Palette.sounds[this.state.genre][this.state.stagingLayerSoundName] : 0} />
       </div>
     </>
-  )
+  )};
 };
 
 export default Palette;

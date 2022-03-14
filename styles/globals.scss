@@ -147,6 +147,10 @@ table.table-palette tfoot {
   border-radius: 50%;
 }
 
+.button-palette {
+  border-radius: 50%;
+}
+
 .button-palette:before {
   background-image: linear-gradient(92.83deg, #c563c5 0, #7718b5 100%);
   content: "";
@@ -238,6 +242,50 @@ table.table-palette tfoot {
 .palette-list a:hover {
   color: #f1f1f1;
   background-color: #320f48;
+}
+
+.palette-genre {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.palette-layer {
+  display: flex;
+  border-radius: 22px;
+  border: 1px solid #eaeaea;
+  flex-direction: column;
+  min-width: 400px;
+}
+
+.palette-layer-details {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  max-height: 60px;
+  flex-flow: nowrap;
+  vertical-align: middle;
+  padding: 5px 16px 5px 8px;
+  align-items: center;
+}
+
+.palette-layer-progress {
+  height: 3px;
+  bottom: 0;
+  padding: 0;
+  margin: 0;
+  background-color: white;
+}
+
+.play-btn {
+  border-radius: 20px !important;
+}
+
+.palette-layer-wav {
+  width: 74%;
+  background-image: url('../public/images/wave.svg');
+  height: 67px;
+  background-size: contain;
 }
 
 $item-color: white;
