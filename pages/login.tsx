@@ -1,6 +1,7 @@
 import { Button, Input, Spacer } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { Tone } from "tone/build/esm/core/Tone";
 import { login } from "../components/Helper";
 
 const Login = (): React.ReactNode => {
@@ -9,6 +10,55 @@ const Login = (): React.ReactNode => {
     const [email, setEmail] = useState<string>('');
     const [firstname, setFirstname] = useState<string>('');
     const [lastname, setLastname] = useState<string>('');
+
+    function startRecordingFunction() {
+
+      const MicRecorder = require('mic-recorder-to-mp3');
+
+      var preRecordingDuration = 1850;
+      var recordingDuration = 1850 * 4; //TIME TO RECORD FOR (calculate using BPM)
+  
+      const recorder = new MicRecorder({
+        bitRate: 128
+      });
+
+      const player = new Audio("metronome130.mp3");
+      player.play();
+
+      setTimeout(function () {
+        
+      
+        //START
+        recorder.start().then(() => {
+          //
+        }).catch((e:any) => {
+          console.error(e);
+        });
+
+        //STOP AFTER TIME
+        setTimeout(function () {
+          recorder
+          .stop()
+          .getMp3().then(([buffer, blob]) => {
+
+            //Create file
+            const file = new File(buffer, 'mp3recording.mp3', {
+              type: blob.type,
+              lastModified: Date.now()
+            });
+          
+            //Play it back with default sound (not tone js) this is just for trouble shooting
+            const player = new Audio(URL.createObjectURL(file));
+            player.play();
+          
+          }).catch((e:any) => {
+            console.log(e);
+          });
+        }, recordingDuration); //TIME THAT IT RUNS FOR
+
+      }, preRecordingDuration); //TIME BEFORE RECORDING
+      
+    }
 
     const getLogin = async () => {
         if (email.length === 0 || firstname.length === 0 || lastname.length === 0) {
@@ -38,6 +88,9 @@ const Login = (): React.ReactNode => {
         <Button shadow type="secondary" id="btn-new-session" onClick={getLogin}>
             Login
         </Button>
+        <button onClick={startRecordingFunction}>
+          Start Recording
+        </button>
       </>
     );
   };
