@@ -6,7 +6,6 @@ import * as Tone from "tone";
 interface PaletteLayerProps {
   stagingSoundName: string|null,
   stagingSoundBuffer: AudioBuffer|null,
-  duration: number,
 };
 
 interface PaletteLayerState {
@@ -15,6 +14,7 @@ interface PaletteLayerState {
   tonePlayer: any,
   currentSeconds: number,
   paused: boolean,
+  duration: number,
 };
 
 class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState> {
@@ -31,6 +31,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
       tonePlayer: null,
       currentSeconds: 0,
       paused: false,
+      duration: 0,
     };
     this.handlePlayer = this.handlePlayer.bind(this);
     this.createTonePlayer = this.createTonePlayer.bind(this);
@@ -47,6 +48,20 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
   createTonePlayer(name: string|null, buffer: AudioBuffer|null) {
     if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
     if (this.state.timer !== null) clearInterval(this.state.timer);
+    if (buffer === null) {
+      const au = document.createElement('audio');
+      au.src = '../../' + name + '.mp3';
+      au.addEventListener('loadedmetadata', () => {
+        const duration = au.duration;
+        this.setState({
+          duration: duration,
+        });
+        console.log("The duration of the song is of: " + duration + " seconds");
+      }, false);
+      au.remove();
+    } else {
+      
+    }
     const tonePlayer = buffer !== null ? new Tone.Player(buffer).toDestination() : new Tone.Player('../../' + name + '.mp3').toDestination();
     tonePlayer.onstop = () => {
       clearInterval(this.state.timer);
@@ -83,6 +98,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
         currentSeconds: 0,
         paused: false,
         isPlaying: false,
+        duration: 0,
       });
     }
   };
@@ -127,7 +143,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
               {this.props.stagingSoundName === null ? <Mic color="white"/> : <Music color="white"/>}
             </div>
           </div>
-          {(this.state.isPlaying || this.state.paused) && <div className='palette-layer-progress' style={{width: `${(this.state.currentSeconds / this.props.duration) * 100}%`}}>
+          {(this.state.isPlaying || this.state.paused) && <div className='palette-layer-progress' style={{width: `${(this.state.currentSeconds / this.state.duration) * 100}%`}}>
           </div>}
         </div>
       </>

@@ -6,7 +6,6 @@ interface PaletteCellProps {
   instrumentName: string,
   updateLayerStagingSound: any,
   isSelected: boolean,
-  duration: number,
 };
 
 interface PaletteCellState {

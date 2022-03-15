@@ -110,11 +110,11 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
           <br></br>
           {(Palette.sounds[this.state.genre] !== null && Palette.sounds[this.state.genre] !== undefined) && 
           <Grid.Container gap={2} justify="center" style={{maxWidth: 500}}>
-            {Object.keys(Palette.sounds[this.state.genre]).map((name:string, i:number) => {
+            {Palette.sounds[this.state.genre].map((name:string, i:number) => {
               return(
                 <Grid key={`palette-cell-${this.state.genre}-${i}`}>
                   <PaletteCell instrumentName={name} updateLayerStagingSound={this.updateLayerSoundName}
-                                isSelected={this.state.stagingLayerSoundName === name} duration={Palette.sounds[this.state.genre][name]} />
+                                isSelected={this.state.stagingLayerSoundName === name} />
                 </Grid>)
               })
             }
@@ -132,7 +132,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
           <p>Choose a sound or make a recording</p> 
           : <p>Drag and Drop on the session to stage the layer</p>}
         <PaletteLayer stagingSoundBuffer={this.state.stagingLayerSoundBuffer} 
-          stagingSoundName={this.state.stagingLayerSoundName} duration={this.state.stagingLayerSoundName ? Palette.sounds[this.state.genre][this.state.stagingLayerSoundName] : 0} />
+          stagingSoundName={this.state.stagingLayerSoundName} />
       </div>
     </>
   )};
