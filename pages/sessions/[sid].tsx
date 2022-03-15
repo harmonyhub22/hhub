@@ -21,6 +21,7 @@ import Member from "../../interfaces/models/Member";
 import TimeLineRow from "../../components/TimeLineRow";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { TimelineRow } from "../../components/dean_temp/TimelineRow";
 
 function Session() {
   const { visible, setVisible, bindings } = useModal();
@@ -33,6 +34,7 @@ function Session() {
   });
   const [layers, setLayers] = useState<Layer[]>([]);
   const [partner, setPartner] = useState<Member>();
+  const [maxTimelineWidth, setMaxTimelineWidth] = useState(100);
 
   const router = useRouter();
   const member = useContext(MemberContext);
@@ -68,6 +70,7 @@ function Session() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // TODO: redo this function to work with the snap-to-grid coordinates (for start/end time), duplication button, and submit button (which executes this function)
   const addLayer = async (
     paletteData: PaletteData,
     selectedPatterns: string[]
@@ -89,6 +92,11 @@ function Session() {
       repeatCount: paletteData.numRepeats,
       file: "",
     };
+
+    // update the max width of the timeline if this layer's end time surpasses it
+    if (endTime > maxTimelineWidth) {
+      setMaxTimelineWidth((prev) => endTime);
+    }
 
     const newLayers: Layer[] = [];
     selectedPatterns.forEach(async (patternName: string) => {
@@ -223,7 +231,7 @@ function Session() {
               </tr>
             )}
 
-            <TimeLineRow maxWidth={300} />
+            <TimelineRow maxWidth={maxTimelineWidth} />
           </tbody>
         </table>
       </div>

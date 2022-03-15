@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDrop } from "react-dnd";
+import { Container, CustomDragLayer } from "react-dnd";
 import { Droppable } from "./Droppable";
 import TimeLineLayer from "./TimeLineLayer";
 
@@ -21,22 +21,28 @@ class TimeLineRow extends React.Component<TimeLineRowProps> {
 
   render() {
     return (
-      <tr
-        style={{ width: this.props.maxWidth.toString() + "px" }}
-        ref={this.props.dropRef}
-      >
-        <td>
-          {/* Use the props of the dropped layer to create a new TimeLineLayer component (extra functionality) */}
-          {/* {this.props.basket.map(layer => <TimeLineLayer />)}*/}
-          {Object.keys(this.props.layer).length === 0 ? 
-            <p>{this.props.layer.id}</p> :
-            <p>Nothing yet!</p>
-            }
-          {this.props.isOver && <p>Drop here!</p>}
-        </td>
-      </tr>
+      <>
+        <Container snapToGrid={true} />
+        <CustomDragLayer snapToGrid={true} />
+      </>
+      // <tr
+      //   style={{ width: this.props.maxWidth.toString() + "px" }}
+      //   ref={this.props.dropRef}
+      // >
+      //   <td>
+      //     {/* Use the props of the dropped layer to create a new TimeLineLayer component (extra functionality) */}
+      //     {/* {this.props.basket.map(layer => <TimeLineLayer />)}*/}
+      //     {Object.keys(this.props.layer).length === 0 ?
+      //       <p>{this.props.layer.id}</p> :
+      //       <p>Nothing yet!</p>
+      //       }
+      //     {this.props.isOver && <p>Drop here!</p>}
+
+      //   </td>
+      // </tr>
     );
   }
 }
 
-export default Droppable(TimeLineRow);
+// export default Droppable(TimeLineRow);
+export default TimeLineRow;
