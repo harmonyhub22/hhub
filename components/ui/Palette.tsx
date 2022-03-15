@@ -1,5 +1,5 @@
 import {
-  Drawer, Tabs, Grid, Select, Text
+  Drawer, Tabs, Grid, Select, Text, Button
 } from "@geist-ui/core";
 import PaletteCell from "./Palette-Cell";
 import { config } from "../config";
@@ -91,6 +91,46 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
     }
   }
 
+  startRecordingFunction() {
+    const MicRecorder = require('mic-recorder-to-mp3');
+
+    var preRecordingDuration = 1850;
+    var recordingDuration = 1850 * 4; //TIME TO RECORD FOR (calculate using BPM)
+
+    const recorder = new MicRecorder({
+        bitRate: 128
+    });
+
+    const player = new Audio("metronome130.mp3");
+    player.play();
+
+    setTimeout(function() {
+      recorder.start().then(() => {
+      }).catch((e:any) => {
+          console.error(e);
+      });
+
+      //STOP AFTER TIME
+      setTimeout(function() {
+          recorder
+          .stop()
+          .getMp3().then(([buffer, blob]) => {
+            //Create file
+            const file = new File(buffer, 'mp3recording.mp3', {
+                type: blob.type,
+                lastModified: Date.now()
+            });
+            
+            //Play it back with default sound (not tone js) this is just for trouble shooting
+            const player = new Audio(URL.createObjectURL(file));
+            player.play();
+          }).catch((e:any) => {
+            console.log(e);
+          });
+      }, recordingDuration); //TIME THAT IT RUNS FOR
+    }, preRecordingDuration); //TIME BEFORE RECORDING
+  }
+
   render() {
     return (
     <>
@@ -122,6 +162,9 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
         </Tabs.Item>
         <Tabs.Item label={<><Mic/> Record</>} value="2">
           <span>Recording Section</span>
+          <Button onClick={this.startRecordingFunction}>
+            Start Recording
+          </Button>
         </Tabs.Item>
       </Tabs>
       <br />
