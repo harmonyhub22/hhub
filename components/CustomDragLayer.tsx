@@ -43,9 +43,7 @@ function getItemStyles(
 
 export interface CustomDragLayerProps {
   snapToGrid: boolean;
-  maxWidth: number;
-  stagingSoundName: string | null;
-  stagingSoundBuffer: AudioBuffer | null;
+  layerWidth: number;
 }
 
 export const CustomDragLayer: FC<CustomDragLayerProps> = (props) => {
@@ -62,11 +60,7 @@ export const CustomDragLayer: FC<CustomDragLayerProps> = (props) => {
     switch (itemType) {
       case "box":
         return (
-          <BoxDragPreview
-            maxWidth={props.maxWidth}
-            stagingSoundName={props.stagingSoundName}
-            stagingSoundBuffer={props.stagingSoundBuffer}
-          />
+          <BoxDragPreview boxWidth={props.layerWidth} />
         );
       default:
         return null

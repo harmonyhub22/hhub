@@ -1,55 +1,60 @@
 import { CSSProperties, FC, useCallback, useEffect, useState } from 'react'
 import { useDrop } from 'react-dnd'
-import { DraggableBox } from './DraggableBox'
+import DraggableLayer from './ui/DraggableLayer'
 import { snapToGrid as doSnapToGrid } from './snapToGrid'
 import update from 'immutability-helper'
 
-export interface ContainerProps {
-  snapToGrid: boolean;
-  maxWidth: number;
-  setLayerInfo: any;
-}
-
-interface BoxContainer {
+interface LayerBox {
   id: string;
   top: number;
   left: number;
   stagingSoundName: string | null;
   stagingSoundBuffer: AudioBuffer | null;
+  showPalette: any;
+  duration: number;
 }
 
-export const Container: FC<ContainerProps> = ({ snapToGrid, maxWidth, setLayerInfo }) => {
-  const [styles, setStyles] = useState({
-    width: 100,
-    height: 60,
-    position: "relative",
-    border: "2px solid black",
-  });
+const styles: CSSProperties = {
+  width: "100%",
+  height: 60,
+  position: "relative",
+  border: "1px dashed gray",
+};
 
-  const [boxContainer, setBoxContainer] = useState<BoxContainer>({
+export interface ContainerProps {
+  snapToGrid: boolean;
+  setLayerInfo: any;
+}
+
+export const Container: FC<ContainerProps> = ({ snapToGrid, setLayerInfo }) => {
+  const[layerIsPlaced, setLayerIsPlaced] = useState(false);
+
+  const [layerBox, setLayerBox] = useState<LayerBox>({
     id: "-1",
     top: 0,
     left: 0,
     stagingSoundName: null,
     stagingSoundBuffer: null,
+    showPalette: null,
+    duration: 0,
   });
 
   const moveBox = useCallback(
     (id: string, left: number, top: number) => {
       console.log("Going to move the box!");
       console.log("before:");
-      console.log(boxContainer);
+      console.log(layerBox);
 
-      setBoxContainer((prev) => ({
+      setLayerBox((prev) => ({
         ...prev,
         top: top,
         left: left,
       }));
 
       console.log("after:");
-      console.log(boxContainer);
+      console.log(layerBox);
     },
-    [boxContainer]
+    [layerBox]
   );
 
   const [, drop] = useDrop(
@@ -58,32 +63,44 @@ export const Container: FC<ContainerProps> = ({ snapToGrid, maxWidth, setLayerIn
       // collect: (monitor) => ({
       //   isOver: !!monitor.isOver(),
       // }),
-      drop(item: BoxContainer, monitor) {
+      drop(item: LayerBox, monitor) {
+        setLayerIsPlaced(true);
         console.log("Item is being dropped! the item id is " + item.id)
-        if (boxContainer.id === "-1") {
-          setBoxContainer({
-            id: item.id,
-            top: 0,
-            left: 0,
-            stagingSoundName: item.stagingSoundName,
-            stagingSoundBuffer: item.stagingSoundBuffer,
-          });
-        }
+        // if (boxContainer.id === "-1") {
+        //   setBoxContainer({
+        //     id: item.id,
+        //     top: 0,
+        //     left: 0,
+        //     stagingSoundName: item.stagingSoundName,
+        //     stagingSoundBuffer: item.stagingSoundBuffer,
+        //     showPalette: item.showPalette,
+        //     duration: item.duration,
+        //   });
+        // }
+
+        setLayerBox({
+          id: item.id,
+          top: 0,
+          left: 0,
+          stagingSoundName: item.stagingSoundName,
+          stagingSoundBuffer: item.stagingSoundBuffer,
+          showPalette: item.showPalette,
+          duration: item.duration,
+        });
 
         const delta = monitor.getDifferenceFromInitialOffset() as {
           x: number;
           y: number;
         };
 
-        if (delta.x != 0 || delta.y != 0) {
-          let left = Math.round(item.left + delta.x);
-          let top = Math.round(item.top + delta.y);
-          if (snapToGrid) {
-            [left, top] = doSnapToGrid(left, top);
-          }
-  
-          moveBox(item.id, left, top);
+        let left = Math.round(item.left + delta.x);
+        let top = Math.round(item.top + delta.y);
+        if (snapToGrid) {
+          [left, top] = doSnapToGrid(left, top);
         }
+
+        moveBox(item.id, left, top);
+
         return undefined;
       },
     }),
@@ -91,27 +108,26 @@ export const Container: FC<ContainerProps> = ({ snapToGrid, maxWidth, setLayerIn
   );
 
   useEffect(() => {
-    setStyles({
-      width: maxWidth,
-      height: 60,
-      position: "relative",
-      border: "2px solid black",
-    });
+    //console.log("useEffect in container: id is " + layerBox.id)
   }, []);
 
   return (
     // if we uncomment the collect: in useDrop(), add logic to show "Drop here!" if .isOver
     <div ref={drop} style={styles}>
-      {boxContainer.id === "-1"
-      ? <p>Drop your layer here!</p>
-      : <DraggableBox
-          id={boxContainer.id}
-          top={boxContainer.top}
-          left={boxContainer.left}
-          stagingSoundName={boxContainer.stagingSoundName}
-          stagingSoundBuffer={boxContainer.stagingSoundBuffer}
+      {layerBox.id === "-1" ? (
+        <p>Drop your layer here!</p>
+      ) : (
+        <DraggableLayer
+          id={layerBox.id}
+          top={layerBox.top}
+          left={layerBox.left}
+          stagingSoundName={layerBox.stagingSoundName}
+          stagingSoundBuffer={layerBox.stagingSoundBuffer}
+          showPalette={layerBox.showPalette}
+          duration={layerBox.duration}
+          layerIsPlaced={layerIsPlaced}
         />
-      }
+      )}
     </div>
   );
 }

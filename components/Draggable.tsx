@@ -11,8 +11,9 @@ export const Draggable = (Component: any) => {
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
       }),
-    });
+      [props.id, props.left, props.top]
+    );
 
-    return <Component isDragging={isDragging} dragRef={dragRef} {...props} />;
+    return <Component isDragging={isDragging} drag={drag} preview={preview} {...props} />;
   };
 };

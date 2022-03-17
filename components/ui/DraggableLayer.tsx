@@ -1,35 +1,43 @@
 import { Button, Text } from "@geist-ui/core";
-import { PlayFill, PauseFill, Moon } from "@geist-ui/icons";
-import React from "react";
+import { PlayFill, PauseFill, Moon, Mic, Music } from "@geist-ui/icons";
+import React, { CSSProperties } from "react";
 import * as Tone from "tone";
 import { Draggable } from "../Draggable";
 
-interface PaletteLayerProps {
+interface DraggableLayerProps {
   id: string;
+  left: number;
+  top: number;
   stagingSoundName: string | null;
   stagingSoundBuffer: AudioBuffer | null;
   isDragging: boolean;
-  dragRef: any;
+  drag: any;
   showPalette: any;
+  duration: number;
+  preview?: boolean; 
+  layerIsPlaced: boolean;
+  layerWidth: number;
 }
 
-interface PaletteLayerState {
+interface DraggableLayerState {
   stagingSoundName: string | null;
   isPlaying: boolean;
   playerDuration: number;
   pauseTime: number;
   tonePlayer: any;
+  paused: boolean;
+  currentSeconds: number;
 }
 
-class PaletteLayer extends React.Component<
-  PaletteLayerProps,
-  PaletteLayerState
+class DraggableLayer extends React.Component<
+  DraggableLayerProps,
+  DraggableLayerState
 > {
   static hasPlayerColor: string = "#320f48";
   static hasPlayerFontColor: string = "#DDDDDD";
   static hasPlayerIconColor: string = "#c563c5";
 
-  constructor(props: PaletteLayerProps) {
+  constructor(props: DraggableLayerProps) {
     super(props);
     this.state = {
       stagingSoundName: null,
@@ -37,6 +45,8 @@ class PaletteLayer extends React.Component<
       pauseTime: 0,
       playerDuration: 0,
       tonePlayer: null,
+      currentSeconds: 0,
+      paused: false,
     };
     this.handlePlayer = this.handlePlayer.bind(this);
     this.createTonePlayer = this.createTonePlayer.bind(this);
@@ -76,10 +86,13 @@ class PaletteLayer extends React.Component<
     });
   }
 
-  componentDidUpdate(prevProps: PaletteLayerProps, prevState: PaletteLayerState) {
-    console.log("~~~~~~~~~~ component did update for palette layer ~~~~~~~~~~ ");
-    console.log("prev state was")
-    console.log(prevState);
+  componentDidUpdate(prevProps: DraggableLayerProps) {
+    console.log("~~~~~ componentDidUpdate for DraggableLayer ~~~~~~~");
+    console.log("prev sound name was " + prevProps.stagingSoundName);
+    console.log("now its " + this.props.stagingSoundName);
+    console.log("prev buffer was " + prevProps.stagingSoundBuffer);
+    console.log("now its " + this.props.stagingSoundBuffer);
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~");
     if (
       this.props.stagingSoundName !== null &&
       this.props.stagingSoundName !== prevProps.stagingSoundName
@@ -99,9 +112,19 @@ class PaletteLayer extends React.Component<
         playerDuration: 0,
       });
     }
-    console.log("now its")
-    console.log(this.state)
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ");
+  }
+
+  getStyles(left: number, top: number, isDragging: boolean): CSSProperties {
+    const transform = `translate3d(${left}px, ${top}px, 0)`;
+    return {
+      position: "absolute",
+      transform,
+      WebkitTransform: transform,
+      // IE fallback: hide the real node using CSS when dragging
+      // because IE will ignore our custom "empty image" drag preview.
+      opacity: isDragging ? 0 : 1,
+      height: isDragging ? 0 : "",
+    };
   }
 
   handlePlayer() {
@@ -117,57 +140,69 @@ class PaletteLayer extends React.Component<
   }
 
   render() {
+    // TODO: add logic to show timeline-specific functionality (duplication, deletion, submitting, etc) based on if this is dropped in the container
     return (
-      <>
-        {this.props.isDragging ? (
-          <p></p> // just show nothing here
-        ) : (
-          <div
-            className="palette-layer"
-            ref={this.props.dragRef}
-            style={{
-              backgroundColor:
-                this.state.tonePlayer === null
-                  ? ""
-                  : PaletteLayer.hasPlayerColor,
-            }}
-            onDragStart={() => this.props.showPalette(false)}
-          >
+      <div
+        ref={this.props.drag}
+        style={this.getStyles(
+          this.props.left,
+          this.props.top,
+          this.props.isDragging
+        )}
+        role="DraggableBox"
+        onDragStart={() => this.props.showPalette(false)}
+      >
+        <div
+          className="palette-layer"
+          style={{
+            backgroundColor:
+              this.state.tonePlayer === null ? "" : DraggableLayer.hasPlayerColor,
+            border:
+              this.state.tonePlayer === null ? "1px solid #eaeaea" : "none",
+          }}
+        >
+          <div className="palette-layer-details">
             <div>
               <Button
                 iconRight={
                   this.state.tonePlayer === null ? (
                     <Moon />
                   ) : this.state.isPlaying ? (
-                    <PauseFill color={PaletteLayer.hasPlayerIconColor} />
+                    <PauseFill color={DraggableLayer.hasPlayerIconColor} />
                   ) : (
-                    <PlayFill color={PaletteLayer.hasPlayerIconColor} />
+                    <PlayFill color={DraggableLayer.hasPlayerIconColor} />
                   )
                 }
                 auto
                 scale={2 / 3}
                 px={0.6}
                 onClick={this.handlePlayer}
-                className={"play-btn"}
+                className="play-btn"
               />
             </div>
             <div className="palette-layer-wav"></div>
             <div>
-              {this.state.tonePlayer !== null && (
-                <Text my={0} style={{ color: PaletteLayer.hasPlayerFontColor }}>
-                  {this.state.playerDuration !== null
-                    ? `${Math.floor(
-                        this.state.tonePlayer.sampleTime % 60
-                      )}.${Math.floor(this.state.tonePlayer.sampleTime / 60)}`
-                    : ""}
-                </Text>
+              {this.props.stagingSoundName === null ? (
+                <Mic color="white" />
+              ) : (
+                <Music color="white" />
               )}
             </div>
           </div>
-        )}
-      </>
+          {(this.state.isPlaying || this.state.paused) && (
+            <div
+              className="palette-layer-progress"
+              style={{
+                width: `${
+                  (this.state.currentSeconds / this.props.duration) * 100
+                }%`,
+              }}
+            ></div>
+          )}
+        </div>
+      </div>
     );
   }
 }
 
-export default Draggable(PaletteLayer);
+export default Draggable(DraggableLayer);

@@ -3,23 +3,17 @@ import { Box } from './Box'
 
 const styles: CSSProperties = {
   display: 'inline-block',
-  // transform: 'rotate(-7deg)',
-  // WebkitTransform: 'rotate(-7deg)',
 }
 
 export interface BoxDragPreviewProps {
-  maxWidth: number;
-  stagingSoundName: string | null;
-  stagingSoundBuffer: AudioBuffer | null;
+  boxWidth: number;
 }
 
 export interface BoxDragPreviewState {
   tickTock: any
 }
 
-export const BoxDragPreview: FC<BoxDragPreviewProps> = memo(function BoxDragPreview({
-  maxWidth, stagingSoundName, stagingSoundBuffer
-}) {
+export const BoxDragPreview: FC<BoxDragPreviewProps> = memo(function BoxDragPreview({boxWidth}) {
   const [tickTock, setTickTock] = useState(false);
 
   useEffect(
@@ -33,9 +27,8 @@ export const BoxDragPreview: FC<BoxDragPreviewProps> = memo(function BoxDragPrev
   return (
     <div style={styles}>
       <Box
-        stagingSoundBuffer={stagingSoundBuffer}
-        stagingSoundName={stagingSoundName}
         yellow={tickTock}
+        boxWidth={boxWidth}
         preview
       />
     </div>

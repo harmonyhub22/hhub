@@ -1,37 +1,47 @@
-import { CSSProperties, FC, memo, useEffect } from "react";
-import TimeLineLayer from "./TimeLineLayer";
-
-const styles: CSSProperties = {
-  border: "1px dashed gray",
-  cursor: "move",
-  display: "flex",
-  maxHeight: "60px",
-  flexFlow: "nowrap",
-  verticalAlign: "middle",
-  minWidth: "400px",
-  borderRadius: "22px",
-  padding: "5px 16px 5px 8px",
-};
+import { CSSProperties, FC, memo, useEffect, useState } from "react";
+import TimeLineLayer from "./ui/DraggableLayer";
 
 export interface BoxProps {
   yellow?: boolean;
   preview?: boolean;
-  stagingSoundName: string | null;
-  stagingSoundBuffer: AudioBuffer | null;
+  boxWidth: number;
 }
 
-export const Box: FC<BoxProps> = memo(function Box({ yellow, preview, stagingSoundName, stagingSoundBuffer }) {
+export const Box: FC<BoxProps> = memo(function Box({ yellow, preview, boxWidth }) {
   const backgroundColor = yellow ? "yellow" : "white";
+
+  const [styles, setStyles] = useState({
+    border: "1px dashed gray",
+    cursor: "move",
+    display: "flex",
+    height: "70px",
+    flexFlow: "nowrap",
+    verticalAlign: "middle",
+    width: "400px",
+    borderRadius: "22px",
+    padding: "5px 16px 5px 8px",
+  });
+
+  useEffect(() => {
+    setStyles({
+      border: "1px dashed gray",
+      cursor: "move",
+      display: "flex",
+      height: "70px",
+      flexFlow: "nowrap",
+      verticalAlign: "middle",
+      borderRadius: "22px",
+      padding: "5px 16px 5px 8px",
+      width: (boxWidth * 58).toString() + "px",  // TODO: find a solid math formula for computing the width based on layer duration
+    });
+  }, []);
 
   return (
     <div
-      style={{ ...styles, backgroundColor }}
+      style={styles}
       role={preview ? "BoxPreview" : "Box"}
     >
-      <TimeLineLayer
-        stagingSoundBuffer={stagingSoundBuffer}
-        stagingSoundName={stagingSoundName}
-      />
+      <p>Drag me to the timeline!</p>
     </div>
   );
 });

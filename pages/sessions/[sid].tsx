@@ -29,12 +29,13 @@ function Session() {
   const [session, setSession] = useState<Session>();
   const [sessionData, setSessionData] = useState<SessionData>({
     bpm: 130,
-    measures: 1,
+    measures: 16,
   });
   const [layers, setLayers] = useState<Layer[]>([]);
   const [partner, setPartner] = useState<Member>();
   const [maxTimelineWidth, setMaxTimelineWidth] = useState(500);
   const [layerIsPlaced, setLayerIsPlaced] = useState(false);
+  const[currentLayerDuration, setCurrentLayerDuration] = useState(0);
 
   const router = useRouter();
   const member = useContext(MemberContext);
@@ -185,6 +186,30 @@ function Session() {
     socket.emit("finished");
   };
 
+  // timeline headers are beats for now (each snap-to-place interval = width of 1 column)
+  const getTimelineHeaders = () => {
+    const headers = [];
+    for (var i = 1; i <= sessionData.measures * 4; i++) {
+      if (i < 10) {
+        headers.push(<th key={"B_" + i}>{i}</th>);
+      }
+      else if (i >= 10 && i < 100) {
+        headers.push(<th key={"B_" + i} style={{fontSize: 10}}>{i}</th>);
+      }
+      else if (i >= 100 && i < 1000) {
+        headers.push(<th key={"B_" + i} style={{fontSize: 7}}>{i}</th>);
+      }
+      else {
+        headers.push(<th key={"B_" + i} style={{fontSize: 5}}>{i}</th>);
+      }
+    }
+    return headers;
+  }
+
+  const handleSetLayerDuration = (dur: number) => {
+    setCurrentLayerDuration(dur);
+  }
+
   return (
     <Page>
       <Head>
@@ -192,18 +217,19 @@ function Session() {
         <p>Song BPM: {sessionData.bpm}</p>
       </Head>
       <div id="session-timeline-div">
+        <h1>Session Timeline</h1>
         <table id="session-timeline">
           <tbody>
             <tr>
-              {Array.from(Array(sessionData.measures), (_, i) => (
-                <th key={"M_" + i}>M{i}</th>
-              ))}
+              {getTimelineHeaders().map((item, i) => {
+                return item;
+              })}
             </tr>
             {(layers?.length ?? 0) !== 0 ? (
               layers.map((layer, i) => {
                 return (
                   <tr key={"layer_" + i}>
-                    <td colSpan={sessionData.measures}>
+                    <td colSpan={sessionData.measures * 4}>
                       <audio
                         controls
                         style={computeLayerStyle(
@@ -236,25 +262,26 @@ function Session() {
               </tr>
             )}
             <TimelineRow
-              maxWidth={maxTimelineWidth}
               handleLayerPlacement={handleLayerPlacement}
+              colSpan={sessionData.measures * 4}
+              layerDuration={currentLayerDuration}
             />
           </tbody>
         </table>
       </div>
-      
+
       <div id="session-buttons">
         <Button auto onClick={() => setVisible(true)} type="success">
           Finish Song
         </Button>
-        {!layerIsPlaced && 
-          <Button auto  onClick={() => setShowPalette(true)} scale={1}>
+        {/* {!layerIsPlaced && (
+          <Button auto onClick={() => setShowPalette(true)} scale={1}>
             Show Pallete
           </Button>
-        }
+        )} */}
       </div>
 
-      <Drawer
+      {/* <Drawer
         visible={showPallete}
         onClose={() => setShowPalette(false)}
         placement="right"
@@ -266,7 +293,16 @@ function Session() {
             showPalette={setShowPalette}
           />
         </Drawer.Content>
-      </Drawer>
+      </Drawer> */}
+
+      <div id="palette">
+        <Palette
+          genreName={"alt"}
+          initials={`${member.firstname[0]}${member.lastname[0]}`}
+          showPalette={setShowPalette}
+          setCurrentLayerDuration={handleSetLayerDuration}
+        />
+      </div>
 
       <Modal {...bindings}>
         <Modal.Title>Finishing Song</Modal.Title>
