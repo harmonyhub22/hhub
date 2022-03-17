@@ -1,6 +1,5 @@
 import type { CSSProperties, FC } from 'react'
 import { XYCoord, useDragLayer } from 'react-dnd'
-import { ItemTypes } from './ItemTypes'
 import { BoxDragPreview } from './BoxDragPreview'
 import { snapToGrid } from './snapToGrid'
 
@@ -43,7 +42,10 @@ function getItemStyles(
 }
 
 export interface CustomDragLayerProps {
-  snapToGrid: boolean
+  snapToGrid: boolean;
+  maxWidth: number;
+  stagingSoundName: string | null;
+  stagingSoundBuffer: AudioBuffer | null;
 }
 
 export const CustomDragLayer: FC<CustomDragLayerProps> = (props) => {
@@ -58,8 +60,14 @@ export const CustomDragLayer: FC<CustomDragLayerProps> = (props) => {
 
   function renderItem() {
     switch (itemType) {
-      case ItemTypes.BOX:
-        return <BoxDragPreview title={item.title} />
+      case "box":
+        return (
+          <BoxDragPreview
+            maxWidth={props.maxWidth}
+            stagingSoundName={props.stagingSoundName}
+            stagingSoundBuffer={props.stagingSoundBuffer}
+          />
+        );
       default:
         return null
     }

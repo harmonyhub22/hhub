@@ -18,10 +18,9 @@ import {
 import SessionData from "../../interfaces/session_data";
 import LayersCreated from "../../interfaces/socket-data/layers_created";
 import Member from "../../interfaces/models/Member";
-import TimeLineRow from "../../components/TimeLineRow";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { TimelineRow } from "../../components/dean_temp/TimelineRow";
+import { TimelineRow } from "../../components/TimelineRow";
 
 function Session() {
   const { visible, setVisible, bindings } = useModal();
@@ -34,7 +33,8 @@ function Session() {
   });
   const [layers, setLayers] = useState<Layer[]>([]);
   const [partner, setPartner] = useState<Member>();
-  const [maxTimelineWidth, setMaxTimelineWidth] = useState(100);
+  const [maxTimelineWidth, setMaxTimelineWidth] = useState(500);
+  const [layerIsPlaced, setLayerIsPlaced] = useState(false);
 
   const router = useRouter();
   const member = useContext(MemberContext);
@@ -152,6 +152,11 @@ function Session() {
     layerStyle.marginLeft = leftOffset.toString() + "%";
     return layerStyle;
   };
+
+  const handleLayerPlacement = (placed: boolean) => {
+    setLayerIsPlaced(placed);
+  }
+
   const loop = async (file: string, loopcount: number) => {
     const crunker = new Crunker();
     const arr: AudioBuffer[] = [];
@@ -230,10 +235,23 @@ function Session() {
                 </td>
               </tr>
             )}
-
-            <TimelineRow maxWidth={maxTimelineWidth} />
+            <TimelineRow
+              maxWidth={maxTimelineWidth}
+              handleLayerPlacement={handleLayerPlacement}
+            />
           </tbody>
         </table>
+      </div>
+      
+      <div id="session-buttons">
+        <Button auto onClick={() => setVisible(true)} type="success">
+          Finish Song
+        </Button>
+        {!layerIsPlaced && 
+          <Button auto  onClick={() => setShowPalette(true)} scale={1}>
+            Show Pallete
+          </Button>
+        }
       </div>
 
       <Drawer
@@ -242,7 +260,11 @@ function Session() {
         placement="right"
       >
         <Drawer.Content>
-          <Palette genreName={"alt"} initials={`${member.firstname[0]}${member.lastname[0]}`} showPalette={setShowPalette} />
+          <Palette
+            genreName={"alt"}
+            initials={`${member.firstname[0]}${member.lastname[0]}`}
+            showPalette={setShowPalette}
+          />
         </Drawer.Content>
       </Drawer>
 
@@ -258,15 +280,6 @@ function Session() {
           Download
         </Modal.Action>
       </Modal>
-
-      <Page.Footer>
-        <Button auto onClick={() => setVisible(true)} type="success">
-          Finish Song
-        </Button>
-        <Button auto onClick={() => setShowPalette(true)} scale={1}>
-          Show Pallete
-        </Button>
-      </Page.Footer>
     </Page>
   );
 }

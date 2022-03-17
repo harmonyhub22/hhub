@@ -3,16 +3,22 @@ import { useDrop } from "react-dnd";
 
 export const Droppable = (Component: any) => {
   return (props: any) => {
-    const [layer, setLayer] = useState({});
+    const [layer, setLayer] = useState([]);
     const [{ isOver }, dropRef] = useDrop(() => ({
       accept: "layer",
-      drop: (item) => setLayer({ id: item.id }),
-    //   drop: (item) => console.log(item),
+      drop: (item) => setLayer([item]),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
       }),
     }));
-
-    return <Component isOver={isOver} dropRef={dropRef} layer={layer} setLayer={setLayer} {...props} />;
+    return (
+      <Component
+        isOver={isOver}
+        dropRef={dropRef}
+        layer={layer}
+        setLayer={setLayer}
+        {...props}
+      />
+    );
   };
 };

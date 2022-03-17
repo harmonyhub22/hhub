@@ -22,25 +22,26 @@ function getStyles(
 }
 
 export interface DraggableBoxProps {
-  id: string
-  title: string
-  left: number
-  top: number
+  id: string;
+  left: number;
+  top: number;
+  stagingSoundName: string | null;
+  stagingSoundBuffer: AudioBuffer | null;
 }
 
 export const DraggableBox: FC<DraggableBoxProps> = memo(function DraggableBox(
   props,
 ) {
-  const { id, title, left, top } = props
+  const { id, left, top, stagingSoundName, stagingSoundBuffer } = props
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
-      type: ItemTypes.BOX,
-      item: { id, left, top, title },
+      type: "box",
+      item: { id, left, top,  },
       collect: (monitor: DragSourceMonitor) => ({
         isDragging: monitor.isDragging(),
       }),
     }),
-    [id, left, top, title],
+    [id, left, top],
   )
 
   useEffect(() => {
@@ -53,7 +54,7 @@ export const DraggableBox: FC<DraggableBoxProps> = memo(function DraggableBox(
       style={getStyles(left, top, isDragging)}
       role="DraggableBox"
     >
-      <Box title={title} />
+      <Box stagingSoundBuffer={stagingSoundBuffer} stagingSoundName={stagingSoundName} />
     </div>
   )
 })

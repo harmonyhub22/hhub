@@ -1,58 +1,54 @@
-import {
-  Drawer, Tabs, Grid, Select, Text
-} from "@geist-ui/core";
+import { Drawer, Tabs, Grid, Select, Text } from "@geist-ui/core";
 import PaletteCell from "./Palette-Cell";
 import { config } from "../config";
 import React from "react";
-import { Mic, Music } from '@geist-ui/icons';
+import { Mic, Music } from "@geist-ui/icons";
 import PaletteLayer from "./Palette-Layer";
 
-
 interface PaletteProps {
-  genreName: string,
-  initials: string,
-  showPalette: any,
-};
+  genreName: string;
+  initials: string;
+  showPalette: any;
+}
 
 interface PaletteState {
-  stagingLayerSoundName: string|null,
-  stagingLayerSoundBuffer: AudioBuffer|null,
-  lastGenre: string,
-};
+  stagingLayerSoundName: string | null;
+  stagingLayerSoundBuffer: AudioBuffer | null;
+  lastGenre: string;
+}
 
 class Palette extends React.Component<PaletteProps, PaletteState> {
+  static presetSounds: string[] | any[] = config.sounds;
+  static genres: string[] | any[] = config.genres;
 
-  static presetSounds: string[]|any[] = config.sounds;
-  static genres: string[]|any[] = config.genres;
-
-  constructor(props:PaletteProps) {
+  constructor(props: PaletteProps) {
     super(props);
     this.state = {
       stagingLayerSoundName: null,
       stagingLayerSoundBuffer: null,
-      lastGenre: config.genres[0]
+      lastGenre: config.genres[0],
     };
     this.updateLayerSoundName = this.updateLayerSoundName.bind(this);
     this.updateLayerSoundBuffer = this.updateLayerSoundBuffer.bind(this);
   }
 
-  updateLayerSoundName (stagingLayerSoundName:string|null) {
-    console.log(this.state.stagingLayerSoundName);
+  updateLayerSoundName(stagingLayerSoundName: string | null) {
+    console.log("passed in: " + stagingLayerSoundName);
     if (this.state.stagingLayerSoundName === stagingLayerSoundName) {
-      console.log('undo');
       this.setState({
         stagingLayerSoundName: null,
       });
     } else {
-      console.log('set');
-      this.setState({
+      console.log("current: " + this.state.stagingLayerSoundName);
+      this.setState((prev) => ({
+        ...prev,
         stagingLayerSoundName: stagingLayerSoundName,
-      });
+      }));
+      console.log("now its: " + this.state.stagingLayerSoundName);
     }
-    console.log(this.state.stagingLayerSoundName);
   }
 
-  updateLayerSoundBuffer (stagingLayerSoundBuffer:AudioBuffer|null) {
+  updateLayerSoundBuffer(stagingLayerSoundBuffer: AudioBuffer | null) {
     this.setState({
       stagingLayerSoundBuffer: stagingLayerSoundBuffer,
     });
@@ -61,6 +57,15 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
         stagingLayerSoundName: null,
       });
     }
+  }
+
+  componentDidUpdate(prevProps: PaletteProps, prevState: PaletteState) {
+    console.log("~~~~~ componentDidUpdate for palette ~~~~~~~")
+    console.log("prev sound name was " + prevState.stagingLayerSoundName)
+    console.log("now its " + this.state.stagingLayerSoundName)
+    console.log("prev buffer was " + prevState.stagingLayerSoundBuffer);
+    console.log("now its " + this.state.stagingLayerSoundBuffer);
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~")
   }
 
   render() {
@@ -122,14 +127,15 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
           <Drawer.Title>New Layer</Drawer.Title>
           <p>Drag your layer onto the highlighted portion of the timeline!</p>
           <PaletteLayer
-            id={1}  // can we pass in metadata like this?
+            id={1} // can we pass in metadata like this?
             stagingSoundBuffer={this.state.stagingLayerSoundBuffer}
             stagingSoundName={this.state.stagingLayerSoundName}
             showPalette={this.props.showPalette}
           />
         </div>
       </>
-    );};
-};
+    );
+  }
+}
 
 export default Palette;

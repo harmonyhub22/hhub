@@ -2,13 +2,10 @@ import { Button, Text } from "@geist-ui/core";
 import { PlayFill, PauseFill, Moon } from "@geist-ui/icons";
 import React from "react";
 import * as Tone from "tone";
-import { Draggable } from "./Draggable";
 
 interface TimeLineLayerProps {
   stagingSoundName: string | null;
   stagingSoundBuffer: AudioBuffer | null;
-  isDragging: boolean;
-  dragRef: any;
 }
 
 interface TimeLineLayerState {
@@ -74,27 +71,27 @@ class TimeLineLayer extends React.Component<
     });
   }
 
-  componentDidUpdate(prevProps: TimeLineLayerProps) {
-    if (
-      this.props.stagingSoundName !== null &&
-      this.props.stagingSoundName !== prevProps.stagingSoundName
-    ) {
-      this.createTonePlayer(this.props.stagingSoundName, null);
-    } else if (this.props.stagingSoundBuffer !== null) {
-      this.createTonePlayer(null, this.props.stagingSoundBuffer);
-    } else if (
-      this.props.stagingSoundBuffer === null &&
-      this.props.stagingSoundName === null &&
-      (prevProps.stagingSoundBuffer !== null ||
-        prevProps.stagingSoundName !== null)
-    ) {
-      if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
-      this.setState({
-        tonePlayer: null,
-        playerDuration: 0,
-      });
-    }
-  }
+  // componentDidUpdate(prevProps: TimeLineLayerProps) {
+  //   if (
+  //     this.props.stagingSoundName !== null &&
+  //     this.props.stagingSoundName !== prevProps.stagingSoundName
+  //   ) {
+  //     this.createTonePlayer(this.props.stagingSoundName, null);
+  //   } else if (this.props.stagingSoundBuffer !== null) {
+  //     this.createTonePlayer(null, this.props.stagingSoundBuffer);
+  //   } else if (
+  //     this.props.stagingSoundBuffer === null &&
+  //     this.props.stagingSoundName === null &&
+  //     (prevProps.stagingSoundBuffer !== null ||
+  //       prevProps.stagingSoundName !== null)
+  //   ) {
+  //     if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
+  //     this.setState({
+  //       tonePlayer: null,
+  //       playerDuration: 0,
+  //     });
+  //   }
+  // }
 
   handlePlayer() {
     if (this.state.tonePlayer === null) return;
@@ -113,12 +110,11 @@ class TimeLineLayer extends React.Component<
       <>
         <div
           className="palette-layer"
-          ref={this.props.dragRef}
           style={{
             backgroundColor:
               this.state.tonePlayer === null
                 ? ""
-                : TimeLineLayer.hasPlayerColor,
+                : TimeLineLayer.hasPlayerColor
           }}
         >
           <div>
@@ -157,4 +153,4 @@ class TimeLineLayer extends React.Component<
   }
 }
 
-export default Draggable(TimeLineLayer);
+export default TimeLineLayer;
