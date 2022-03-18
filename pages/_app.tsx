@@ -16,7 +16,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   const fetchCurrentMember = async () => {
-    console.log(member);
     const fetchedMember = await getCurrentMember();
     console.log(fetchedMember);
     if (fetchedMember !== undefined && fetchedMember !== null) {

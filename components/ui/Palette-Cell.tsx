@@ -33,6 +33,10 @@ class PaletteCell extends React.Component<PaletteCellProps, PaletteCellState> {
     };
   };
 
+  componentWillUnmount() {
+    if (this.state.tonePlayer !== null) this.state.tonePlayer.stop();
+  }
+
   onSoundClick = () => {
     if (this.state.tonePlayer.state === "started") {
       this.state.tonePlayer.stop();
