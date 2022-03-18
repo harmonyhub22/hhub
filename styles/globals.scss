@@ -288,6 +288,51 @@ table.table-palette tfoot {
   background-size: contain;
 }
 
+.palette-recording-tab {
+  min-height: 300px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+}
+
+.palette-metronome {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  border: 1px solid #f5a623;
+  padding: 16px;
+  width: 80%;
+}
+
+.palette-recording-details {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.record-btn {
+  width: 100% !important;
+  min-height: 60px;
+  border-radius: 20px !important;
+}
+
+@keyframes recording-pulse {
+  0%   {border-color: #e00;}
+  50%  {border-color: white;}
+  100% {border-color: #e00;}
+}
+
+.record-timer {
+  animation-name: recording-pulse;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+}
+
 $item-color: white;
 $item-background: #2196f3;
 $item-border: 1px solid #1a6fb3;
