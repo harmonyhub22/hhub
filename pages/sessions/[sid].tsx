@@ -295,15 +295,6 @@ function Session() {
         </Drawer.Content>
       </Drawer>
 
-      {/*<div id="palette">
-        <Palette
-          genreName={"alt"}
-          initials={`${member.firstname[0]}${member.lastname[0]}`}
-          showPalette={setShowPalette}
-          setCurrentLayerDuration={handleSetLayerDuration}
-        />
-      </div>*/}
-
       <Modal {...bindings}>
         <Modal.Title>Finishing Song</Modal.Title>
         <Modal.Content>
