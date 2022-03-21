@@ -16,7 +16,6 @@ import {
   postLayerRecording,
 } from "../../components/Session";
 import SessionData from "../../interfaces/session_data";
-import LayerCreated from "../../interfaces/socket-data/layers_created";
 import LayersCreated from "../../interfaces/socket-data/layers_created";
 import Member from "../../interfaces/models/Member";
 

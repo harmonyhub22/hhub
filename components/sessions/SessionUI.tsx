@@ -9,7 +9,7 @@ import Member from "../../interfaces/models/Member";
 interface SessionUIProps {}
 
 interface SessionUIState {
-  layers: Layer;
+  layers: Layer | null;
   session: Session;
   sessionData: SessionData;
   partner: Member;
@@ -23,7 +23,7 @@ class SessionUI extends Component<SessionUIProps, SessionUIState> {
   }
   partnerLayer(layerId: string) {
     if (session?.sessionId === undefined) return;
-    const layer: Layer | null = await getLayerById(session?.sessionId, layerId);
+    const layer: Layer | null = getLayerById(session?.sessionId, layerId);
     if (layer === null || layer === undefined) {
       console.log("could not get partner layer");
       return;
