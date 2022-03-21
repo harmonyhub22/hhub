@@ -106,7 +106,7 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
       });
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks);
+        const audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' });
         this.props.updateLayerStagingBuffer(audioBlob, (Date.now() - startTime) / 1000);
         clearInterval(this.state.timer);
         this.setState({
