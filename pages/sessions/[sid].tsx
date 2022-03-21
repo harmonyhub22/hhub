@@ -20,6 +20,7 @@ import SessionData from "../../interfaces/session_data";
 import LayerCreated from "../../interfaces/socket-data/layers_created";
 import LayersCreated from "../../interfaces/socket-data/layers_created";
 import Member from "../../interfaces/models/Member";
+import TimelineLayer from "../../components/ui/Timeline-Layer";
 
 function Session() {
   const { visible, setVisible, bindings } = useModal();
@@ -213,13 +214,21 @@ function Session() {
         </table>
       </div>
 
+      <TimelineLayer stagingSoundName={'Drum1'}
+        soundBufferDate={null}
+        stagingSoundBuffer={null}
+        duration={7}
+        initialTimelinePosition={0}
+        creatorInitials={`${member.firstname[0]}${member.lastname[0]}`}
+      />
+
       <Drawer
         visible={showPallete}
         onClose={() => setShowPalette(false)}
         placement="right"
       >
         <Drawer.Content>
-          <Palette genreName={"alt"} initials={`${member.firstname[0]}${member.lastname[0]}`} />
+          <Palette />
         </Drawer.Content>
       </Drawer>
 

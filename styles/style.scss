@@ -273,6 +273,26 @@ table.table-palette tfoot {
   background-size: contain;
 }
 
+.timeline-layer {
+  display: flex;
+  justify-content: space-between;
+  max-height: 50px;
+  flex-flow: nowrap;
+  vertical-align: middle;
+  min-width: 400px;
+  border-radius: 22px;
+  padding: 5px 16px 5px 8px;
+  align-items: center;
+  border: 1px solid #eaeaea;
+}
+
+.timeline-layer-wav {
+  width: 74%;
+  background-image: url("../public/images/black_wave.svg");
+  height: 67px;
+  background-size: contain;
+}
+
 $item-color: white;
 $item-background: #2196f3;
 $item-border: 1px solid #1a6fb3;

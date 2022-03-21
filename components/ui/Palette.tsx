@@ -10,8 +10,6 @@ import PaletteRecorder from "./Palette-Recorder";
 
 
 interface PaletteProps {
-  genreName: string,
-  initials: string,
 };
 
 interface PaletteState {
