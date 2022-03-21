@@ -19,8 +19,6 @@ import SessionData from "../../interfaces/session_data";
 import LayersCreated from "../../interfaces/socket-data/layers_created";
 import Member from "../../interfaces/models/Member";
 import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { TimelineRow } from "../../components/TimelineRow";
 
 function Session() {
   const { visible, setVisible, bindings } = useModal();
@@ -59,11 +57,11 @@ function Session() {
     setSession(s);
     setLayers(s.layers); // set the current layers
     setPartner(s.member1.memberId === member.memberId ? s.member2 : s.member1); // set the partner
-    socket.on("layers_added", async (data: LayersCreated) => {
+    /*socket.on("layers_added", async (data: LayersCreated) => {
       data.layerIds.map(async (layerId) => {
         await partnerLayer(layerId);
       });
-    });
+    }); */
   };
 
   useEffect(() => {
@@ -76,6 +74,7 @@ function Session() {
     paletteData: PaletteData,
     selectedPatterns: string[]
   ) => {
+    /*
     if (paletteData === null || paletteData === undefined) return;
     if (!paletteData.name) {
       alert("Please select a palette pattern to use!");
@@ -133,6 +132,7 @@ function Session() {
       layerIds: newLayerIds,
     };
     socket.emit("add_layer", dataToEmit);
+    */
   };
 
   // the left offset and width of the layer depends on the start time and ratio of layer duration to the entire song, respectively
@@ -210,6 +210,10 @@ function Session() {
     setCurrentLayerDuration(dur);
   }
 
+  const toggleShowPalette = (show: boolean) => {
+    setShowPalette(show);
+  }
+
   return (
     <Page>
       <Head>
@@ -261,11 +265,11 @@ function Session() {
                 </td>
               </tr>
             )}
-            <TimelineRow
+            {/*<TimelineRow
               handleLayerPlacement={handleLayerPlacement}
               colSpan={sessionData.measures * 4}
               layerDuration={currentLayerDuration}
-            />
+            />*/}
           </tbody>
         </table>
       </div>
@@ -274,35 +278,31 @@ function Session() {
         <Button auto onClick={() => setVisible(true)} type="success">
           Finish Song
         </Button>
-        {/* {!layerIsPlaced && (
-          <Button auto onClick={() => setShowPalette(true)} scale={1}>
-            Show Pallete
-          </Button>
-        )} */}
+        <Button auto onClick={() => setShowPalette(true)} scale={1}>
+          Show Pallete
+        </Button>
       </div>
 
-      {/* <Drawer
+      <Drawer
         visible={showPallete}
         onClose={() => setShowPalette(false)}
         placement="right"
       >
         <Drawer.Content>
           <Palette
-            genreName={"alt"}
-            initials={`${member.firstname[0]}${member.lastname[0]}`}
-            showPalette={setShowPalette}
+            toggleShowPalette={toggleShowPalette}
           />
         </Drawer.Content>
-      </Drawer> */}
+      </Drawer>
 
-      <div id="palette">
+      {/*<div id="palette">
         <Palette
           genreName={"alt"}
           initials={`${member.firstname[0]}${member.lastname[0]}`}
           showPalette={setShowPalette}
           setCurrentLayerDuration={handleSetLayerDuration}
         />
-      </div>
+      </div>*/}
 
       <Modal {...bindings}>
         <Modal.Title>Finishing Song</Modal.Title>

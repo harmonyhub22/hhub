@@ -10,10 +10,11 @@ interface PaletteLayerProps {
   stagingSoundBufferDuration: any,
   stagingSoundBuffer: Blob|null,
   isDragging: boolean;
-  drag: any;
-  preview: any;
-  left: number;
-  top: number;
+  drag: any,
+  preview: any,
+  left: number,
+  top: number,
+  toggleShowPalette: any,
 };
 
 interface PaletteLayerState {
@@ -145,7 +146,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
   getStyles(left: number, top: number, isDragging: boolean): CSSProperties {
     const transform = `translate3d(${left}px, ${top}px, 0)`;
     return {
-      position: "absolute",
+      // position: "absolute",
       transform,
       WebkitTransform: transform,
       // IE fallback: hide the real node using CSS when dragging
@@ -189,6 +190,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
           this.props.isDragging
         )}
         role="DraggableBox"
+        onDragStart={() => this.props.toggleShowPalette(false)}
       >
         <div className="palette-layer" style={{backgroundColor: this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor, border: this.state.tonePlayer === null ? "1px solid #eaeaea" : "none"}}>
           <div className="palette-layer-details">

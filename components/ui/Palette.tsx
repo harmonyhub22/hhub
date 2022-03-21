@@ -1,83 +1,99 @@
 import {
-  Drawer, Tabs, Grid, Select, Text, Button
+  Drawer, Tabs, Grid, Select
 } from "@geist-ui/core";
 import PaletteCell from "./Palette-Cell";
 import { config } from "../config";
 import React from "react";
-import { Mic, Music } from "@geist-ui/icons";
-import DraggableLayer from "./DraggableLayer";
-//import { NodeNextResponse } from "next/dist/server/base-http";
+import { Mic, Music } from '@geist-ui/icons';
+import PaletteLayer from "./Palette-Layer";
+import PaletteRecorder from "./Palette-Recorder";
+
 
 interface PaletteProps {
-  genreName: string;
-  initials: string;
-  showPalette: any;
-  setCurrentLayerDuration: any;
+  toggleShowPalette: any,
 }
 
 interface PaletteState {
   stagingLayerSoundName: string|null,
-  stagingLayerSoundBuffer: AudioBuffer|null,
-  stagingLayerSoundBufferId: string|null,
+  stagingLayerSoundBuffer: Blob|null,
+  stagingLayerSoundBufferDate: string|null,
+  stagingLayerSoundBufferDuration: any,
   genre: string,
 };
 
 class Palette extends React.Component<PaletteProps, PaletteState> {
   static sounds: any = config.sounds;
+  static db_name: string = 'AUDIO_BUFFERS';
+  static db_obj_store_name: string = 'AUDIO';
 
   constructor(props: PaletteProps) {
     super(props);
     this.state = {
       stagingLayerSoundName: null,
       stagingLayerSoundBuffer: null,
-      stagingLayerSoundBufferId: null,
+      stagingLayerSoundBufferDate: null,
+      stagingLayerSoundBufferDuration: null,
       genre: '',
     };
     this.updateLayerSoundName = this.updateLayerSoundName.bind(this);
     this.updateLayerSoundBuffer = this.updateLayerSoundBuffer.bind(this);
     this.updatePaletteGenre = this.updatePaletteGenre.bind(this);
+
+    // create indexed db
+    const request = indexedDB.open(Palette.db_name, 1);
+    request.onupgradeneeded = (event) => {
+      const db = request.result;
+      db.createObjectStore(Palette.db_obj_store_name);
+    };
   }
 
   componentDidMount() {
     const data = window.localStorage.getItem('palette-staging-layer') || null;
     if (data === null) return;
+
+    // get data from local storage
     const jsonData = JSON.parse(data);
+
+    // set the state
     this.setState({
       stagingLayerSoundName: jsonData.name,
-      stagingLayerSoundBuffer: jsonData.buffer || null,
-      stagingLayerSoundBufferId: jsonData.id || null,
+      stagingLayerSoundBufferDate: jsonData.date || null,
+      stagingLayerSoundBufferDuration: jsonData.duration || null,
       genre: jsonData.genre || Object.keys(config.sounds)[0],
     });
-    
-    if (this.state.genre && this.state.stagingLayerSoundName) {
-      this.props.setCurrentLayerDuration(
-        Palette.sounds[this.state.genre][this.state.stagingLayerSoundName]
-      );
-    }
   }
 
   componentDidUpdate(prevProps:PaletteProps, prevState:PaletteState) {
-    if (JSON.stringify(prevState) !== JSON.stringify(this.state)) {
+    if (prevState.stagingLayerSoundName !== this.state.stagingLayerSoundName || 
+      prevState.stagingLayerSoundBufferDate !== this.state.stagingLayerSoundBufferDate) {
       const data = {
         'name': this.state.stagingLayerSoundName,
-        'id': this.state.stagingLayerSoundBufferId,
-        'buffer': this.state.stagingLayerSoundBuffer,
+        'date': this.state.stagingLayerSoundBufferDate,
+        'duration': this.state.stagingLayerSoundBufferDuration,
         'genre': this.state.genre,
       };
       window.localStorage.setItem('palette-staging-layer', JSON.stringify(data));
-    }
 
-    if (this.state.genre && this.state.stagingLayerSoundName) {
-      this.props.setCurrentLayerDuration(
-        Palette.sounds[this.state.genre][this.state.stagingLayerSoundName]
-      );
+      // get the sound buffer if its there
+      if (this.state.stagingLayerSoundBufferDate !== null && this.state.stagingLayerSoundBufferDate !== undefined 
+        && prevState.stagingLayerSoundBufferDate !== this.state.stagingLayerSoundBufferDate) {
+        const request = indexedDB.open(Palette.db_name, 1);
+        request.onsuccess = (event) => {
+          const db = request.result;
+          const transaction = db.transaction([Palette.db_obj_store_name], 'readwrite');
+          if (this.state.stagingLayerSoundBufferDate !== null) {
+            const getRequest = transaction.objectStore(Palette.db_obj_store_name)
+              .get(this.state.stagingLayerSoundBufferDate);
+            getRequest.onsuccess = (event) => {
+              const buffer = getRequest.result;
+              this.setState({
+                stagingLayerSoundBuffer: buffer,
+              });
+            };
+          }
+        };
+      }
     }
-    // console.log("~~~~~ componentDidUpdate for palette ~~~~~~~");
-    // console.log("prev sound name was " + prevState.stagingLayerSoundName);
-    // console.log("now its " + this.state.stagingLayerSoundName);
-    // console.log("prev buffer was " + prevState.stagingLayerSoundBuffer);
-    // console.log("now its " + this.state.stagingLayerSoundBuffer);
-    // console.log("~~~~~~~~~~~~~~~~~~~~~~~~~");
   }
 
   updatePaletteGenre(name:string) {
@@ -87,181 +103,102 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
     });
   }
 
-  updateLayerSoundName(stagingLayerSoundName: string | null) {
-    console.log("passed in: " + stagingLayerSoundName);
-    if (this.state.stagingLayerSoundName === stagingLayerSoundName) {
-      this.setState({
-        stagingLayerSoundName: null,
-      });
-    } else {
-      console.log("current: " + this.state.stagingLayerSoundName);
-      this.setState((prev) => ({
-        ...prev,
-        stagingLayerSoundName: stagingLayerSoundName,
-      }));
-      console.log("now its: " + this.state.stagingLayerSoundName);
-    }
-  }
-
-  updateLayerSoundBuffer(stagingLayerSoundBuffer: AudioBuffer | null) {
+  updateLayerSoundName (stagingLayerSoundName:string|null) {
     this.setState({
-      stagingLayerSoundBuffer: stagingLayerSoundBuffer,
+      stagingLayerSoundName: this.state.stagingLayerSoundName === stagingLayerSoundName ? null : stagingLayerSoundName,
+      stagingLayerSoundBufferDate: null,
+      stagingLayerSoundBuffer: null,
+      stagingLayerSoundBufferDuration: null,
     });
-    if (stagingLayerSoundBuffer !== null) {
-      this.setState({
-        stagingLayerSoundName: null,
-      });
-    }
   }
 
-  startRecordingFunction() {
-    const MicRecorder = require('mic-recorder-to-mp3');
+  updateLayerSoundBuffer (stagingLayerSoundBuffer:Blob|null, duration:number|null) {
+    const oldBufferDate: string|null = this.state.stagingLayerSoundBufferDate;
+    const request = indexedDB.open(Palette.db_name, 1);
+    const newDate = Date.now().toString();
+    request.onsuccess = (event) => {
+      const db = request.result;
+      const transaction = db.transaction([Palette.db_obj_store_name], 'readwrite');
+      
+      // delete old recording buffer
+      if (oldBufferDate !== null) {
+        console.log('deleteing old recording');
+        const deleteRequest = transaction.objectStore(Palette.db_obj_store_name)
+          .delete(oldBufferDate);
+        deleteRequest.onsuccess = (event) => {
+          console.log('deleted');
+        };
+      }
 
-    var preRecordingDuration = 1850;
-    var recordingDuration = 1850 * 4; //TIME TO RECORD FOR (calculate using BPM)
+      // add the recording to indexed db
+      const putRequest = transaction.objectStore(Palette.db_obj_store_name)
+        .put(this.state.stagingLayerSoundBuffer, newDate);
+      putRequest.onsuccess = (event) => {
+        // console.log('putted');
+      };
+    }
 
-    const recorder = new MicRecorder({
-        bitRate: 128
+    this.setState({
+      stagingLayerSoundBufferDate: stagingLayerSoundBuffer === null ? null : newDate,
+      stagingLayerSoundBuffer: stagingLayerSoundBuffer,
+      stagingLayerSoundBufferDuration: stagingLayerSoundBuffer === null ? null : duration,
+      stagingLayerSoundName: stagingLayerSoundBuffer === null ? this.state.stagingLayerSoundName : null,
     });
-
-    const player = new Audio("metronome130.mp3");
-    player.play();
-
-    setTimeout(function() {
-      recorder.start().then(() => {
-      }).catch((e:any) => {
-          console.error(e);
-      });
-
-      //STOP AFTER TIME
-      setTimeout(function() {
-          recorder
-          .stop()
-          .getMp3().then(([buffer, blob]) => {
-            //Create file
-            const file = new File(buffer, 'mp3recording.mp3', {
-                type: blob.type,
-                lastModified: Date.now()
-            });
-            
-            //Play it back with default sound (not tone js) this is just for trouble shooting
-            const player = new Audio(URL.createObjectURL(file));
-            player.play();
-          }).catch((e:any) => {
-            console.log(e);
-          });
-      }, recordingDuration); //TIME THAT IT RUNS FOR
-    }, preRecordingDuration); //TIME BEFORE RECORDING
   }
 
   render() {
     return (
-      <>
-        <h1>Sound Palette</h1>
-        <div id="layer-section" style={{ textAlign: "center" }}>
-          <h2>New Layer</h2>
-          {this.state.stagingLayerSoundBufferId === null &&
-          this.state.stagingLayerSoundName === null ? (
-            <p>Choose a sound or make a recording</p>
-          ) : (
-            <p>Drag and Drop on the session to stage the layer</p>
-          )}
-          <DraggableLayer
-            id="1"
-            stagingSoundBuffer={this.state.stagingLayerSoundBuffer}
-            stagingSoundName={this.state.stagingLayerSoundName}
-            duration={
-              this.state.stagingLayerSoundName
-                ? Palette.sounds[this.state.genre][this.state.stagingLayerSoundName]
-                : 0
+    <>
+      <div style={{textAlign: 'center'}}>
+        <Drawer.Title>Sound Palette</Drawer.Title>
+        <br></br>
+      </div>
+      <Tabs initialValue="1" align="center" leftSpace={0}>
+        <Tabs.Item label={<><Music /> Sounds</>} value="1">
+          {(Palette.sounds !== null && Palette.sounds !== undefined) && <div className="palette-genre">
+            <span>Genre</span>
+            <Select initialValue={this.state.genre} value={this.state.genre} onChange={(val) => {
+              if (typeof val === 'string') { this.updatePaletteGenre(val) }
+            }}>
+              {Object.keys(Palette.sounds).map((genre:string, i:number) => {
+                return (<Select.Option key={`genre-option-${i}`} value={`${genre}`}>{genre}</Select.Option>)
+              })}
+            </Select>
+          </div>}
+          <br></br>
+          {(Palette.sounds[this.state.genre] !== null && Palette.sounds[this.state.genre] !== undefined) && 
+          <Grid.Container gap={2} justify="center" style={{maxWidth: 500}}>
+            {Palette.sounds[this.state.genre].map((name:string, i:number) => {
+              return(
+                <Grid key={`palette-cell-${this.state.genre}-${i}`}>
+                  <PaletteCell instrumentName={name} updateLayerStagingSound={this.updateLayerSoundName}
+                                isSelected={this.state.stagingLayerSoundName === name} />
+                </Grid>)
+              })
             }
-            showPalette={this.props.showPalette}
-            layerIsPlaced={false}
-          />
-        </div>
+          </Grid.Container>}
+        </Tabs.Item>
+        <Tabs.Item label={<><Mic/> Record</>} value="2">
+          <PaletteRecorder updateLayerStagingBuffer={this.updateLayerSoundBuffer} />
+        </Tabs.Item>
+      </Tabs>
+      <br />
 
-        <br />
-        <br />
-        <Tabs initialValue="1" align="center" leftSpace={0}>
-          <Tabs.Item
-            label={
-              <>
-                <Music /> Sounds
-              </>
-            }
-            value="1"
-          >
-            {Palette.sounds !== null && Palette.sounds !== undefined && (
-              <div className="palette-genre">
-                <span>Genre</span>
-                <Select
-                  initialValue={this.state.genre}
-                  value={this.state.genre}
-                  onChange={(val) => {
-                    if (typeof val === "string") {
-                      this.updatePaletteGenre(val);
-                    }
-                  }}
-                >
-                  {Object.keys(Palette.sounds).map(
-                    (genre: string, i: number) => {
-                      return (
-                        <Select.Option
-                          key={`genre-option-${i}`}
-                          value={`${genre}`}
-                        >
-                          {genre}
-                        </Select.Option>
-                      );
-                    }
-                  )}
-                </Select>
-              </div>
-            )}
-            <br></br>
-            {Palette.sounds[this.state.genre] !== null &&
-              Palette.sounds[this.state.genre] !== undefined && (
-                <Grid.Container
-                  gap={2}
-                  justify="center"
-                  style={{ maxWidth: 500 }}
-                >
-                  {Object.keys(Palette.sounds[this.state.genre]).map(
-                    (name: string, i: number) => {
-                      return (
-                        <Grid key={`palette-cell-${this.state.genre}-${i}`}>
-                          <PaletteCell
-                            instrumentName={name}
-                            updateLayerStagingSound={this.updateLayerSoundName}
-                            isSelected={
-                              this.state.stagingLayerSoundName === name
-                            }
-                            duration={Palette.sounds[this.state.genre][name]}
-                          />
-                        </Grid>
-                      );
-                    }
-                  )}
-                </Grid.Container>
-              )}
-          </Tabs.Item>
-          <Tabs.Item
-            label={
-              <>
-                <Mic /> Record
-              </>
-            }
-            value="2"
-          >
-            <span>Recording Section</span>
-            <Button onClick={this.startRecordingFunction}>
-              Start Recording
-            </Button>
-          </Tabs.Item>
-        </Tabs>
-        <br />
-      </>
-    );};
+      <div style={{textAlign: "center"}}>
+        <Drawer.Title>New Layer</Drawer.Title>
+        {(this.state.stagingLayerSoundBufferDate === null && this.state.stagingLayerSoundName === null) ? 
+          <p>Choose a sound or make a recording</p> 
+          : <p>Drag and Drop on the session to stage the layer</p>}
+        <PaletteLayer
+          stagingSoundBuffer={this.state.stagingLayerSoundBuffer}
+          stagingSoundBufferDate={this.state.stagingLayerSoundBufferDate}
+          stagingSoundBufferDuration={this.state.stagingLayerSoundBufferDuration}
+          stagingSoundName={this.state.stagingLayerSoundName}
+          toggleShowPalette={this.props.toggleShowPalette}
+        />
+      </div>
+    </>
+  )};
 };
 
 export default Palette;
