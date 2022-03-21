@@ -1,16 +1,15 @@
-import '../styles/globals.scss'
-import type { AppProps } from 'next/app'
-import { GeistProvider, CssBaseline } from '@geist-ui/core'
-import { useEffect, useMemo, useState } from 'react';
-import { getCurrentMember } from '../components/Helper';
-import Member from '../interfaces/models/Member';
-import { SocketContext } from '../context/socket';
-import { createSocket } from '../components/init-socket';
-import { MemberContext } from '../context/member';
-import { useRouter } from 'next/router';
+import "../styles/style.scss";
+import type { AppProps } from "next/app";
+import { GeistProvider, CssBaseline } from "@geist-ui/core";
+import { useEffect, useMemo, useState } from "react";
+import { getCurrentMember } from "../components/Helper";
+import Member from "../interfaces/models/Member";
+import { SocketContext } from "../context/socket";
+import { createSocket } from "../components/init-socket";
+import { MemberContext } from "../context/member";
+import { useRouter } from "next/router";
 
 function MyApp({ Component, pageProps }: AppProps) {
-
   const [member, setMember] = useState<Member>({} as Member);
   const [socket, setSocket] = useState<any>();
   const router = useRouter();
@@ -25,7 +24,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         setSocket(createSocket(fetchedMember.memberId));
       }
     } else {
-      console.log('logging in');
+      console.log("logging in");
       router.push({
         pathname: "/login",
       });
@@ -34,7 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     fetchCurrentMember();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
