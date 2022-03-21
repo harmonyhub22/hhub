@@ -4,7 +4,7 @@ import React, { CSSProperties } from "react";
 import * as Tone from "tone";
 import { Draggable } from "../Draggable";
 
-interface DraggableLayerProps {
+interface TimelineLayerProps {
   id: string;
   left: number;
   top: number;
@@ -19,7 +19,7 @@ interface DraggableLayerProps {
   layerWidth: number;
 }
 
-interface DraggableLayerState {
+interface TimelineLayerState {
   stagingSoundName: string | null;
   isPlaying: boolean;
   playerDuration: number;
@@ -29,15 +29,15 @@ interface DraggableLayerState {
   currentSeconds: number;
 }
 
-class DraggableLayer extends React.Component<
-  DraggableLayerProps,
-  DraggableLayerState
+class TimelineLayer extends React.Component<
+  TimelineLayerProps,
+  TimelineLayerState
 > {
   static hasPlayerColor: string = "#320f48";
   static hasPlayerFontColor: string = "#DDDDDD";
   static hasPlayerIconColor: string = "#c563c5";
 
-  constructor(props: DraggableLayerProps) {
+  constructor(props: TimelineLayerProps) {
     super(props);
     this.state = {
       stagingSoundName: null,
@@ -86,8 +86,8 @@ class DraggableLayer extends React.Component<
     });
   }
 
-  componentDidUpdate(prevProps: DraggableLayerProps) {
-    console.log("~~~~~ componentDidUpdate for DraggableLayer ~~~~~~~");
+  componentDidUpdate(prevProps: TimelineLayerProps) {
+    console.log("~~~~~ componentDidUpdate for TimelineLayer ~~~~~~~");
     console.log("prev sound name was " + prevProps.stagingSoundName);
     console.log("now its " + this.props.stagingSoundName);
     console.log("prev buffer was " + prevProps.stagingSoundBuffer);
@@ -156,7 +156,7 @@ class DraggableLayer extends React.Component<
           className="palette-layer"
           style={{
             backgroundColor:
-              this.state.tonePlayer === null ? "" : DraggableLayer.hasPlayerColor,
+              this.state.tonePlayer === null ? "" : TimelineLayer.hasPlayerColor,
             border:
               this.state.tonePlayer === null ? "1px solid #eaeaea" : "none",
           }}
@@ -168,9 +168,9 @@ class DraggableLayer extends React.Component<
                   this.state.tonePlayer === null ? (
                     <Moon />
                   ) : this.state.isPlaying ? (
-                    <PauseFill color={DraggableLayer.hasPlayerIconColor} />
+                    <PauseFill color={TimelineLayer.hasPlayerIconColor} />
                   ) : (
-                    <PlayFill color={DraggableLayer.hasPlayerIconColor} />
+                    <PlayFill color={TimelineLayer.hasPlayerIconColor} />
                   )
                 }
                 auto
@@ -205,4 +205,4 @@ class DraggableLayer extends React.Component<
   }
 }
 
-export default Draggable(DraggableLayer);
+export default Draggable(TimelineLayer);

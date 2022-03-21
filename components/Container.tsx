@@ -1,6 +1,6 @@
 import { CSSProperties, FC, useCallback, useEffect, useState } from 'react'
 import { useDrop } from 'react-dnd'
-import DraggableLayer from './ui/DraggableLayer'
+import TimelineLayer from './ui/TimelineLayer'
 import { snapToGrid as doSnapToGrid } from './snapToGrid'
 import update from 'immutability-helper'
 
@@ -117,7 +117,7 @@ export const Container: FC<ContainerProps> = ({ snapToGrid, setLayerInfo }) => {
       {layerBox.id === "-1" ? (
         <p>Drop your layer here!</p>
       ) : (
-        <DraggableLayer
+        <TimelineLayer
           id={layerBox.id}
           top={layerBox.top}
           left={layerBox.left}
