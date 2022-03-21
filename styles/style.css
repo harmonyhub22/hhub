@@ -262,10 +262,39 @@ table.table-palette tfoot {
   background-color: #320f48;
 }
 
+.palette-genre {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: space-evenly;
+      -ms-flex-pack: space-evenly;
+          justify-content: space-evenly;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
 .palette-layer {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  border-radius: 22px;
+  border: 1px solid #eaeaea;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  min-width: 400px;
+}
+
+.palette-layer-details {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
@@ -273,13 +302,18 @@ table.table-palette tfoot {
   -ms-flex-flow: nowrap;
       flex-flow: nowrap;
   vertical-align: middle;
-  min-width: 400px;
-  border-radius: 22px;
   padding: 5px 16px 5px 8px;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  border: 1px solid #eaeaea;
+}
+
+.palette-layer-progress {
+  height: 3px;
+  bottom: 0;
+  padding: 0;
+  margin: 0;
+  background-color: white;
 }
 
 .play-btn {
@@ -291,6 +325,98 @@ table.table-palette tfoot {
   background-image: url("../public/images/wave.svg");
   height: 67px;
   background-size: contain;
+}
+
+.palette-recording-tab {
+  min-height: 300px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.palette-metronome {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-radius: 10px;
+  border: 1px solid #f5a623;
+  padding: 16px;
+  width: 80%;
+}
+
+.palette-recording-details {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+}
+
+.record-btn {
+  width: 100% !important;
+  min-height: 60px;
+  border-radius: 20px !important;
+}
+
+@-webkit-keyframes recording-pulse {
+  0% {
+    border-color: #e00;
+  }
+  50% {
+    border-color: white;
+  }
+  100% {
+    border-color: #e00;
+  }
+}
+
+@keyframes recording-pulse {
+  0% {
+    border-color: #e00;
+  }
+  50% {
+    border-color: white;
+  }
+  100% {
+    border-color: #e00;
+  }
+}
+
+.record-timer {
+  -webkit-animation-name: recording-pulse;
+          animation-name: recording-pulse;
+  -webkit-animation-duration: 3s;
+          animation-duration: 3s;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
 }
 
 .react-calendar-timeline * {
