@@ -1,0 +1,198 @@
+.home {
+  min-height: 100vh;
+  width: 100%;
+  margin-left: -3rem;
+  @include flex(space-between, center, row);
+}
+
+#man {
+  animation: man 1s ease infinite alternate;
+  transform-origin: bottom;
+}
+
+@keyframes man {
+  from {
+    transform: rotateX(2deg);
+  }
+  to {
+    transform: rotateZ(-12deg);
+  }
+}
+
+#notes {
+  animation: notes 2s ease infinite alternate 0.5s;
+}
+
+@keyframes notes {
+  from {
+    transform: translateY(-5%);
+  }
+  to {
+    transform: translateY(-15%);
+  }
+}
+
+#man-leg {
+  animation: man-leg 1s ease infinite alternate;
+  transform-origin: bottom;
+}
+
+@keyframes man-leg {
+  from {
+    transform: rotateX(-5deg);
+  }
+  to {
+    transform: rotateX(-10deg);
+  }
+}
+
+#lady-hand1 {
+  animation: lady-hand1 1s ease infinite alternate;
+  transform-origin: bottom;
+}
+
+@keyframes lady-hand1 {
+  from {
+    transform: rotateY(3deg);
+  }
+  to {
+    transform: rotateY(-10deg);
+  }
+}
+
+#lady-hand2 {
+  animation: lady-hand2 1s ease infinite alternate;
+  transform-origin: bottom;
+}
+
+@keyframes lady-hand2 {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(2deg);
+  }
+}
+
+#man-hand {
+  animation: man-hand 1s ease infinite alternate;
+  transform-origin: top;
+}
+
+@keyframes man-hand {
+  from {
+    transform: rotateX(-4deg);
+  }
+  to {
+    transform: rotateX(12deg);
+  }
+}
+
+#lady-shirt {
+  animation: lady-shirt 3s ease infinite alternate;
+  transform-origin: bottom;
+}
+
+@keyframes lady-shirt {
+  from {
+    transform: rotateX(0deg);
+  }
+  to {
+    transform: rotateX(-5deg);
+  }
+}
+
+#string {
+  animation: string 1s ease infinite alternate;
+  transform-origin: top;
+}
+
+@keyframes string {
+  from {
+    transform: rotateX(0deg);
+  }
+  to {
+    transform: rotateX(5deg);
+  }
+}
+
+#note1 {
+  animation: note1 2s ease infinite alternate 0.5s;
+}
+
+@keyframes note1 {
+  from {
+    transform: translateY(-10%);
+  }
+  to {
+    transform: translateY(-20%);
+  }
+}
+
+#note2 {
+  animation: note2 2s ease infinite alternate 0.5s;
+}
+
+@keyframes note2 {
+  from {
+    transform: translateY(-10%);
+  }
+  to {
+    transform: translateY(-15%);
+  }
+}
+
+#man-sitting {
+  animation: man-sitting 2s ease infinite alternate 0.5s;
+}
+
+@keyframes man-sitting {
+  from {
+    transform: translateY(0%);
+  }
+  to {
+    transform: translateY(-10%);
+  }
+}
+
+.note-green {
+  margin-top: 5rem;
+  width: 200px;
+  height: 100px;
+}
+
+.button-middle {
+  margin-top: 5rem;
+}
+
+.note-purple {
+  margin-top: 5rem;
+  width: 200px;
+  height: 100px;
+}
+
+#note3 {
+  animation: note3 2s ease infinite alternate 0.5s;
+}
+
+@keyframes note3 {
+  from {
+    transform: translateX(40%);
+  }
+  to {
+    transform: translateX(-10%);
+  }
+}
+
+#note5 {
+  animation: note5 2s ease infinite alternate 0.5s;
+}
+
+@keyframes note5 {
+  from {
+    transform: translateX(-30%);
+  }
+  to {
+    transform: translateX(50%);
+  }
+}

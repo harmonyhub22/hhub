@@ -1,0 +1,79 @@
+.intro {
+  min-height: 100vh;
+  width: 80%;
+  margin: auto;
+  @include flex(space-between, center, row);
+
+  h1 {
+    font-size: 4rem;
+    padding: 0rem 0rem;
+    color: #21a0aa;
+    display: inline-block;
+  }
+}
+
+.intro-login,
+.intro-images {
+  flex: 1 1 30rem;
+  z-index: 2;
+}
+
+#me {
+  animation: me 1s ease infinite alternate;
+  transform-origin: bottom;
+}
+
+#me2 {
+  animation: me2 1.5s ease infinite alternate;
+  transform-origin: bottom;
+}
+
+#ballon {
+  animation: ballon 2s ease infinite alternate 0.5s;
+}
+
+#flower {
+  animation: flower 2s ease infinite alternate 0.5s;
+}
+
+@keyframes me {
+  from {
+    transform: rotateZ(-5deg);
+  }
+  to {
+    transform: rotateZ(10deg);
+  }
+}
+
+@keyframes ballon {
+  from {
+    transform: translateY(0%);
+  }
+  to {
+    transform: translateY(-10%);
+  }
+}
+
+@keyframes me2 {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(13deg);
+  }
+}
+
+@keyframes flower {
+  from {
+    transform: translateY(0%);
+  }
+  to {
+    transform: translateY(-10%);
+  }
+}
+
+#btn-new-session {
+  margin-bottom: 5px;
+  background-color: transparent;
+  color: black;
+}
