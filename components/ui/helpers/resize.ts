@@ -1,5 +1,6 @@
 export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: number,
-  leftResizerId:string, rightResizerId:string) => {
+  leftResizerId:string, rightResizerId:string,
+  setDeltaXLeft:any, setDeltaXRight:any) => {
 
   // Query the element
   const ele: HTMLElement|null = document.getElementById(resizeObjectId);
@@ -15,6 +16,9 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   // The dimension of the element
   let w: number = 0;
 
+  // The overall change in X for either left of right (only one will move at a time)
+  let deltaX: number = 0;
+
   // x position of the element
   let posX: number = ele.parentElement?.getBoundingClientRect().x || 0;
 
@@ -26,6 +30,9 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
 
     // Calculate the dimension of element
     w = parseInt(window.getComputedStyle(ele).width, 10);
+
+    // reset deltaX
+    deltaX = ele.getBoundingClientRect().width;
 
     // Attach the listeners to `document`
     document.addEventListener('mousemove', rightMouseMoveHandler);
@@ -41,6 +48,9 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
     // Calculate the dimension of element
     w = parseInt(window.getComputedStyle(ele).width, 10);
 
+    // reset deltaX
+    deltaX = ele.getBoundingClientRect().width;
+
     // Attach the listeners to `document`
     document.addEventListener('mousemove', leftMouseMoveHandler);
     document.addEventListener('mouseup', leftMouseUpHandler);
@@ -50,7 +60,14 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
     // How far the mouse has been moved
     const dx: number = e.clientX - x;
 
-    if (w + dx <= minWidth || w + dx >= maxWidth) return;
+    if (w + dx > maxWidth) {
+      ele.style.width = `${maxWidth}px`;
+      return;
+    }
+    if (w + dx < minWidth) {
+      ele.style.width = `${minWidth}px`;
+      return;
+    }
 
     // Adjust the dimension of element
     ele.style.width = `${w + dx}px`;
@@ -60,7 +77,14 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
     // How far the mouse has been moved
     const dx: number = e.clientX - x;
 
-    if (w - dx <= minWidth || w - dx >= maxWidth) return;
+    if (w - dx > maxWidth) {
+      ele.style.width = `${maxWidth}px`;
+      return;
+    }
+    if (w - dx < minWidth) {
+      ele.style.width = `${minWidth}px`;
+      return;
+    }
 
     // reset the offset of the parent
     posX = ele?.parentElement?.getBoundingClientRect().x || 0;
@@ -70,12 +94,17 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   };
 
   const rightMouseUpHandler = function () {
+    deltaX -= ele.getBoundingClientRect().width;
+    console.log(deltaX);
+    setDeltaXRight(deltaX);
     // Remove the handlers of `mousemove` and `mouseup`
     document.removeEventListener('mousemove', rightMouseMoveHandler);
     document.removeEventListener('mouseup', rightMouseUpHandler);
   };
 
   const leftMouseUpHandler = function () {
+    deltaX -= ele.getBoundingClientRect().width;
+    setDeltaXLeft(deltaX);
     // Remove the handlers of `mousemove` and `mouseup`
     document.removeEventListener('mousemove', leftMouseMoveHandler);
     document.removeEventListener('mouseup', leftMouseUpHandler);

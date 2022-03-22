@@ -68,6 +68,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.setName = this.setName.bind(this);
     this.setNewName = this.setNewName.bind(this);
     this.handleCommit = this.handleCommit.bind(this);
+    this.updateTrimmedStart = this.updateTrimmedStart.bind(this);
+    this.updateTrimmedEnd = this.updateTrimmedEnd.bind(this);
   }
 
   componentDidMount() {
@@ -75,7 +77,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       this.createTonePlayer(this.props.stagingSoundName, this.props.stagingSoundBuffer);
     }
     initResize(`timeline-layer-${this.state.name}`, TimelineLayer.layerMinWidth, this.state.layerMaxWidth,
-      `resizer-l-${this.state.name}`, `resizer-r-${this.state.name}`);
+      `resizer-l-${this.state.name}`, `resizer-r-${this.state.name}`, 
+      this.updateTrimmedStart, this.updateTrimmedEnd);
   }
 
   componentWillUnmount() {
@@ -127,6 +130,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
         <p>Name <Code>{this.state.name}</Code></p>
         <p>Created <Code>{this.state.name}</Code></p>
         <p>Artist <Code>{this.state.name}</Code></p>
+        <p>Duration <Code>{this.props.duration - this.state.trimmedStart - this.state.trimmedEnd}</Code></p>
+        <p>Original Duration <Code>{this.props.duration}</Code></p>
       </>
       }></Description>
     );
@@ -204,6 +209,24 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     });
   };
 
+  updateTrimmedStart(deltaX:number) {
+    let trimmedStart = this.state.trimmedStart + (deltaX * (this.props.duration / this.state.layerMaxWidth));
+    if (trimmedStart < 0) trimmedStart = 0;
+    else if (trimmedStart > this.props.duration) trimmedStart = this.props.duration;
+    this.setState({
+      trimmedStart: trimmedStart,
+    });
+  };
+
+  updateTrimmedEnd(deltaX:number) {
+    let trimmedEnd = this.state.trimmedEnd + (deltaX * (this.props.duration / this.state.layerMaxWidth));
+    if (trimmedEnd < 0) trimmedEnd = 0;
+    else if (trimmedEnd > this.props.duration) trimmedEnd = this.props.duration;
+    this.setState({
+      trimmedEnd: trimmedEnd,
+    });
+  };
+
   render() {
     return (
       <>
@@ -217,7 +240,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
         </Modal>
 
         <div className="timeline-layer" id={`timeline-layer-${this.state.name}`} 
-          style={{minWidth: TimelineLayer.layerMinWidth, maxWidth: this.state.layerMaxWidth}}>
+          style={{minWidth: TimelineLayer.layerMinWidth, maxWidth: this.state.layerMaxWidth, 
+          width: (this.props.duration - this.state.trimmedStart - this.state.trimmedEnd) * (this.state.layerMaxWidth / this.props.duration)}}>
           <div className='timeline-layer-resizer timeline-layer-resizer-l' id={`resizer-l-${this.state.name}`}></div>
 
           <div className="timeline-layer-details">
@@ -266,7 +290,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
                       step={0.5} onChange={this.handleFadeOut} />
                   </Popover.Item>
                   <Popover.Item style={{justifyContent: 'center'}}>
-                    <Button auto icon={<Repeat />} onClick={this.handleReverse} style={{width: '100%', height: '100%'}}>
+                    <Button auto icon={<Repeat />} 
+                      onClick={this.handleReverse} style={{width: '100%', height: '100%'}}>
                       {this.state.reversed ?
                       "Unreverse" : "Reverse"}
                     </Button>
