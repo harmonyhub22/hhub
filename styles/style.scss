@@ -294,11 +294,10 @@ table.table-palette tfoot {
 }
 
 .timeline-layer {
-  display: flex;
-  border-radius: 22px;
+  border-radius: 12px;
   border: 1px solid #eaeaea;
-  flex-direction: column;
-  min-width: 400px;
+  min-width: 240px;
+  position: relative;
 }
 
 .timeline-layer-wav {
@@ -321,15 +320,33 @@ table.table-palette tfoot {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  padding-left: 22px;
 }
 
 .timeline-layer-commit-btn {
-  padding: 0px 5px 0px 5px;
+  padding: 0px 5px 0px 0px;
 }
 
 .timeline-layer-initials {
-  padding: 0px 20px 0px 5px;
+  padding: 0px 34px 8px 2px;
 };
+
+.timeline-layer-resizer {
+  cursor: col-resize;
+  height: 100%;
+  top: 0;
+  width: 24px;
+  position: absolute;
+  background-image: url("../public/images/re-order-dots.svg");
+}
+
+.timeline-layer-resizer-r {
+  right: 0;
+}
+
+.timeline-layer-resizer-l {
+  left: 0;
+}
 
 .palette-recording-tab {
   min-height: 300px;

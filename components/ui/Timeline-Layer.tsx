@@ -1,7 +1,8 @@
-import { Avatar, Badge, Button, Code, Description, Input, Modal, Popover, Slider, Tag, Tooltip } from "@geist-ui/core";
-import { PlayFill, PauseFill, Moon, Mic, Music, CheckInCircle, MoreVertical, Trash2, Copy, Repeat, VolumeX, Edit3, Info, Sunrise } from '@geist-ui/icons'
+import { Badge, Button, Code, Description, Input, Modal, Popover, Slider, Tag, Tooltip } from "@geist-ui/core";
+import { Mic, Music, CheckInCircle, MoreVertical, Trash2, Copy, Repeat, VolumeX, Edit3, Info, Sunrise } from '@geist-ui/icons'
 import React from "react";
 import * as Tone from "tone";
+import { initResize } from "./helpers/resize";
 
 interface TimelineLayerProps {
   stagingSoundName: string|null,
@@ -10,6 +11,8 @@ interface TimelineLayerProps {
   duration: number,
   initialTimelinePosition: number,
   creatorInitials: string,
+  timelineSeconds: number,
+  timelineWidth: number,
 };
 
 interface TimelineLayerState {
@@ -19,7 +22,7 @@ interface TimelineLayerState {
   trimmedStart: number, // ie. song is 10 seconds and they trim a second off of the beginning, trimmedStart = 1
   trimmedEnd: number, // ie. song is 10 seconds and they trim 2 seconds off of the end, trimmedEnd = 2
   // optional options
-  muted: boolean,
+  muted: boolean, // must be unique
   name: string,
   fadeInDuration: number,
   fadeOutDuration: number,
@@ -27,9 +30,12 @@ interface TimelineLayerState {
   flaggedForDelete: boolean,
   renaming: boolean,
   newName: string,
+  layerMaxWidth: number,
 };
 
 class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerState> {
+
+  static layerMinWidth: number = 240;
 
   constructor(props:TimelineLayerProps) {
     super(props);
@@ -47,6 +53,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       flaggedForDelete: false,
       renaming: false,
       newName: '',
+      layerMaxWidth: (props.duration / props.timelineSeconds) * props.timelineWidth,
     };
     this.handlePlayer = this.handlePlayer.bind(this);
     this.createTonePlayer = this.createTonePlayer.bind(this);
@@ -67,6 +74,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     if (this.state.tonePlayer === null) {
       this.createTonePlayer(this.props.stagingSoundName, this.props.stagingSoundBuffer);
     }
+    initResize(`timeline-layer-${this.state.name}`, TimelineLayer.layerMinWidth, this.state.layerMaxWidth,
+      `resizer-l-${this.state.name}`, `resizer-r-${this.state.name}`);
   }
 
   componentWillUnmount() {
@@ -85,6 +94,13 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       
       this.setState({
         committed: false,
+      });
+    }
+    if (prevProps.duration !== this.props.duration 
+      || prevProps.timelineSeconds !== this.props.timelineSeconds) {
+      
+      this.setState({
+        layerMaxWidth: (this.props.duration / this.props.timelineSeconds) * this.props.timelineWidth,
       });
     }
   };
@@ -200,8 +216,10 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
           <Modal.Action passive onClick={this.setName}>Submit</Modal.Action>
         </Modal>
 
-        <div className="timeline-layer">
-          
+        <div className="timeline-layer" id={`timeline-layer-${this.state.name}`} 
+          style={{minWidth: TimelineLayer.layerMinWidth, maxWidth: this.state.layerMaxWidth}}>
+          <div className='timeline-layer-resizer timeline-layer-resizer-l' id={`resizer-l-${this.state.name}`}></div>
+
           <div className="timeline-layer-details">
             {this.state.committed === false && <div>
               <Tooltip text={'Commit - let your partner see your layer'} 
@@ -279,7 +297,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
             <div>
               <Popover
                 content={this.getInfo()}
-                style={{display: 'flex'}}>
+                style={{display: 'flex', paddingRight: '5px'}}>
                 <Info />
               </Popover>
             </div>
@@ -295,6 +313,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
               </Badge.Anchor>
             </div>
           </div>
+
+          <div className='timeline-layer-resizer timeline-layer-resizer-r' id={`resizer-r-${this.state.name}`}></div>
         </div>
       </>
     )

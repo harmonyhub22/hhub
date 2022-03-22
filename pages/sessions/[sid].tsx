@@ -220,6 +220,8 @@ function Session() {
         duration={7}
         initialTimelinePosition={0}
         creatorInitials={`${member.firstname[0]}${member.lastname[0]}`}
+        timelineSeconds={10}
+        timelineWidth={883}
       />
 
       <Drawer
