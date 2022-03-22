@@ -308,6 +308,13 @@ table.table-palette tfoot {
   background-size: contain;
 }
 
+.timeline-muted-layer-wav {
+  width: 74%;
+  background-image: url("../public/images/grey_wave.svg");
+  height: 50px;
+  background-size: contain;
+}
+
 .timeline-layer-details {
   display: flex;
   flex-direction: row;

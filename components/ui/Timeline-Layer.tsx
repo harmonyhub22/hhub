@@ -1,5 +1,5 @@
-import { Avatar, Badge, Button, Input, Modal, Popover, Slider, Tag, Tooltip } from "@geist-ui/core";
-import { PlayFill, PauseFill, Moon, Mic, Music, CheckInCircle, MoreVertical } from '@geist-ui/icons'
+import { Avatar, Badge, Button, Code, Description, Input, Modal, Popover, Slider, Tag, Tooltip } from "@geist-ui/core";
+import { PlayFill, PauseFill, Moon, Mic, Music, CheckInCircle, MoreVertical, Trash2, Copy, Repeat, VolumeX, Edit3, Info, Sunrise } from '@geist-ui/icons'
 import React from "react";
 import * as Tone from "tone";
 
@@ -50,15 +50,17 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     };
     this.handlePlayer = this.handlePlayer.bind(this);
     this.createTonePlayer = this.createTonePlayer.bind(this);
+    this.getInfo = this.getInfo.bind(this);
     this.handleRename = this.handleRename.bind(this);
     this.handleMute = this.handleMute.bind(this);
     this.handleFadeIn = this.handleFadeIn.bind(this);
     this.handleFadeOut = this.handleFadeOut.bind(this);
+    this.handleDuplicate = this.handleDuplicate.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleReverse = this.handleReverse.bind(this);
     this.setName = this.setName.bind(this);
     this.setNewName = this.setNewName.bind(this);
-    this.playerOptionsContent = this.playerOptionsContent.bind(this);
+    this.handleCommit = this.handleCommit.bind(this);
   }
 
   componentDidMount() {
@@ -101,6 +103,19 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     }
   }
 
+  getInfo() {
+    return (
+      <Description title="Layer Info" style={{padding: '0px 10px 0px 10px'}} content={
+      <>
+        <p>Committed <Code>{this.state.committed ? "Yes" : "No"}</Code></p>
+        <p>Name <Code>{this.state.name}</Code></p>
+        <p>Created <Code>{this.state.name}</Code></p>
+        <p>Artist <Code>{this.state.name}</Code></p>
+      </>
+      }></Description>
+    );
+  };
+
   handleCommit() {
     this.setState({
       committed: true,
@@ -115,7 +130,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
   handleRename() {
     this.setState({
-      renaming: this.state.renaming,
+      renaming: !this.state.renaming,
     });
   };
 
@@ -130,12 +145,11 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.setState({
       name: this.state.newName,
       newName: '',
+      renaming: false,
     });
   };
 
-  handleMute = async (e:any) => {
-    e.preventDefault();
-    console.log('hi');
+  handleMute(e:any) {
     if (this.state.tonePlayer.state === "started") {
       this.state.tonePlayer.stop();
     }
@@ -157,10 +171,15 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   handleReverse() {
+    console.log(this.state.reversed);
     this.setState({
       reversed: !this.state.reversed,
     });
   };
+
+  handleDuplicate() {
+    // duplicate
+  }
 
   handleDelete() {
     // delete the layer
@@ -169,67 +188,99 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     });
   };
 
-  playerOptionsContent() {
-    return (<>
-      <Popover.Item title>
-        Layer Options
-      </Popover.Item>
-      <Popover.Item style={{justifyContent: 'center'}}>
-        <Button auto type="abort" onClick={this.handleRename}>Rename</Button>
-      </Popover.Item>
-      <Popover.Item style={{justifyContent: 'center'}}>
-        <Button auto type="abort" onClick={this.handleMute}>
-          {this.state.muted ?
-          "Unmute" : "Mute"}
-        </Button>
-      </Popover.Item>
-      <Popover.Item style={{justifyContent: 'center'}}>
-        Fade In
-      </Popover.Item>
-      <Popover.Item>
-        <Slider value={this.state.fadeInDuration} min={0} max={this.props.duration} 
-          onChange={this.handleFadeIn} />
-      </Popover.Item>
-      <Popover.Item style={{justifyContent: 'center'}}>
-        Fade Out
-      </Popover.Item>
-      <Popover.Item>
-        <Slider value={this.state.fadeOutDuration} min={0} max={this.props.duration} 
-          onChange={this.handleFadeIn} />
-      </Popover.Item>
-      <Popover.Item>
-        <Button auto type="abort" onClick={this.handleReverse}>
-          {this.state.reversed ?
-          "Unreverse" : "Reverse"}
-        </Button>
-      </Popover.Item>
-      <Popover.Item line />
-      <Popover.Item>
-        <Button auto type="error" onClick={this.handleDelete}>Delete</Button>
-      </Popover.Item>
-    </>);
-  }
-
   render() {
     return (
       <>
+        <Modal visible={this.state.renaming} onClose={this.handleRename}>
+          <Modal.Title>Rename Layer</Modal.Title>
+          <Modal.Content>
+            <Input clearable initialValue={this.state.newName} placeholder="name goes here" width="100%" onChange={this.setNewName} />
+          </Modal.Content>
+          <Modal.Action passive onClick={this.handleRename}>Cancel</Modal.Action>
+          <Modal.Action passive onClick={this.setName}>Submit</Modal.Action>
+        </Modal>
+
         <div className="timeline-layer">
+          
           <div className="timeline-layer-details">
             {this.state.committed === false && <div>
               <Tooltip text={'Commit - let your partner see your layer'} 
-                placement="bottom" type="dark" className="timeline-layer-commit-btn">
-                <Button style={{backgroundColor: "green", border: "none", borderRadius: '50%'}} iconRight={
+                placement="bottomStart" type="dark" className="timeline-layer-commit-btn">
+                <Button style={{backgroundColor: this.state.flaggedForDelete ? "red" : "green", border: "none", borderRadius: '50%'}} iconRight={
                   <CheckInCircle color="white" size={40} />
                 } auto px={0.7}
                 onClick={this.handleCommit}/>
               </Tooltip>
             </div>}
 
-            <div className="timeline-layer-wav"></div>
+            {this.state.muted ? <div className="timeline-muted-layer-wav"></div> : <div className="timeline-layer-wav"></div>}
             
             <div>
-              <Popover content={this.playerOptionsContent} style={{display: 'flex'}} disableItemsAutoClose>
+              <Popover
+                content={
+                  <>
+                  <Popover.Item title style={{justifyContent: 'center'}}>
+                    Layer Options
+                  </Popover.Item>
+                  <Popover.Item style={{justifyContent: 'center', minWidth: '170px'}}>
+                    <Button auto icon={<Edit3 />} type="secondary" ghost onClick={this.handleRename} style={{width: '100%', height: '100%'}}>
+                      Rename
+                    </Button>
+                  </Popover.Item>
+                  <Popover.Item style={{justifyContent: 'center'}}>
+                    <Button auto icon={<VolumeX />} type="warning" ghost onClick={this.handleMute} style={{width: '100%', height: '100%'}}>
+                      {this.state.muted ?
+                      "Unmute" : "Mute"}
+                    </Button>
+                  </Popover.Item>
+                  <Popover.Item style={{justifyContent: 'center'}}>
+                    Fade In
+                  </Popover.Item>
+                  <Popover.Item>
+                    <Slider value={this.state.fadeInDuration} min={0} max={this.props.duration} 
+                      step={0.5} onChange={this.handleFadeIn} />
+                  </Popover.Item>
+                  <Popover.Item style={{justifyContent: 'center'}}>
+                    Fade Out
+                  </Popover.Item>
+                  <Popover.Item>
+                    <Slider value={this.state.fadeOutDuration} min={0} max={this.props.duration} 
+                      step={0.5} onChange={this.handleFadeOut} />
+                  </Popover.Item>
+                  <Popover.Item style={{justifyContent: 'center'}}>
+                    <Button auto icon={<Repeat />} onClick={this.handleReverse} style={{width: '100%', height: '100%'}}>
+                      {this.state.reversed ?
+                      "Unreverse" : "Reverse"}
+                    </Button>
+                  </Popover.Item>
+                  
+                  <Popover.Item line />
+
+                  <Popover.Item style={{justifyContent: 'center'}}>
+                    <Button auto icon={<Copy />} type="success" onClick={this.handleDuplicate} style={{width: '100%', height: '100%'}}>
+                      Duplicate
+                    </Button>
+                  </Popover.Item>
+                  <Popover.Item style={{justifyContent: 'center'}}>
+                    {this.state.flaggedForDelete ? 
+                    <Button auto icon={<Sunrise />} type="success-light" onClick={this.handleDelete} style={{width: '100%', height: '100%'}}>
+                      Restore
+                    </Button> :
+                    <Button auto icon={<Trash2 />} type="error" onClick={this.handleDelete} style={{width: '100%', height: '100%'}}>
+                      Delete
+                    </Button>}
+                  </Popover.Item>
+                  </>
+                } style={{display: 'flex'}} disableItemsAutoClose>
                 <MoreVertical />
+              </Popover>
+            </div>
+            
+            <div>
+              <Popover
+                content={this.getInfo()}
+                style={{display: 'flex'}}>
+                <Info />
               </Popover>
             </div>
 
@@ -245,15 +296,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
             </div>
           </div>
         </div>
-      
-        <Modal visible={this.state.renaming} onClose={this.handleRename}>
-          <Modal.Title>Rename Layer</Modal.Title>
-          <Modal.Content>
-            <Input clearable initialValue={this.state.newName} placeholder="name goes here" onChange={this.setNewName} />
-          </Modal.Content>
-          <Modal.Action passive onClick={this.handleRename}>Cancel</Modal.Action>
-          <Modal.Action passive onClick={this.setName}>Submit</Modal.Action>
-        </Modal>
       </>
     )
   };
