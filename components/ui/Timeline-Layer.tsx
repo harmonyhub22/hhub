@@ -1,5 +1,5 @@
-import { Button, Input, Modal, Popover, Slider } from "@geist-ui/core";
-import { PlayFill, PauseFill, Moon, Mic, Music, CheckInCircle } from '@geist-ui/icons'
+import { Avatar, Badge, Button, Input, Modal, Popover, Slider, Tag, Tooltip } from "@geist-ui/core";
+import { PlayFill, PauseFill, Moon, Mic, Music, CheckInCircle, MoreVertical } from '@geist-ui/icons'
 import React from "react";
 import * as Tone from "tone";
 
@@ -55,8 +55,10 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.handleFadeIn = this.handleFadeIn.bind(this);
     this.handleFadeOut = this.handleFadeOut.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.handleReverse = this.handleReverse.bind(this);
     this.setName = this.setName.bind(this);
     this.setNewName = this.setNewName.bind(this);
+    this.playerOptionsContent = this.playerOptionsContent.bind(this);
   }
 
   componentDidMount() {
@@ -131,7 +133,9 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     });
   };
 
-  handleMute() {
+  handleMute = async (e:any) => {
+    e.preventDefault();
+    console.log('hi');
     if (this.state.tonePlayer.state === "started") {
       this.state.tonePlayer.stop();
     }
@@ -165,62 +169,83 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     });
   };
 
-  playerOptionsContent = () => (
-    <>
+  playerOptionsContent() {
+    return (<>
       <Popover.Item title>
-        <span>Layer Options</span>
+        Layer Options
       </Popover.Item>
-      <Popover.Item>
+      <Popover.Item style={{justifyContent: 'center'}}>
         <Button auto type="abort" onClick={this.handleRename}>Rename</Button>
       </Popover.Item>
-      <Popover.Item>
+      <Popover.Item style={{justifyContent: 'center'}}>
         <Button auto type="abort" onClick={this.handleMute}>
           {this.state.muted ?
-          <span>Unmute</span> : <span>Mute</span>}
+          "Unmute" : "Mute"}
         </Button>
       </Popover.Item>
+      <Popover.Item style={{justifyContent: 'center'}}>
+        Fade In
+      </Popover.Item>
       <Popover.Item>
-        <span>Fade In</span>
         <Slider value={this.state.fadeInDuration} min={0} max={this.props.duration} 
           onChange={this.handleFadeIn} />
       </Popover.Item>
+      <Popover.Item style={{justifyContent: 'center'}}>
+        Fade Out
+      </Popover.Item>
       <Popover.Item>
-        <span>Fade Out</span>
         <Slider value={this.state.fadeOutDuration} min={0} max={this.props.duration} 
           onChange={this.handleFadeIn} />
       </Popover.Item>
       <Popover.Item>
         <Button auto type="abort" onClick={this.handleReverse}>
           {this.state.reversed ?
-          <span>Unreverse</span> : <span>Reverse</span>}
+          "Unreverse" : "Reverse"}
         </Button>
       </Popover.Item>
       <Popover.Item line />
       <Popover.Item>
         <Button auto type="error" onClick={this.handleDelete}>Delete</Button>
       </Popover.Item>
-    </>
-  )
+    </>);
+  }
 
   render() {
     return (
       <>
         <div className="timeline-layer">
-          {this.state.committed === false && <div>
-            <Button iconRight={
-              <CheckInCircle color="green" />
-            } auto scale={2/3} px={0.6}
-            onClick={this.handleCommit} className="play-btn" />
-          </div>}
-            
-          <Popover content={this.playerOptionsContent}>
-            <div className="timeline-layer-wav"></div>
-          </Popover>
+          <div className="timeline-layer-details">
+            {this.state.committed === false && <div>
+              <Tooltip text={'Commit - let your partner see your layer'} 
+                placement="bottom" type="dark" className="timeline-layer-commit-btn">
+                <Button style={{backgroundColor: "green", border: "none", borderRadius: '50%'}} iconRight={
+                  <CheckInCircle color="white" size={40} />
+                } auto px={0.7}
+                onClick={this.handleCommit}/>
+              </Tooltip>
+            </div>}
 
-          <div style={{display: 'flex'}}>
-            {this.props.stagingSoundName === null ? <Mic color="white"/> : <Music color="white"/>}
+            <div className="timeline-layer-wav"></div>
+            
+            <div>
+              <Popover content={this.playerOptionsContent} style={{display: 'flex'}} disableItemsAutoClose>
+                <MoreVertical />
+              </Popover>
+            </div>
+
+            <div className="timeline-layer-initials">
+              <Badge.Anchor placement="bottomRight" className="timeline-layer-initials">
+                <Badge scale={0.1} type="warning">
+                  {this.props.stagingSoundName === null ? 
+                  <Mic size={16} color="white"/> :
+                  <Music size={16} color="white"/>}
+                </Badge>
+                <Tag type="default" invert>{this.props.creatorInitials}</Tag>
+              </Badge.Anchor>
+            </div>
           </div>
         </div>
+      
         <Modal visible={this.state.renaming} onClose={this.handleRename}>
           <Modal.Title>Rename Layer</Modal.Title>
           <Modal.Content>
