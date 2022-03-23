@@ -7,17 +7,22 @@ export const Draggable = (Component: any) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [{ isDragging }, drag, preview] = useDrag(
       () => ({
-        type: "box",
+        type: "layer",
         item: {
           id: props.id,
           left: props.left,
           top: props.top,
+          stagingSoundName: props.stagingSoundName,
+          stagingSoundBufferDate: props.stagingSoundBufferDate,
+          stagingSoundBufferDuration: props.stagingSoundBufferDuration,
+          stagingSoundBuffer: props.stagingSoundBuffer,
+          dropped: props.dropped,
         },
         collect: (monitor: DragSourceMonitor) => ({
           isDragging: monitor.isDragging(),
         }),
       }),
-      [props.id, props.left, props.top]
+      [props.left, props.top]
     );
 
     return <Component isDragging={isDragging} drag={drag} preview={preview} {...props} />;

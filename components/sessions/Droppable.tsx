@@ -4,10 +4,10 @@ import { useDrop } from "react-dnd";
 export const Droppable = (Component: any) => {
   // eslint-disable-next-line react/display-name
   return (props: any) => {
-    const [layer, setLayer] = useState([]);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [{ isOver }, dropRef] = useDrop(() => ({
       accept: "layer",
-      drop: (item) => setLayer([item]),
+      drop: (item, monitor: any) => Component.layerDropped(item, monitor),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
       }),
@@ -16,7 +16,6 @@ export const Droppable = (Component: any) => {
       <Component
         isOver={isOver}
         dropRef={dropRef}
-        newLayer={layer}
         {...props}
       />
     );

@@ -8,6 +8,12 @@ interface PaletteLayerProps {
   stagingSoundBufferDate: string|null,
   stagingSoundBufferDuration: any,
   stagingSoundBuffer: Blob|null,
+  isDragging: boolean,
+  drag: any,
+  preview: any,
+  dropped: boolean,
+  left: number,
+  top: number,
 };
 
 interface PaletteLayerState {
@@ -184,4 +190,4 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
   };
 }
 
-export default PaletteLayer;
+export default Draggable(PaletteLayer);
