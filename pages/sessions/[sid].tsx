@@ -19,6 +19,10 @@ import SessionData from "../../interfaces/session_data";
 import LayersCreated from "../../interfaces/socket-data/layers_created";
 import Member from "../../interfaces/models/Member";
 import { DndProvider } from "react-dnd";
+import { Container } from "../../components/Container";
+import { CustomDragLayer } from "../../components/CustomDragLayer";
+import TimelineLayer from "../../interfaces/TimelineLayer";
+import { config } from "../../components/config";
 
 function Session() {
   const { visible, setVisible, bindings } = useModal();
@@ -30,6 +34,7 @@ function Session() {
     measures: 16,
   });
   const [layers, setLayers] = useState<Layer[]>([]);
+  const [timelineLayers, setTimelineLayers] = useState<TimelineLayer[]>([]);
   const [partner, setPartner] = useState<Member>();
   const [maxTimelineWidth, setMaxTimelineWidth] = useState(500);
   const [layerIsPlaced, setLayerIsPlaced] = useState(false);
@@ -67,7 +72,8 @@ function Session() {
   useEffect(() => {
     getThisSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    getSubmittedLayers();
+  }, [layers]);
 
   // TODO: redo this function to work with the snap-to-grid coordinates (for start/end time), duplication button, and submit button (which executes this function)
   const addLayer = async (
@@ -135,6 +141,43 @@ function Session() {
     */
   };
 
+  // TODO: finish this function
+  const getSubmittedLayers = async() => {
+    if (!session?.sessionId) {
+      return;
+    }
+    const sessionId = session.sessionId;
+    const response = await fetch(config.server_url + "api/session/" + sessionId + "/layers", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if(!response.ok) {
+      throw new Error(await response.json());
+    }
+    const layers: Layer[] = await response.json();
+
+    // set the TimelineLayers state based on these layers
+    const existingTimelineLayers: TimelineLayer[] = [];
+    var timelineYPos = 0;
+    for (let existingLayer in layers) {
+      existingTimelineLayers.push({
+        layer: existingLayer,
+        submitted: true,
+        top: timelineYPos,
+        left: existingLayer.startTime,
+        stagingSoundName: existingLayer.stagingSoundName,
+        stagingSoundBuffer: existingLayer.stagingSoundBuffer,
+        duration: existingLayer.endTime - existingLayer.startTime,
+      })
+      timelineYPos += 60;
+    }
+
+    setTimelineLayers(existingTimelineLayers);
+  }
+
   // the left offset and width of the layer depends on the start time and ratio of layer duration to the entire song, respectively
   const computeLayerStyle = (start: number, duration: number) => {
     const layerStyle = {
@@ -153,10 +196,6 @@ function Session() {
     layerStyle.marginLeft = leftOffset.toString() + "%";
     return layerStyle;
   };
-
-  const handleLayerPlacement = (placed: boolean) => {
-    setLayerIsPlaced(placed);
-  }
 
   const loop = async (file: string, loopcount: number) => {
     const crunker = new Crunker();
@@ -214,6 +253,10 @@ function Session() {
     setShowPalette(show);
   }
 
+  const handleNewStagedLayer = (layer: TimelineLayer) => {
+    setTimelineLayers((prevLayers) => [layer, ...prevLayers]);
+  }
+
   return (
     <Page>
       <Head>
@@ -230,32 +273,12 @@ function Session() {
               })}
             </tr>
             {(layers?.length ?? 0) !== 0 ? (
-              layers.map((layer, i) => {
-                return (
-                  <tr key={"layer_" + i}>
-                    <td colSpan={sessionData.measures * 4}>
-                      <audio
-                        controls
-                        style={computeLayerStyle(
-                          layer.startTime,
-                          layer.endTime - layer.startTime
-                        )}
-                        src={
-                          (layer?.file?.length ?? 0) === 0
-                            ? layer.file
-                            : layer.bucketUrl
-                        }
-                      ></audio>
-                      {layer.memberId === member.memberId
-                        ? member.firstname[0].toUpperCase() +
-                          member.lastname[0].toUpperCase()
-                        : partner !== undefined &&
-                          partner.firstname[0].toUpperCase() +
-                            partner.lastname[0].toUpperCase()}
-                    </td>
-                  </tr>
-                );
-              })
+              <tr>
+              <td colSpan={sessionData.measures * 4} >
+                <Container snapToGrid={false} layers={timelineLayers} handleNewLayer={handleNewStagedLayer} />
+                <CustomDragLayer snapToGrid={true} layerWidth={100} />
+              </td>
+            </tr>          
             ) : (
               <tr>
                 <td key={"first_layer"}>
@@ -264,12 +287,7 @@ function Session() {
                   </Button>
                 </td>
               </tr>
-            )}
-            {/*<TimelineRow
-              handleLayerPlacement={handleLayerPlacement}
-              colSpan={sessionData.measures * 4}
-              layerDuration={currentLayerDuration}
-            />*/}
+            )}            
           </tbody>
         </table>
       </div>

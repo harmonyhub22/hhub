@@ -1,5 +1,5 @@
 import { CSSProperties, FC, memo, useEffect, useState } from "react";
-import TimeLineLayer from "./ui/TimelineLayer";
+import TimeLineLayer from "./ui/StagedLayer";
 
 export interface BoxProps {
   yellow?: boolean;

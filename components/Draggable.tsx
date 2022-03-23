@@ -3,13 +3,18 @@ import { useDrag } from "react-dnd";
 
 export const Draggable = (Component: any) => {
   return (props: any) => {
-    const [{ isDragging }, dragRef] = useDrag({
-      type: "box",
-      item: {
-        id: props.id,
-      },  // access props, the item is the metadata of the layer
-      collect: (monitor) => ({
-        isDragging: !!monitor.isDragging(),
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [{ isDragging }, drag, preview] = useDrag(
+      () => ({
+        type: "box",
+        item: {
+          id: props.id,
+          left: props.left,
+          top: props.top,
+        },
+        collect: (monitor: DragSourceMonitor) => ({
+          isDragging: monitor.isDragging(),
+        }),
       }),
       [props.id, props.left, props.top]
     );

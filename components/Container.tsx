@@ -1,8 +1,10 @@
 import { CSSProperties, FC, useCallback, useEffect, useState } from 'react'
 import { useDrop } from 'react-dnd'
-import TimelineLayer from './ui/TimelineLayer'
+import StagedLayer from './ui/StagedLayer'
 import { snapToGrid as doSnapToGrid } from './snapToGrid'
 import update from 'immutability-helper'
+import TimelineLayer from '../interfaces/TimelineLayer'
+import SubmittedLayer from './ui/SubmittedLayer'
 
 interface LayerBox {
   id: string;
@@ -10,7 +12,6 @@ interface LayerBox {
   left: number;
   stagingSoundName: string | null;
   stagingSoundBuffer: AudioBuffer | null;
-  showPalette: any;
   duration: number;
 }
 
@@ -23,11 +24,12 @@ const styles: CSSProperties = {
 
 export interface ContainerProps {
   snapToGrid: boolean;
-  setLayerInfo: any;
+  layers: TimelineLayer[];
+  handleNewLayer: any;
 }
 
-export const Container: FC<ContainerProps> = ({ snapToGrid, setLayerInfo }) => {
-  const[layerIsPlaced, setLayerIsPlaced] = useState(false);
+export const Container: FC<ContainerProps> = ({ snapToGrid, layers, handleNewLayer }) => {
+  const [containerHeight, setContainerHeight] = useState(60);
 
   const [layerBox, setLayerBox] = useState<LayerBox>({
     id: "-1",
@@ -35,15 +37,14 @@ export const Container: FC<ContainerProps> = ({ snapToGrid, setLayerInfo }) => {
     left: 0,
     stagingSoundName: null,
     stagingSoundBuffer: null,
-    showPalette: null,
     duration: 0,
   });
 
   const moveBox = useCallback(
     (id: string, left: number, top: number) => {
-      console.log("Going to move the box!");
-      console.log("before:");
-      console.log(layerBox);
+      // console.log("Going to move the box!");
+      // console.log("before:");
+      // console.log(layerBox);
 
       setLayerBox((prev) => ({
         ...prev,
@@ -51,8 +52,8 @@ export const Container: FC<ContainerProps> = ({ snapToGrid, setLayerInfo }) => {
         left: left,
       }));
 
-      console.log("after:");
-      console.log(layerBox);
+      // console.log("after:");
+      // console.log(layerBox);
     },
     [layerBox]
   );
@@ -60,31 +61,25 @@ export const Container: FC<ContainerProps> = ({ snapToGrid, setLayerInfo }) => {
   const [, drop] = useDrop(
     () => ({
       accept: "box",
-      // collect: (monitor) => ({
-      //   isOver: !!monitor.isOver(),
-      // }),
-      drop(item: LayerBox, monitor) {
-        setLayerIsPlaced(true);
+      drop(item: LayerBox, monitor: any) {
         console.log("Item is being dropped! the item id is " + item.id)
-        // if (boxContainer.id === "-1") {
-        //   setBoxContainer({
-        //     id: item.id,
-        //     top: 0,
-        //     left: 0,
-        //     stagingSoundName: item.stagingSoundName,
-        //     stagingSoundBuffer: item.stagingSoundBuffer,
-        //     showPalette: item.showPalette,
-        //     duration: item.duration,
-        //   });
-        // }
 
-        setLayerBox({
-          id: item.id,
-          top: 0,
+        const placedLayer: TimelineLayer = {
+          layer: null,  // TODO: set this (not sure how if we are passing around layer data properly atm)
+          submitted: false,
+          top: layers.length * 60,
           left: 0,
           stagingSoundName: item.stagingSoundName,
           stagingSoundBuffer: item.stagingSoundBuffer,
-          showPalette: item.showPalette,
+          duration: item.duration,
+        }
+
+        setLayerBox({
+          id: item.id,
+          top: layers.length * 60,
+          left: 0,
+          stagingSoundName: item.stagingSoundName,
+          stagingSoundBuffer: item.stagingSoundBuffer,
           duration: item.duration,
         });
 
@@ -101,6 +96,8 @@ export const Container: FC<ContainerProps> = ({ snapToGrid, setLayerInfo }) => {
 
         moveBox(item.id, left, top);
 
+        handleNewLayer(placedLayer);
+
         return undefined;
       },
     }),
@@ -108,8 +105,10 @@ export const Container: FC<ContainerProps> = ({ snapToGrid, setLayerInfo }) => {
   );
 
   useEffect(() => {
-    //console.log("useEffect in container: id is " + layerBox.id)
-  }, []);
+    // want the container to be large enough height to hold all submitted layers plus room for 1 more
+    const newContainerHeight = layers.length * 60 + 60;
+    setContainerHeight(newContainerHeight);
+  }, [layers]);
 
   return (
     // if we uncomment the collect: in useDrop(), add logic to show "Drop here!" if .isOver
@@ -117,16 +116,33 @@ export const Container: FC<ContainerProps> = ({ snapToGrid, setLayerInfo }) => {
       {layerBox.id === "-1" ? (
         <p>Drop your layer here!</p>
       ) : (
-        <TimelineLayer
-          id={layerBox.id}
-          top={layerBox.top}
-          left={layerBox.left}
-          stagingSoundName={layerBox.stagingSoundName}
-          stagingSoundBuffer={layerBox.stagingSoundBuffer}
-          showPalette={layerBox.showPalette}
-          duration={layerBox.duration}
-          layerIsPlaced={layerIsPlaced}
-        />
+        layers.map((timelineLayer, i) => {
+          if (timelineLayer.submitted) {
+            return (
+              <SubmittedLayer
+                id={timelineLayer.layer.layerId || "1"}  // TODO: set the layer id properly
+                top={timelineLayer.top}
+                left={timelineLayer.left}
+                stagingSoundName={timelineLayer.stagingSoundName}
+                stagingSoundBuffer={timelineLayer.stagingSoundBuffer}
+                duration={timelineLayer.duration}
+              />
+            )
+          }
+          else {
+            return (
+              <StagedLayer
+                id={timelineLayer.layer.layerId || "1"}
+                top={timelineLayer.top}
+                left={timelineLayer.left}
+                stagingSoundName={timelineLayer.stagingSoundName}
+                stagingSoundBuffer={timelineLayer.stagingSoundBuffer}
+                duration={timelineLayer.duration}
+                addDuplicate={}
+              />
+            )
+          }
+        })
       )}
     </div>
   );
