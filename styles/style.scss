@@ -381,6 +381,22 @@ table.table-palette tfoot {
   border-radius: 20px !important;
 }
 
+.container-box {
+  border: 1px dashed gray;
+  cursor: move;
+  display: flex;
+  height: 70px;
+  flex-flow: nowrap;
+  vertical-align: middle;
+  border-radius: 22px;
+  padding: 5px 16px 5px 8px;
+}
+
+.timeline-container {
+  width: 100%;
+  border: 1px dashed gray;
+}
+
 @keyframes recording-pulse {
   0% {
     border-color: #e00;
