@@ -1,20 +1,13 @@
 import { Button } from "@geist-ui/core";
 import { PlayFill, PauseFill, Moon, Mic, Music } from '@geist-ui/icons'
-import React, { CSSProperties } from "react";
+import React from "react";
 import * as Tone from "tone";
-import { Draggable } from "../Draggable";
 
 interface PaletteLayerProps {
   stagingSoundName: string|null,
   stagingSoundBufferDate: string|null,
   stagingSoundBufferDuration: any,
   stagingSoundBuffer: Blob|null,
-  isDragging: boolean;
-  drag: any,
-  preview: any,
-  left: number,
-  top: number,
-  toggleShowPalette: any,
 };
 
 interface PaletteLayerState {
@@ -143,19 +136,6 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
     }
   };
 
-  getStyles(left: number, top: number, isDragging: boolean): CSSProperties {
-    const transform = `translate3d(${left}px, ${top}px, 0)`;
-    return {
-      // position: "absolute",
-      transform,
-      WebkitTransform: transform,
-      // IE fallback: hide the real node using CSS when dragging
-      // because IE will ignore our custom "empty image" drag preview.
-      opacity: isDragging ? 0 : 1,
-      height: isDragging ? 0 : "",
-    };
-  }
-
   handlePlayer() {
     if (this.state.tonePlayer === null) return;
     if (this.state.tonePlayer.state === "started") {
@@ -182,16 +162,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
 
   render() {
     return (
-      <div
-        ref={this.props.drag}
-        style={this.getStyles(
-          this.props.left,
-          this.props.top,
-          this.props.isDragging
-        )}
-        role="DraggableBox"
-        onDragStart={() => this.props.toggleShowPalette(false)}
-      >
+      <>
         <div className="palette-layer" style={{backgroundColor: this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor, border: this.state.tonePlayer === null ? "1px solid #eaeaea" : "none"}}>
           <div className="palette-layer-details">
             <div>
@@ -208,9 +179,9 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
           {(this.state.isPlaying || this.state.paused) && <div className='palette-layer-progress' style={{width: `${(this.state.currentSeconds / this.state.duration) * 100}%`}}>
           </div>}
         </div>
-      </div>
+      </>
     )
   };
 }
 
-export default Draggable(PaletteLayer);
+export default PaletteLayer;

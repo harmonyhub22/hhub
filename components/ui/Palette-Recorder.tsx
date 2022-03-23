@@ -115,8 +115,8 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
           currentSeconds: 0,
           volume: 0,
         });
-        mediaRecorder.stream.getTracks()
-          .forEach(track => track.stop());
+        mediaRecorder.stream.getTracks() // get all tracks from the MediaStream
+          .forEach(track => track.stop()); // stop each of them
       };
 
       mediaRecorder.start();
@@ -157,6 +157,7 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
         </div>
         <div className="palette-recording-details">
           <Text className={this.state.isRecording ? "record-timer" : ""} blockquote>{this.printTime(this.state.currentSeconds)}</Text>
+          {/*<Capacity value={Math.floor(this.state.volume)} style={{transform: 'rotate(-90deg)'}} />*/}
         </div>
         {!this.state.isRecording ?
           <Button icon={<Target color="white" />} className="record-btn" auto onClick={this.startRecording}

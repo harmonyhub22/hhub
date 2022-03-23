@@ -1,6 +1,6 @@
 import React from "react";
 import * as Tone from "tone";
-import { Target } from '@geist-ui/icons';
+import { Volume2 } from '@geist-ui/icons';
 
 interface PaletteCellProps {
   instrumentName: string,
@@ -9,9 +9,9 @@ interface PaletteCellProps {
 };
 
 interface PaletteCellState {
-  isPlaying: boolean,
   isSelected: boolean,
   tonePlayer: any,
+  isPlaying: boolean,
 };
 
 class PaletteCell extends React.Component<PaletteCellProps, PaletteCellState> {
@@ -21,16 +21,11 @@ class PaletteCell extends React.Component<PaletteCellProps, PaletteCellState> {
   constructor(props:PaletteCellProps) {
     super(props);
     this.state = {
-      isPlaying: false,
       isSelected: this.props.isSelected,
       tonePlayer: new Tone.Player("../../" + this.props.instrumentName + ".mp3").toDestination(),
+      isPlaying: false,
     };
     this.onSoundClick = this.onSoundClick.bind(this);
-    this.state.tonePlayer.onstart = () => {
-      this.setState({
-        isPlaying: true,
-      });
-    };
     this.state.tonePlayer.onstop = () => {
       this.setState({
         isPlaying: false,
@@ -38,39 +33,56 @@ class PaletteCell extends React.Component<PaletteCellProps, PaletteCellState> {
     };
   };
 
+  componentWillUnmount() {
+    if (this.state.tonePlayer !== null) this.state.tonePlayer.stop();
+  }
+
   onSoundClick = () => {
-    this.state.tonePlayer.start(0);
-    /*
-    console.log(this.state.isSelected);
-    if (!this.state.isSelected) { // select the player
-      this.setState({
-        isSelected: true,
-      });
-    } else { // unselect the player
-      this.setState({
-        isPlaying: false,
-      });
+    if (this.state.tonePlayer.state === "started") {
+      this.state.tonePlayer.stop();
+      if (this.state.isSelected)
+        this.props.updateLayerStagingSound(this.props.instrumentName); // unselect
+      return;
     }
-    */
+    if (this.state.isSelected) {
+      this.props.updateLayerStagingSound(this.props.instrumentName); // unselect
+      return;
+    }
+    
+    if (!this.state.isPlaying) {
+      this.state.tonePlayer.start(0);
+      this.setState({
+        isPlaying: true,
+      });
+      this.props.updateLayerStagingSound(this.props.instrumentName); // send the sound path to the staging layer
+    }
+  };
+
+  componentDidUpdate(prevProps:PaletteCellProps) {
+    if (prevProps.isSelected !== this.props.isSelected) {
+      this.setState({
+        isSelected: this.props.isSelected,
+      });
+    };
   };
 
   render() {
-    return <td key={this.props.instrumentName}>
-      <div className="table-palette-buttonframe" style={{border: this.state.isSelected ? PaletteCell.selectedBorder : ""}}>
+    return (
+      <>
         <button
           className="button-palette"
           role="button"
+          style={{border: this.state.isSelected ? PaletteCell.selectedBorder : ""}}
           onClick={() => {
             this.onSoundClick();
-            // send the sound path to the staging layer
-            this.props.updateLayerStagingSound(this.state.isSelected ? this.props.instrumentName : null);
           }}
         >
           {this.props.instrumentName}
-          {this.state.isPlaying && <Target/>}
+          <br></br>
+          {this.state.isPlaying && <Volume2/>}
         </button>
-      </div>
-    </td>
+      </>
+    )
   };
 };
 

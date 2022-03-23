@@ -10,8 +10,7 @@ import PaletteRecorder from "./Palette-Recorder";
 
 
 interface PaletteProps {
-  toggleShowPalette: any,
-}
+};
 
 interface PaletteState {
   stagingLayerSoundName: string|null,
@@ -22,11 +21,12 @@ interface PaletteState {
 };
 
 class Palette extends React.Component<PaletteProps, PaletteState> {
+
   static sounds: any = config.sounds;
   static db_name: string = 'AUDIO_BUFFERS';
   static db_obj_store_name: string = 'AUDIO';
 
-  constructor(props: PaletteProps) {
+  constructor(props:PaletteProps) {
     super(props);
     this.state = {
       stagingLayerSoundName: null,
@@ -193,9 +193,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
           stagingSoundBuffer={this.state.stagingLayerSoundBuffer}
           stagingSoundBufferDate={this.state.stagingLayerSoundBufferDate}
           stagingSoundBufferDuration={this.state.stagingLayerSoundBufferDuration}
-          stagingSoundName={this.state.stagingLayerSoundName}
-          toggleShowPalette={this.props.toggleShowPalette}
-        />
+          stagingSoundName={this.state.stagingLayerSoundName} />
       </div>
     </>
   )};
