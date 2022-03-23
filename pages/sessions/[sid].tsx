@@ -22,10 +22,7 @@ const SessionPage = () => {
         placement="right"
       >
         <Drawer.Content>
-          <Palette
-            genreName={"alt"}
-            initials={`00`} // ${member.firstname[0]}${member.lastname[0]}`}
-          />
+          <Palette />
         </Drawer.Content>
       </Drawer>
 
