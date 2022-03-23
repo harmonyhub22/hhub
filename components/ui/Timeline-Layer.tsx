@@ -13,6 +13,9 @@ interface TimelineLayerProps {
   creatorInitials: string,
   timelineSeconds: number,
   timelineWidth: number,
+  dropped: boolean,
+  left: number,
+  top: number,
 };
 
 interface TimelineLayerState {

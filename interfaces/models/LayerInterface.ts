@@ -1,9 +1,15 @@
 export default interface LayerInterface {
     layerId: string,
+    left: number,
+    top: number,
     startTime: number,
     endTime: number,
-    repeatCount: number,
+    dropped: boolean,
     file: string,
     bucketUrl: string,
     memberId: string,
+    stagingSoundName: string|null,
+    stagingSoundBufferDate: string|null,
+    stagingSoundBufferDuration: any,
+    stagingSoundBuffer: Blob|null,
 }

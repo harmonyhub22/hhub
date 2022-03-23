@@ -194,6 +194,9 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
           stagingSoundBufferDate={this.state.stagingLayerSoundBufferDate}
           stagingSoundBufferDuration={this.state.stagingLayerSoundBufferDuration}
           stagingSoundName={this.state.stagingLayerSoundName} />
+          dropped={false}
+          left={0}
+          top={0}
       </div>
     </>
   )};
