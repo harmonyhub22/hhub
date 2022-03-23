@@ -2,10 +2,9 @@ import React, { useState, useEffect, useContext } from "react";
 import { Button } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
-import { getLiveSession } from "../components/Session";
 import { SocketContext } from "../context/socket";
-
-import * as Tone from "tone";
+import { getLiveSession } from "../api/Session";
+import SessionInterface from "../interfaces/models/SessionInterface";
 
 const Home = () => {
   const [liveSessionId, setLiveSessionId] = useState<string>();
@@ -21,8 +20,8 @@ const Home = () => {
   };
 
   const checkLiveSession = async () => {
-    const liveSession = await getLiveSession();
-    if (liveSession === null || liveSession === undefined) return;
+    const liveSession: SessionInterface|null = await getLiveSession();
+    if (liveSession === null) return;
     setLiveSessionId(liveSession.sessionId);
   };
 

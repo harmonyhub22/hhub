@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
-import Layer from "../interfaces/models/Layer";
+import Layer from "../interfaces/models/LayerInterface";
 import Queue from "../interfaces/models/Queue";
-import Session from "../interfaces/models/SessionInterface";
+import SessionInterface from "../interfaces/models/SessionInterface";
 import { config } from "../components/config";
 
 export const joinWaitQueue = async () => {
@@ -36,7 +36,7 @@ export const getLiveSession = async () => {
     if (!response.ok) {
       throw new Error(await response.json());
     }
-    const s: Session = await response.json();
+    const s: SessionInterface = await response.json();
     console.log(s);
     return s;
   } catch (e) {
@@ -60,7 +60,7 @@ export const getSession = async (sessionId: string) => {
     if (!response.ok) {
       throw new Error(await response.json());
     }
-    const s: Session = await response.json();
+    const s: SessionInterface = await response.json();
     console.log(s);
     return s;
   } catch (e) {

@@ -1,5 +1,5 @@
 import Genre from "./Genre";
-import Layer from "./Layer";
+import LayerInterface from "./LayerInterface";
 import Member from "./Member";
 
 export default interface SessionInterface {
@@ -10,5 +10,5 @@ export default interface SessionInterface {
   genre: Genre;
   member1: Member;
   member2: Member;
-  layers: Layer[];
+  layers: LayerInterface[];
 }

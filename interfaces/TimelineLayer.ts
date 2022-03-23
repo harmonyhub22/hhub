@@ -1,4 +1,4 @@
-import Layer from './models/Layer';
+import Layer from './models/LayerInterface';
 
 export default interface TimelineLayer {
     layer: Layer | null,
