@@ -67,18 +67,3 @@ export const logout = async () => {
     return null;
   }
 };
-
-export const blobToArrayBuffer = async (blob: any) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.addEventListener("loadend", (e) => {
-      resolve(reader.result);
-    });
-    reader.addEventListener("error", reject);
-    reader.readAsArrayBuffer(blob);
-  });
-};
-
-export const arrayBufferToBlob = (buffer: any, type: any) => {
-  return new Blob([buffer], { type: type });
-};

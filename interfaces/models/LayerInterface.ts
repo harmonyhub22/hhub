@@ -1,4 +1,4 @@
-export default interface Layer {
+export default interface LayerInterface {
     layerId: string,
     left: number,
     top: number,

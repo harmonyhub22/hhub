@@ -4,13 +4,16 @@ import Member from "../../interfaces/models/Member";
 import SessionInterface from "../../interfaces/models/SessionInterface";
 
 interface SessionProps {
+  sessionId: string|null,
   member: any;
   socket: any;
 }
+
 interface SessionState {
-  session: SessionInterface | null;
-  partner: Member | null;
+  session: SessionInterface|null;
+  partner: Member|null;
 }
+
 class Session extends Component<SessionProps, SessionState> {
   constructor(props: SessionProps) {
     super(props);
@@ -19,6 +22,10 @@ class Session extends Component<SessionProps, SessionState> {
       partner: null,
     };
   }
+
+  componentDidMount() {
+    console.log(this.props.sessionId);
+  };
 
   render() {
     return (
