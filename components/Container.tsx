@@ -3,8 +3,9 @@ import { useDrop } from 'react-dnd'
 import StagedLayer from './ui/StagedLayer'
 import { snapToGrid as doSnapToGrid } from './snapToGrid'
 import update from 'immutability-helper'
-import TimelineLayer from '../interfaces/TimelineLayer'
 import SubmittedLayer from './ui/SubmittedLayer'
+import TimelineLayer from './ui/Timeline-Layer'
+import Layer from '../interfaces/models/Layer'
 
 interface LayerBox {
   id: string;
@@ -24,7 +25,7 @@ const styles: CSSProperties = {
 
 export interface ContainerProps {
   snapToGrid: boolean;
-  layers: TimelineLayer[];
+  layers: Layer[];
   handleNewLayer: any;
 }
 
@@ -64,7 +65,7 @@ export const Container: FC<ContainerProps> = ({ snapToGrid, layers, handleNewLay
       drop(item: LayerBox, monitor: any) {
         console.log("Item is being dropped! the item id is " + item.id)
 
-        const placedLayer: TimelineLayer = {
+        const placedLayer: Layer = {
           layer: null,  // TODO: set this (not sure how if we are passing around layer data properly atm)
           submitted: false,
           top: layers.length * 60,
@@ -116,32 +117,46 @@ export const Container: FC<ContainerProps> = ({ snapToGrid, layers, handleNewLay
       {layerBox.id === "-1" ? (
         <p>Drop your layer here!</p>
       ) : (
-        layers.map((timelineLayer, i) => {
-          if (timelineLayer.submitted) {
-            return (
-              <SubmittedLayer
-                id={timelineLayer.layer.layerId || "1"}  // TODO: set the layer id properly
-                top={timelineLayer.top}
-                left={timelineLayer.left}
-                stagingSoundName={timelineLayer.stagingSoundName}
-                stagingSoundBuffer={timelineLayer.stagingSoundBuffer}
-                duration={timelineLayer.duration}
-              />
-            )
-          }
-          else {
-            return (
-              <StagedLayer
-                id={timelineLayer.layer.layerId || "1"}
-                top={timelineLayer.top}
-                left={timelineLayer.left}
-                stagingSoundName={timelineLayer.stagingSoundName}
-                stagingSoundBuffer={timelineLayer.stagingSoundBuffer}
-                duration={timelineLayer.duration}
-                addDuplicate={}
-              />
-            )
-          }
+        layers.map((layer, i) => {
+          // if (timelineLayer.submitted) {
+          //   return (
+          //     <SubmittedLayer
+          //       id={timelineLayer.layer.layerId || "1"}  // TODO: set the layer id properly
+          //       top={timelineLayer.top}
+          //       left={timelineLayer.left}
+          //       stagingSoundName={timelineLayer.stagingSoundName}
+          //       stagingSoundBuffer={timelineLayer.stagingSoundBuffer}
+          //       duration={timelineLayer.duration}
+          //     />
+          //   )
+          // }
+          // else {
+          //   return (
+          //     <StagedLayer
+          //       id={timelineLayer.layer.layerId || "1"}
+          //       top={timelineLayer.top}
+          //       left={timelineLayer.left}
+          //       stagingSoundName={timelineLayer.stagingSoundName}
+          //       stagingSoundBuffer={timelineLayer.stagingSoundBuffer}
+          //       duration={timelineLayer.duration}
+          //       addDuplicate={}
+          //     />
+          //   )
+          // }
+
+          return (
+            <TimelineLayer stagingSoundName={'Drum1'}
+              soundBufferDate={null}
+              stagingSoundBuffer={null}
+              duration={7}
+              initialTimelinePosition={0}
+              creatorInitials={`${member.firstname[0]}${member.lastname[0]}`}
+              timelineSeconds={10}
+              timelineWidth={883}
+              top={layer.top}
+              left={layer.left}
+            />
+          )
         })
       )}
     </div>

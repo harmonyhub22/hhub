@@ -21,7 +21,6 @@ import Member from "../../interfaces/models/Member";
 import { DndProvider } from "react-dnd";
 import { Container } from "../../components/Container";
 import { CustomDragLayer } from "../../components/CustomDragLayer";
-import TimelineLayer from "../../interfaces/TimelineLayer";
 import { config } from "../../components/config";
 
 function Session() {
@@ -34,7 +33,6 @@ function Session() {
     measures: 16,
   });
   const [layers, setLayers] = useState<Layer[]>([]);
-  const [timelineLayers, setTimelineLayers] = useState<TimelineLayer[]>([]);
   const [partner, setPartner] = useState<Member>();
   const [maxTimelineWidth, setMaxTimelineWidth] = useState(500);
   const [layerIsPlaced, setLayerIsPlaced] = useState(false);
@@ -77,8 +75,7 @@ function Session() {
 
   // TODO: redo this function to work with the snap-to-grid coordinates (for start/end time), duplication button, and submit button (which executes this function)
   const addLayer = async (
-    paletteData: PaletteData,
-    selectedPatterns: string[]
+    newLayer: Layer,
   ) => {
     /*
     if (paletteData === null || paletteData === undefined) return;
@@ -159,23 +156,7 @@ function Session() {
     }
     const layers: Layer[] = await response.json();
 
-    // set the TimelineLayers state based on these layers
-    const existingTimelineLayers: TimelineLayer[] = [];
-    var timelineYPos = 0;
-    for (let existingLayer in layers) {
-      existingTimelineLayers.push({
-        layer: existingLayer,
-        submitted: true,
-        top: timelineYPos,
-        left: existingLayer.startTime,
-        stagingSoundName: existingLayer.stagingSoundName,
-        stagingSoundBuffer: existingLayer.stagingSoundBuffer,
-        duration: existingLayer.endTime - existingLayer.startTime,
-      })
-      timelineYPos += 60;
-    }
-
-    setTimelineLayers(existingTimelineLayers);
+    setLayers(layers);
   }
 
   // the left offset and width of the layer depends on the start time and ratio of layer duration to the entire song, respectively
@@ -253,8 +234,8 @@ function Session() {
     setShowPalette(show);
   }
 
-  const handleNewStagedLayer = (layer: TimelineLayer) => {
-    setTimelineLayers((prevLayers) => [layer, ...prevLayers]);
+  const handleNewStagedLayer = (layer: Layer) => {
+    addLayer(layer);
   }
 
   return (
@@ -275,7 +256,7 @@ function Session() {
             {(layers?.length ?? 0) !== 0 ? (
               <tr>
               <td colSpan={sessionData.measures * 4} >
-                <Container snapToGrid={false} layers={timelineLayers} handleNewLayer={handleNewStagedLayer} />
+                <Container snapToGrid={false} layers={layers} handleNewLayer={handleNewStagedLayer} />
                 <CustomDragLayer snapToGrid={true} layerWidth={100} />
               </td>
             </tr>          
