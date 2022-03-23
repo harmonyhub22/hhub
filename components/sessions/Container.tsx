@@ -1,53 +1,53 @@
 import React, { CSSProperties, FC, useCallback, useEffect, useState } from 'react'
 import TimelineLayer from '../ui/Timeline-Layer'
-import Layer from '../../interfaces/models/Layer'
 import { Layers } from '@geist-ui/icons';
 import { Droppable } from './Droppable';
+import LayerInterface from '../../interfaces/models/LayerInterface';
 
-interface LayerBox {
-  id: string;
-  top: number;
-  left: number;
-  stagingSoundName: string | null;
-  stagingSoundBuffer: AudioBuffer | null;
+interface NeverCommittedLayer {
+  id: string,
+  top: number,
+  left: number,
+
+  stagingSoundName: string|null,
+  stagingSoundBuffer: Blob|null,
+  stagingSoundBufferDate: string|null,
   duration: number;
+  trimmedStart: number,
+  trimmedEnd: number,
+  fadeInDuration: number,
+  fadeOutDuration: number,
+  reversed: boolean,
 }
 
 interface ContainerProps {
-  submittedLayers: Layer[];
-  handleNewLayer: any;
-  width: number;
-  seconds: number;
+  layers: LayerInterface[],
+  commitLayer: any,
+  width: number,
+  seconds: number,
 }
 
 interface ContainerState {
-  droppedLayers: Layer[];
+  neverCommittedLayers: any[],
 }
 
 class Container extends React.Component<ContainerProps, ContainerState> {
   constructor(props: ContainerProps) {
     super(props);
     this.state = {
-      droppedLayers: [],
-    }
+      neverCommittedLayers: [],
+    };
     this.layerDropped = this.layerDropped.bind(this);
-  }
+  };
 
-  // componentDidUpdate(prevProps:ContainerProps) {
-  //   if (prevProps.newLayer.staged !) {
-
-  //   }
-  // };
-
-  layerDropped(newLayer: Layer, monitor: any) {
+  layerDropped(newLayer: any, monitor: any) {
     // if its a palette layer that we are dropping
     if (newLayer.dropped === false) {
       // add this to the dropped layers
       newLayer.dropped = true;
-      this.setState((prevState: ContainerState) => ({
-        ...prevState,
-        droppedLayers: [newLayer, ...prevState.droppedLayers],
-      }));
+      this.setState({
+        neverCommittedLayers: [newLayer, ...this.state.neverCommittedLayers],
+      });
     }
 
     // otherwise, we already dropped it and the user just moved the timeline layer
@@ -70,47 +70,55 @@ class Container extends React.Component<ContainerProps, ContainerState> {
 
   render() {
     return (
-      <div ref={drop} style={{
+      <div ref={null} style={{
         height: this.props.layers.length * 60 + 60,
         width: this.props.width,
       }}>
-          {this.state.droppedLayers.length === 0 ? 
-            <p>Drop your layer here!</p> : (
-            // render submitted layers
-            this.props.submittedLayers.map((layer, i) => {          
-              return (
-              <TimelineLayer stagingSoundName={'Drum1'}
-                  soundBufferDate={null}
-                  stagingSoundBuffer={null}
-                  duration={7}
-                  initialTimelinePosition={0}
-                  creatorInitials={`${member.firstname[0]}${member.lastname[0]}`}
-                  timelineSeconds={10}
-                  timelineWidth={883}
-                  top={layer.top}
-                  left={layer.left}
-                  dropped={true}
-              />
-              )
-            });
-            // render staged/dropped layers
-            this.state.droppedLayers.map((layer, i) => {
-              return (
-                <TimelineLayer stagingSoundName={'Drum1'}
-                  soundBufferDate={null}
-                  stagingSoundBuffer={null}
-                  duration={7}
-                  initialTimelinePosition={0}
-                  creatorInitials={`${member.firstname[0]}${member.lastname[0]}`}
-                  timelineSeconds={10}
-                  timelineWidth={883}
-                  top={layer.top}
-                  left={layer.left}
-                  dropped={true}
-              />
-              )
-            }); 
-          )}
+
+        {this.props.layers.map((layer:LayerInterface, i:number) => {      
+          return (
+            <TimelineLayer key={`layer-${i}`}
+              soundName={layer.fileName}
+              soundBufferDate={null}
+              soundBuffer={null}
+              bucketUrl={layer.bucketUrl}
+              duration={layer.duration}
+              initialTimelinePosition={layer.startTime}
+              creatorInitials={'aa'} // layer.initials}
+              timelineSeconds={this.props.seconds}
+              timelineWidth={this.props.width}
+              top={60} // need to figure out a better way for this
+              trimmedStart={layer.trimmedStart}
+              trimmedEnd={layer.trimmedEnd}
+              fadeInDuration={layer.fadeInDuration}
+              fadeOutDuration={layer.fadeOutDuration}
+              reversed={layer.reversed}
+            />
+          )
+        })}
+
+        {this.state.neverCommittedLayers.map((layer:NeverCommittedLayer, i:number) => {
+          return (
+            <TimelineLayer 
+              key={`never-comitted-layer-${i}`}
+              soundName={layer.stagingSoundName}
+              soundBufferDate={layer.stagingSoundBufferDate}
+              soundBuffer={layer.stagingSoundBuffer}
+              duration={layer.duration}
+              initialTimelinePosition={0} // need to change to whereever they drop it at
+              creatorInitials={'aa'} // `${member.firstname[0]}${member.lastname[0]}`}
+              timelineSeconds={10}
+              timelineWidth={883}
+              top={layer.top}
+              bucketUrl={null}
+              trimmedStart={layer.trimmedStart}
+              trimmedEnd={layer.trimmedStart}
+              fadeInDuration={layer.fadeInDuration}
+              fadeOutDuration={layer.fadeOutDuration}
+              reversed={layer.reversed}
+            />
+          )
+        })}
       </div>
     );
   }

@@ -3,6 +3,8 @@ import { Modal } from "@geist-ui/core";
 import Member from "../../interfaces/models/Member";
 import SessionInterface from "../../interfaces/models/SessionInterface";
 import { getSession } from "../../api/Session";
+import LayerInterface from "../../interfaces/models/LayerInterface";
+import Timeline from "./Timeline";
 
 interface SessionProps {
   sessionId: string|null,
@@ -22,6 +24,7 @@ class Session extends Component<SessionProps, SessionState> {
       session: null,
       partner: null,
     };
+    this.commitLayer = this.commitLayer.bind(this);
   }
 
   async componentDidMount() {
@@ -33,6 +36,14 @@ class Session extends Component<SessionProps, SessionState> {
       partner: session.member1.memberId === this.props.member.memberId ? session.member2 : session.member1,
     });
   };
+
+  async commitLayer(layerData:LayerInterface) {
+    if (layerData.layerId === null) { // add new layer
+
+    } else { // edit existing layer
+
+    }
+  }
 
   render() {
     return (
@@ -51,6 +62,8 @@ class Session extends Component<SessionProps, SessionState> {
             </Modal.Action>
           }
         </Modal>
+
+        <Timeline layers={this.state.session?.layers ?? []} commitLayer={this.commitLayer} />
       </>
     );
   }

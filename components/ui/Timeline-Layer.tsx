@@ -5,9 +5,10 @@ import * as Tone from "tone";
 import { initResize } from "./helpers/resize";
 
 interface TimelineLayerProps {
-  stagingSoundName: string|null,
+  soundName: string|null,
   soundBufferDate: string|null,
-  stagingSoundBuffer: Blob|null,
+  soundBuffer: Blob|null,
+  bucketUrl: string|null,
   duration: number,
   initialTimelinePosition: number,
   creatorInitials: string,
@@ -80,7 +81,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
   componentDidMount() {
     if (this.state.tonePlayer === null) {
-      this.createTonePlayer(this.props.stagingSoundName, this.props.stagingSoundBuffer);
+      this.createTonePlayer(this.props.soundName, this.props.soundBuffer, this.props.bucketUrl);
     }
     initResize(`timeline-layer-${this.state.name}`, TimelineLayer.layerMinWidth, this.state.layerMaxWidth,
       `resizer-l-${this.state.name}`, `resizer-r-${this.state.name}`, 
@@ -114,7 +115,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     }
   };
 
-  createTonePlayer(name: string|null, buffer: Blob|null) {
+  createTonePlayer(name: string|null, buffer: Blob|null, bucketUrl: string|null) {
     if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
 
     if (name !== null) {
@@ -124,6 +125,10 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     } else if (buffer !== null) {
       this.setState({
         tonePlayer: new Tone.Player(URL.createObjectURL(buffer)).toDestination(),
+      });
+    } else if (bucketUrl !== null) {
+      this.setState({
+        tonePlayer: new Tone.Player(bucketUrl).toDestination(),
       });
     }
   }
@@ -336,7 +341,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
             <div className="timeline-layer-initials">
               <Badge.Anchor placement="bottomRight" className="timeline-layer-initials">
                 <Badge scale={0.1} type="warning">
-                  {this.props.stagingSoundName === null ? 
+                  {this.props.soundName === null ? 
                   <Mic size={16} color="white"/> :
                   <Music size={16} color="white"/>}
                 </Badge>
