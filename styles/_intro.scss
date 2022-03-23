@@ -3,12 +3,21 @@
   width: 80%;
   margin: auto;
   @include flex(space-between, center, row);
-
+  @media (max-width: 1300px) {
+    display: block;
+    padding: 2rem 2rem;
+    text-align: center;
+  }
   h1 {
     font-size: 4rem;
     padding: 0rem 0rem;
     color: #21a0aa;
     display: inline-block;
+  }
+  @media (max-width: 800px) {
+    .intro-images {
+      display: none;
+    }
   }
 }
 

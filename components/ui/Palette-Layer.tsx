@@ -1,32 +1,34 @@
 import { Button } from "@geist-ui/core";
-import { PlayFill, PauseFill, Moon, Mic, Music } from '@geist-ui/icons'
+import { PlayFill, PauseFill, Moon, Mic, Music } from "@geist-ui/icons";
 import React from "react";
 import * as Tone from "tone";
 
 interface PaletteLayerProps {
-  stagingSoundName: string|null,
-  stagingSoundBufferDate: string|null,
-  stagingSoundBufferDuration: any,
-  stagingSoundBuffer: Blob|null,
-};
+  stagingSoundName: string | null;
+  stagingSoundBufferDate: string | null;
+  stagingSoundBufferDuration: any;
+  stagingSoundBuffer: Blob | null;
+}
 
 interface PaletteLayerState {
-  stagingSoundBuffer: Blob|null,
-  isPlaying: boolean,
-  timer: any,
-  tonePlayer: any,
-  currentSeconds: number,
-  paused: boolean,
-  duration: number,
-};
+  stagingSoundBuffer: Blob | null;
+  isPlaying: boolean;
+  timer: any;
+  tonePlayer: any;
+  currentSeconds: number;
+  paused: boolean;
+  duration: number;
+}
 
-class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState> {
-
+class PaletteLayer extends React.Component<
+  PaletteLayerProps,
+  PaletteLayerState
+> {
   static hasPlayerColor: string = "#320f48";
   static hasPlayerFontColor: string = "#DDDDDD";
   static hasPlayerIconColor: string = "#c563c5";
 
-  constructor(props:PaletteLayerProps) {
+  constructor(props: PaletteLayerProps) {
     super(props);
     this.state = {
       stagingSoundBuffer: null,
@@ -43,8 +45,11 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
 
   componentDidMount() {
     if (this.state.tonePlayer === null) {
-      this.createTonePlayer(this.props.stagingSoundName, 
-        this.props.stagingSoundBuffer, this.props.stagingSoundBufferDuration);
+      this.createTonePlayer(
+        this.props.stagingSoundName,
+        this.props.stagingSoundBuffer,
+        this.props.stagingSoundBufferDuration
+      );
     }
   }
 
@@ -53,43 +58,58 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
     clearInterval(this.state.timer);
   }
 
-  createTonePlayer(name: string|null, buffer: Blob|null, bufferDuration: number|null) {
+  createTonePlayer(
+    name: string | null,
+    buffer: Blob | null,
+    bufferDuration: number | null
+  ) {
     if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
     if (this.state.timer !== null) clearInterval(this.state.timer);
 
     // get duration of audio
-    if (name !== null) { // get public sound mp3
-      const au = document.createElement('audio');
-      au.src = '../../' + name + '.mp3';
-      au.addEventListener('loadedmetadata', () => {
-        const duration = au.duration;
-        const tonePlayer = new Tone.Player('../../' + name + '.mp3').toDestination();
-        console.log("The duration of the song is of: " + duration + " seconds");
-        tonePlayer.onstop = () => {
-          clearInterval(this.state.timer);
-          if (!this.state.paused) {
-            this.setState({
-              currentSeconds: 0,
-              paused: false,
-              isPlaying: false,
-            });
-          }
-        };
-        this.setState({
-          tonePlayer: tonePlayer,
-          stagingSoundBuffer: buffer,
-          duration: duration,
-          isPlaying: false,
-          currentSeconds: 0,
-          paused: false,
-          timer: null,
-        });
-      }, false);
+    if (name !== null) {
+      // get public sound mp3
+      const au = document.createElement("audio");
+      au.src = "../../" + name + ".mp3";
+      au.addEventListener(
+        "loadedmetadata",
+        () => {
+          const duration = au.duration;
+          const tonePlayer = new Tone.Player(
+            "../../" + name + ".mp3"
+          ).toDestination();
+          let music = tonePlayer;
+          music.fadeIn = 5;
+          console.log("The toneplayer is: ", music);
+          tonePlayer.onstop = () => {
+            clearInterval(this.state.timer);
+            if (!this.state.paused) {
+              this.setState({
+                currentSeconds: 0,
+                paused: false,
+                isPlaying: false,
+              });
+            }
+          };
+          this.setState({
+            tonePlayer: tonePlayer,
+            stagingSoundBuffer: buffer,
+            duration: duration,
+            isPlaying: false,
+            currentSeconds: 0,
+            paused: false,
+            timer: null,
+          });
+        },
+        false
+      );
       au.remove();
-    } else if (buffer !== null && bufferDuration !== null) { // get buffer from props
-      const tonePlayer = new Tone.Player(URL.createObjectURL(buffer)).toDestination();
+    } else if (buffer !== null && bufferDuration !== null) {
+      // get buffer from props
+      const tonePlayer = new Tone.Player(
+        URL.createObjectURL(buffer)
+      ).toDestination();
       const duration = bufferDuration;
-      console.log("The duration of the song is of: " + duration + " seconds");
       tonePlayer.onstop = () => {
         clearInterval(this.state.timer);
         if (!this.state.paused) {
@@ -112,17 +132,37 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
     }
   }
 
-  componentDidUpdate(prevProps:PaletteLayerProps) {
-    if (this.props.stagingSoundName !== null &&
-      this.props.stagingSoundName !== prevProps.stagingSoundName) { // set to name
-      this.createTonePlayer(this.props.stagingSoundName, this.props.stagingSoundBuffer, null);
-    } else if (this.props.stagingSoundBufferDate !== null && this.props.stagingSoundBuffer !== null
-      && (this.props.stagingSoundBufferDate !== prevProps.stagingSoundBufferDate 
-        || this.props.stagingSoundBuffer !== prevProps.stagingSoundBuffer)) { // set to recording
-      this.createTonePlayer(null, this.props.stagingSoundBuffer, this.props.stagingSoundBufferDuration)
-    } else if (this.props.stagingSoundBufferDate === null && this.props.stagingSoundName === null
-        && (prevProps.stagingSoundBufferDate !== null || prevProps.stagingSoundName !== null)) { // remove name and recording
-      console.log('removing both');
+  componentDidUpdate(prevProps: PaletteLayerProps) {
+    if (
+      this.props.stagingSoundName !== null &&
+      this.props.stagingSoundName !== prevProps.stagingSoundName
+    ) {
+      // set to name
+      this.createTonePlayer(
+        this.props.stagingSoundName,
+        this.props.stagingSoundBuffer,
+        null
+      );
+    } else if (
+      this.props.stagingSoundBufferDate !== null &&
+      this.props.stagingSoundBuffer !== null &&
+      (this.props.stagingSoundBufferDate !== prevProps.stagingSoundBufferDate ||
+        this.props.stagingSoundBuffer !== prevProps.stagingSoundBuffer)
+    ) {
+      // set to recording
+      this.createTonePlayer(
+        null,
+        this.props.stagingSoundBuffer,
+        this.props.stagingSoundBufferDuration
+      );
+    } else if (
+      this.props.stagingSoundBufferDate === null &&
+      this.props.stagingSoundName === null &&
+      (prevProps.stagingSoundBufferDate !== null ||
+        prevProps.stagingSoundName !== null)
+    ) {
+      // remove name and recording
+      console.log("removing both");
       if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
       if (this.state.timer !== null) clearInterval(this.state.timer);
       this.setState({
@@ -134,7 +174,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
         duration: 0,
       });
     }
-  };
+  }
 
   handlePlayer() {
     if (this.state.tonePlayer === null) return;
@@ -158,30 +198,61 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
     this.setState({
       isPlaying: !this.state.isPlaying,
     });
-  };
-
+  }
   render() {
     return (
       <>
-        <div className="palette-layer" style={{backgroundColor: this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor, border: this.state.tonePlayer === null ? "1px solid #eaeaea" : "none"}}>
+        <div
+          className="palette-layer"
+          style={{
+            backgroundColor:
+              this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor,
+            border:
+              this.state.tonePlayer === null ? "1px solid #eaeaea" : "none",
+          }}
+        >
           <div className="palette-layer-details">
             <div>
-              <Button iconRight={this.state.tonePlayer === null ? <Moon/> : this.state.isPlaying ? 
-                <PauseFill color={PaletteLayer.hasPlayerIconColor} /> : <PlayFill color={PaletteLayer.hasPlayerIconColor}/>} auto scale={2/3} px={0.6}
-                onClick={this.handlePlayer} className="play-btn" />
+              <Button
+                iconRight={
+                  this.state.tonePlayer === null ? (
+                    <Moon />
+                  ) : this.state.isPlaying ? (
+                    <PauseFill color={PaletteLayer.hasPlayerIconColor} />
+                  ) : (
+                    <PlayFill color={PaletteLayer.hasPlayerIconColor} />
+                  )
+                }
+                auto
+                scale={2 / 3}
+                px={0.6}
+                onClick={this.handlePlayer}
+                className="play-btn"
+              />
             </div>
-            <div className="palette-layer-wav">
-            </div>
-            <div style={{display: 'flex'}}>
-              {this.props.stagingSoundName === null ? <Mic color="white"/> : <Music color="white"/>}
+            <div className="palette-layer-wav"></div>
+            <div style={{ display: "flex" }}>
+              {this.props.stagingSoundName === null ? (
+                <Mic color="white" />
+              ) : (
+                <Music color="white" />
+              )}
             </div>
           </div>
-          {(this.state.isPlaying || this.state.paused) && <div className='palette-layer-progress' style={{width: `${(this.state.currentSeconds / this.state.duration) * 100}%`}}>
-          </div>}
+          {(this.state.isPlaying || this.state.paused) && (
+            <div
+              className="palette-layer-progress"
+              style={{
+                width: `${
+                  (this.state.currentSeconds / this.state.duration) * 100
+                }%`,
+              }}
+            ></div>
+          )}
         </div>
       </>
-    )
-  };
+    );
+  }
 }
 
 export default PaletteLayer;

@@ -3,6 +3,11 @@
   width: 100%;
   margin-left: -3rem;
   @include flex(space-between, center, row);
+  @media (max-width: 1300px) {
+    display: block;
+    padding: 2rem 2rem;
+    text-align: center;
+  }
 }
 
 #man {
