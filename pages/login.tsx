@@ -1,9 +1,9 @@
 import { Button, Input, Spacer } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { login } from "../components/Helper";
-import Wave from "../components/Wave";
-import { LoginAnimation } from "../components/AnimationPic";
+import { login } from "../api/Helper";
+import Wave from "../components/animations/Wave";
+import { LoginAnimation } from "../components/animations/AnimationPic";
 
 const Login = (): React.ReactNode => {
   const router = useRouter();

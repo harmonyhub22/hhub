@@ -442,6 +442,112 @@ table.table-palette tfoot {
   border: 1px solid #bbb;
 }
 
+.navbar {
+  /* background-color: lightgray; */
+  /* height: 80px; */
+  /* display: flex; */
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  cursor: pointer;
+}
+
+.menu_bars {
+  margin-left: 2rem;
+  font-size: 2rem;
+  background: none;
+}
+
+.nav_menu {
+  /* background-color: lightgray; */
+  width: 250px;
+  height: 100vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  position: fixed;
+  top: 0;
+  left: -100%;
+  -webkit-transition: 850ms;
+  transition: 850ms;
+}
+
+.nav_menu_active {
+  left: 0;
+  -webkit-transition: 350ms;
+  transition: 350ms;
+}
+
+.nav_text {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 8px 0px 8px 16px;
+  list-style: none;
+  height: 60px;
+}
+
+.nav_text a {
+  text-decoration: none;
+  color: black;
+  font-size: 18px;
+  width: 95%;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 0 16px;
+  border-radius: 4px;
+}
+
+.nav_text a:hover {
+  background-color: #1a83ff;
+}
+
+.nav_menu_items {
+  width: 100%;
+}
+
+.navbar_toggle {
+  /* background-color: lightgray; */
+  width: 100%;
+  height: 80px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.navbar_item_label {
+  margin-left: 16px;
+  color: black;
+  cursor: pointer;
+}
+
+.nav_text:before {
+  content: "";
+}
+
 .intro {
   min-height: 100vh;
   width: 80%;
