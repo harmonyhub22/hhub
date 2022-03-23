@@ -2,6 +2,7 @@ import { Button } from "@geist-ui/core";
 import { PlayFill, PauseFill, Moon, Mic, Music } from '@geist-ui/icons'
 import React from "react";
 import * as Tone from "tone";
+import { Draggable } from "../sessions/Draggable";
 
 interface PaletteLayerProps {
   stagingSoundName: string|null,
@@ -9,10 +10,7 @@ interface PaletteLayerProps {
   stagingSoundBufferDuration: any,
   stagingSoundBuffer: Blob|null,
   isDragging: boolean,
-  drag: any,
-  preview: any,
-  dropped: boolean,
-  left: number,
+  isDropped: boolean,
   top: number,
 };
 
