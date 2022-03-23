@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Modal } from "@geist-ui/core";
 import Member from "../../interfaces/models/Member";
 import SessionInterface from "../../interfaces/models/SessionInterface";
+import { getSession } from "../../api/Session";
 
 interface SessionProps {
   sessionId: string|null,
@@ -23,8 +24,14 @@ class Session extends Component<SessionProps, SessionState> {
     };
   }
 
-  componentDidMount() {
-    console.log(this.props.sessionId);
+  async componentDidMount() {
+    if (this.props.sessionId === null) return;
+    const session: SessionInterface|null = await getSession(this.props.sessionId);
+    if (session === null) return;
+    this.setState({
+      session: session,
+      partner: session.member1.memberId === this.props.member.memberId ? session.member2 : session.member1,
+    });
   };
 
   render() {

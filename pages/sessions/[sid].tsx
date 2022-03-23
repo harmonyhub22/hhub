@@ -17,7 +17,7 @@ const SessionPage = () => {
   const socket = useContext(SocketContext);
 
   useEffect(() => {
-    if (window.localStorage.getItem('sid') === null && typeof router.query?.sid === "string") {
+    if (typeof router.query?.sid === "string") {
       window.localStorage.setItem('sid', router.query.sid);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
