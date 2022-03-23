@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { config } from "./config";
+import { config } from "../components/config";
 
 export const createSocket = (memberId: string) => {
   console.log(config.server_url);

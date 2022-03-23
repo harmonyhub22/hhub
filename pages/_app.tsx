@@ -2,10 +2,10 @@ import "../styles/style.scss";
 import type { AppProps } from "next/app";
 import { GeistProvider, CssBaseline } from "@geist-ui/core";
 import { useEffect, useMemo, useState } from "react";
-import { getCurrentMember } from "../components/Helper";
+import { getCurrentMember } from "../api/Helper";
 import Member from "../interfaces/models/Member";
 import { SocketContext } from "../context/socket";
-import { createSocket } from "../components/init-socket";
+import { createSocket } from "../api/InitSockets";
 import { MemberContext } from "../context/member";
 import { useRouter } from "next/router";
 

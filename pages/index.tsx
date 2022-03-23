@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Button, Spacer } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
-import { getLiveSession } from "../components/Session";
+import { getLiveSession } from "../api/Session";
 import { SocketContext } from "../context/socket";
 import * as Tone from "tone";
 import {
@@ -10,7 +10,7 @@ import {
   SingleNode,
   DoubleNote,
   DoubleHomeAnimation,
-} from "../components/AnimationPic";
+} from "../components/animations/AnimationPic";
 
 const Home = () => {
   const [liveSessionId, setLiveSessionId] = useState<string>();
