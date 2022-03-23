@@ -18,6 +18,7 @@ interface TimelineLayerProps {
   fadeInDuration: number,
   fadeOutDuration: number,
   reversed: boolean,
+  top: number,
 };
 
 interface TimelineLayerState {
