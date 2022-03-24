@@ -6,7 +6,7 @@ import Palette from "../../components/ui/Palette";
 import Session from "../../components/sessions/Session";
 import { useRouter } from "next/router";
 import { IoIosColorPalette } from "react-icons/io";
-import Timer from "../../components/Timer"
+// import Timer from "../../components/Timer"
 
 const SessionPage = () => {
   const { visible, setVisible, bindings } = useModal();
