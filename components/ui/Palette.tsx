@@ -90,19 +90,19 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
                 stagingLayerSoundBuffer: buffer,
               });
             };
+            const getAllRequest = transaction.objectStore(Palette.db_obj_store_name).getAllKeys();
+            getAllRequest.onsuccess = () => {
+              const allRecords = getAllRequest.result;
+              allRecords.forEach((key:any) => {
+                if (key !== this.state.stagingLayerSoundBufferDate) {
+                  const deleteRequest = transaction.objectStore(Palette.db_obj_store_name).delete(key);
+                  deleteRequest.onsuccess = () => {
+                    console.log('deleted');
+                  };
+                }
+              });
+            };
           }
-          const getAllRequest = transaction.objectStore(Palette.db_obj_store_name).getAllKeys();
-          getAllRequest.onsuccess = () => {
-            const allRecords = getAllRequest.result;
-            allRecords.forEach((key:any) => {
-              if (key !== this.state.stagingLayerSoundBufferDate) {
-                const deleteRequest = transaction.objectStore(Palette.db_obj_store_name).delete(key);
-                deleteRequest.onsuccess = () => {
-                  console.log('deleted');
-                };
-              }
-            });
-          };
         };
       }
     }
