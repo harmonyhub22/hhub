@@ -5,7 +5,7 @@ import { MemberContext } from "../../context/member";
 import { SocketContext } from "../../context/socket";
 import Palette from "../../components/ui/Palette";
 import Session from "../../components/sessions/Session";
-
+import Timer from "../../components/Timer"
 const SessionPage = () => {
   const { visible, setVisible, bindings } = useModal();
   const [showPalette, setShowPalette] = React.useState(false);
