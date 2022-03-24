@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { Modal } from "@geist-ui/core";
+import { Modal, Text } from "@geist-ui/core";
 import Member from "../../interfaces/models/Member";
 import SessionInterface from "../../interfaces/models/SessionInterface";
 import { getSession } from "../../api/Session";
 import LayerInterface from "../../interfaces/models/LayerInterface";
 import Timeline from "./Timeline";
+import SessionMembers from "./SessionMembers";
 
 interface SessionProps {
   member: any;
@@ -62,6 +63,11 @@ class Session extends Component<SessionProps, SessionState> {
             </Modal.Action>
           }
         </Modal>
+
+        <SessionMembers youMemberId={this.props.member.memberId}
+          member1={this.state.session?.member1 ?? null} member2={this.state.session?.member2 ?? null} />
+
+        <Text h4 style={{textAlign: 'center'}}>Your Collaborative Session</Text>
 
         <Timeline layers={this.state.session?.layers ?? []} commitLayer={this.commitLayer} />
       </>

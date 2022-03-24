@@ -2,7 +2,7 @@
 import React from "react";
 import { DragSourceMonitor, useDrag } from "react-dnd";
 
-export const Draggable = (Component: any) => {
+export const PaletteDraggable = (Component: any) => {
   return (props: any) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [{ isDragging }, drag, preview] = useDrag(
@@ -16,7 +16,6 @@ export const Draggable = (Component: any) => {
           stagingSoundBufferDate: props.stagingSoundBufferDate,
           stagingSoundBufferDuration: props.stagingSoundBufferDuration,
           stagingSoundBuffer: props.stagingSoundBuffer,
-          dropped: props.dropped,
         },
         collect: (monitor: DragSourceMonitor) => ({
           isDragging: monitor.isDragging(),
@@ -25,6 +24,6 @@ export const Draggable = (Component: any) => {
       [props.left, props.top]
     );
 
-    return <Component isDragging={isDragging} drag={drag} preview={preview} {...props} />;
+    return <Component drag={drag} preview={preview} {...props} />;
   };
 };

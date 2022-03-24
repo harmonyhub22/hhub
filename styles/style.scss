@@ -301,6 +301,8 @@ table.table-palette tfoot {
   border: 1px solid #eaeaea;
   min-width: 240px;
   position: relative;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 .timeline-layer-wav {
@@ -352,9 +354,19 @@ table.table-palette tfoot {
 }
 
 .timeline-wrapper {
-  //
+  border-radius: 20px;
+  border: 1px solid #eaeaea;
+  min-height: 80vh;
 }
 
 .layer-container {
   width: 100%;
+}
+
+.session-members {
+  display: inline-table;
+  position: fixed;
+  right: 0;
+  top: 0;
+  padding: 0px 0px 6px 6px;
 }
