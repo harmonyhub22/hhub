@@ -1,4 +1,4 @@
-import { Card, Dot } from "@geist-ui/core";
+import { Card, Dot, Text } from "@geist-ui/core";
 import React from "react";
 import Member from "../../interfaces/models/Member";
 
@@ -19,14 +19,14 @@ class SessionMembers extends React.Component<SessionMembersProps> {
         {this.props.member1 !== null && this.props.member2 !== null && 
         (this.props.member1.memberId === this.props.youMemberId ?
           <>
-            <Dot type="success">(You){' '}{this.props.member1.firstname}{' '}{this.props.member1.lastname}</Dot>
+            <Dot type="default"><Text small>(You){' '}{this.props.member1.firstname}{' '}{this.props.member1.lastname}</Text></Dot>
             <br></br>
-            <Dot type="warning">{this.props.member2.firstname}{' '}{this.props.member2.lastname}</Dot>
+            <Dot type="warning"><Text small>{this.props.member2.firstname}{' '}{this.props.member2.lastname}</Text></Dot>
           </> :
           <>
-            <Dot type="success">(You){' '}{this.props.member2.firstname}{' '}{this.props.member2.lastname}</Dot>
+            <Dot type="default"><Text small>(You){' '}{this.props.member2.firstname}{' '}{this.props.member2.lastname}</Text></Dot>
             <br></br>
-            <Dot type="warning">{this.props.member1.firstname}{' '}{this.props.member1.lastname}</Dot>
+            <Dot type="warning"><Text small>{this.props.member1.firstname}{' '}{this.props.member1.lastname}</Text></Dot>
           </>
         )}
         

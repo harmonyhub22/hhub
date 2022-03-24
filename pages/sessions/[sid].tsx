@@ -5,9 +5,10 @@ import { SocketContext } from "../../context/socket";
 import Palette from "../../components/ui/Palette";
 import Session from "../../components/sessions/Session";
 import { useRouter } from "next/router";
-import { getLiveSession } from "../../api/Session";
+import { IoIosColorPalette } from "react-icons/io";
 
-const SessionPage = (props:any) => {
+
+const SessionPage = () => {
   const { visible, setVisible, bindings } = useModal();
   const [showPalette, setShowPalette] = useState(false);
 
@@ -24,6 +25,13 @@ const SessionPage = (props:any) => {
   return (
     <Page>
       <Session member={member} socket={socket} />
+
+      <div className="palette-open-button">
+        <Button type="secondary-light" style={{borderRadius: '6px 6px 0px 0px'}}
+          onClick={() => setShowPalette(true)} icon={<IoIosColorPalette />}>
+          Open Palette
+        </Button>
+      </div>
       <Drawer
         visible={showPalette}
         onClose={() => setShowPalette(false)}
@@ -33,15 +41,6 @@ const SessionPage = (props:any) => {
           <Palette />
         </Drawer.Content>
       </Drawer>
-
-      <Page.Footer>
-        <Button auto onClick={() => setVisible(true)} type="success">
-          Finish Song
-        </Button>
-        <Button auto onClick={() => setShowPalette(true)} scale={1}>
-          Show Pallete
-        </Button>
-      </Page.Footer>
     </Page>
   );
 };

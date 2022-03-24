@@ -1,9 +1,8 @@
 import { Badge, Button, Code, Description, Input, Modal, Popover, Slider, Tag, Tooltip } from "@geist-ui/core";
 import { Mic, Music, CheckInCircle, MoreVertical, Trash2, Copy, Repeat, VolumeX, Edit3, Info, Sunrise } from '@geist-ui/icons'
-import React, { useContext } from "react";
+import React from "react";
 import * as Tone from "tone";
 import LayerInterface from "../../interfaces/models/LayerInterface";
-import Member from "../../interfaces/models/Member";
 import { initResize } from "./helpers/resize";
 
 interface TimelineLayerProps {
@@ -52,7 +51,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   constructor(props:TimelineLayerProps) {
     super(props);
     this.state = {
-      committed: false,
+      committed: props.layerId !== null,
       startTime: props.initialStartTime,
       trimmedStart: props.trimmedStart,
       trimmedEnd: props.trimmedEnd,
@@ -172,8 +171,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       fadeInDuration: this.state.fadeInDuration,
       fadeOutDuration: this.state.fadeOutDuration,
       reversed: this.state.reversed,
-      trimmedStart: this.state.trimmedStart,
-      trimmedEnd: this.state.trimmedEnd,
+      trimmedStartDuration: this.state.trimmedStart,
+      trimmedEndDuration: this.state.trimmedEnd,
     };
     this.props.commitLayer(currentLayer);
   };

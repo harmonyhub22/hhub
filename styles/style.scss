@@ -368,5 +368,26 @@ table.table-palette tfoot {
   position: fixed;
   right: 0;
   top: 0;
-  padding: 0px 0px 6px 6px;
+  border-radius: 0px 0px 0px 6px !important;
+}
+
+.session-options {
+  text-align: center;
+  position: fixed;
+  bottom: 3vh;
+  border: none !important;
+  opacity: 100;
+  pointer-events: none;
+  background: transparent !important;
+  padding: 0px !important;
+  display: flex;
+  justify-content: center;
+}
+
+.palette-open-button {
+  position: fixed;
+  transform-origin: bottom right;
+  transform: rotateZ(-90deg);
+  top: 32vh;
+  right: 0;
 }

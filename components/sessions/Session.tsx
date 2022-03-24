@@ -6,6 +6,7 @@ import { getSession } from "../../api/Session";
 import LayerInterface from "../../interfaces/models/LayerInterface";
 import Timeline from "./Timeline";
 import SessionMembers from "./SessionMembers";
+import SessionOptions from "./SessionOptions";
 
 interface SessionProps {
   member: any;
@@ -70,6 +71,9 @@ class Session extends Component<SessionProps, SessionState> {
         <Text h4 style={{textAlign: 'center'}}>Your Collaborative Session</Text>
 
         <Timeline layers={this.state.session?.layers ?? []} commitLayer={this.commitLayer} />
+
+        <SessionOptions socket={this.props.socket} sessionId={this.state.session?.sessionId ?? null}
+          partnerFirstname={this.state.partner?.firstname ?? ""} />
       </>
     );
   }

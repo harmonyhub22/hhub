@@ -9,6 +9,6 @@ export default interface LayerInterface {
     fadeInDuration: number,
     fadeOutDuration: number,
     reversed: boolean,
-    trimmedStart: number, // ie. song is 10 seconds and they trim a second off of the beginning, trimmedStart = 1
-    trimmedEnd: number,
+    trimmedStartDuration: number, // ie. song is 10 seconds and they trim a second off of the beginning, trimmedStartDuration = 1
+    trimmedEndDuration: number,
 }

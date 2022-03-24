@@ -92,8 +92,8 @@ class Container extends React.Component<ContainerProps, ContainerState> {
             timelineSeconds={this.props.seconds}
             timelineWidth={this.props.width}
             top={60} // need to figure out a better way for this
-            trimmedStart={layer.trimmedStart}
-            trimmedEnd={layer.trimmedEnd}
+            trimmedStart={layer.trimmedStartDuration}
+            trimmedEnd={layer.trimmedEndDuration}
             fadeInDuration={layer.fadeInDuration}
             fadeOutDuration={layer.fadeOutDuration}
             reversed={layer.reversed}
