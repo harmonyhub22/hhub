@@ -131,18 +131,6 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
     request.onsuccess = (event) => {
       const db = request.result;
       const transaction = db.transaction([Palette.db_obj_store_name], 'readwrite');
-      
-      /*
-      // delete old recording buffer
-      if (oldBufferDate !== null) {
-        console.log('deleteing old recording');
-        const deleteRequest = transaction.objectStore(Palette.db_obj_store_name)
-          .delete(oldBufferDate);
-        deleteRequest.onsuccess = (event) => {
-          console.log('deleted');
-        };
-      } */
-
       // add the recording to indexed db
       const putRequest = transaction.objectStore(Palette.db_obj_store_name)
         .put(this.state.stagingLayerSoundBuffer, newDate);

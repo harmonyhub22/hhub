@@ -5,11 +5,13 @@ export const Droppable = (Component: any) => {
   // eslint-disable-next-line react/display-name
   return (props: any) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [{ isOver }, dropRef] = useDrop(() => ({
+    const [{ canDrop, isOver }, dropRef] = useDrop(() => ({
       accept: "layer",
-      drop: (item, monitor: any) => Component.layerDropped(item, monitor),
+      hover: (item, monitor: any) => {console.log('is hovering')},
+      drop: (item, monitor: any) => {console.log('is drop')}, // Component.layerDropped(item, monitor),
       collect: (monitor) => ({
-        isOver: !!monitor.isOver(),
+        canDrop: monitor.canDrop(),
+        isOver: monitor.isOver(),
       }),
     }));
     return (

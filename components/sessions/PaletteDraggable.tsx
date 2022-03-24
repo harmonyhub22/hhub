@@ -24,6 +24,6 @@ export const PaletteDraggable = (Component: any) => {
       [props.left, props.top]
     );
 
-    return <Component drag={drag} preview={preview} {...props} />;
+    return <Component drag={drag} isDragging={isDragging} preview={preview} {...props} />;
   };
 };

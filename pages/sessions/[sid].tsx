@@ -24,7 +24,7 @@ const SessionPage = () => {
 
   return (
     <Page>
-      <Session member={member} socket={socket} />
+      <Session member={member} socket={socket}  />
 
       <div className="palette-open-button">
         <Button type="secondary-light" style={{borderRadius: '6px 6px 0px 0px'}}
