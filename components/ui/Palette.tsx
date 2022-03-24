@@ -91,6 +91,18 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
               });
             };
           }
+          const getAllRequest = transaction.objectStore(Palette.db_obj_store_name).getAllKeys();
+          getAllRequest.onsuccess = () => {
+            const allRecords = getAllRequest.result;
+            allRecords.forEach((key:any) => {
+              if (key !== this.state.stagingLayerSoundBufferDate) {
+                const deleteRequest = transaction.objectStore(Palette.db_obj_store_name).delete(key);
+                deleteRequest.onsuccess = () => {
+                  console.log('deleted');
+                };
+              }
+            });
+          };
         };
       }
     }
@@ -120,6 +132,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
       const db = request.result;
       const transaction = db.transaction([Palette.db_obj_store_name], 'readwrite');
       
+      /*
       // delete old recording buffer
       if (oldBufferDate !== null) {
         console.log('deleteing old recording');
@@ -128,13 +141,13 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
         deleteRequest.onsuccess = (event) => {
           console.log('deleted');
         };
-      }
+      } */
 
       // add the recording to indexed db
       const putRequest = transaction.objectStore(Palette.db_obj_store_name)
         .put(this.state.stagingLayerSoundBuffer, newDate);
       putRequest.onsuccess = (event) => {
-        // console.log('putted');
+        console.log('putted');
       };
     }
 

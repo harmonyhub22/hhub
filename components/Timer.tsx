@@ -1,10 +1,13 @@
+
 import React, { useState, useEffect, useContext } from "react";
 import { MemberContext } from '../context/member';
 import { useRouter } from "next/router";
 import { SocketContext } from "../context/socket";
-import { getLiveSession } from "../components/Session";
+// import { getLiveSession } from "../components/Session";
 
 const Timer = ({initialMinutes = 0,initialSeconds = 10,}) => {
+}
+/*
     const member = useContext(MemberContext);
     const router = useRouter()
     const socket = useContext(SocketContext);
@@ -108,3 +111,4 @@ const Timer = ({initialMinutes = 0,initialSeconds = 10,}) => {
     );
   };
   export default Timer;
+  */
