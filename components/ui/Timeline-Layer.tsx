@@ -1,16 +1,21 @@
 import { Badge, Button, Code, Description, Input, Modal, Popover, Slider, Tag, Tooltip } from "@geist-ui/core";
 import { Mic, Music, CheckInCircle, MoreVertical, Trash2, Copy, Repeat, VolumeX, Edit3, Info, Sunrise } from '@geist-ui/icons'
-import React from "react";
+import React, { useContext } from "react";
 import * as Tone from "tone";
+import LayerInterface from "../../interfaces/models/LayerInterface";
+import Member from "../../interfaces/models/Member";
 import { initResize } from "./helpers/resize";
 
 interface TimelineLayerProps {
-  soundName: string|null,
+  layerId: string|null,
+  memberId: string|null,
+  name: string|null,
+  fileName: string|null,
   soundBufferDate: string|null,
   soundBuffer: Blob|null,
   bucketUrl: string|null,
   duration: number,
-  initialTimelinePosition: number,
+  initialStartTime: number,
   creatorInitials: string,
   timelineSeconds: number,
   timelineWidth: number,
@@ -20,16 +25,16 @@ interface TimelineLayerProps {
   fadeOutDuration: number,
   reversed: boolean,
   top: number,
+  commitLayer: any,
 };
 
 interface TimelineLayerState {
   tonePlayer: any|null,
   committed: boolean|null, // if true, there partner should see it
-  timelinePosition: number, // beats or seconds (tbd) from the beginning of timeline
+  startTime: number, // beats or seconds (tbd) from the beginning of timeline
   trimmedStart: number, // ie. song is 10 seconds and they trim a second off of the beginning, trimmedStart = 1
   trimmedEnd: number, // ie. song is 10 seconds and they trim 2 seconds off of the end, trimmedEnd = 2
-  // optional options
-  muted: boolean, // must be unique
+  muted: boolean,
   name: string,
   fadeInDuration: number,
   fadeOutDuration: number,
@@ -48,12 +53,12 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     super(props);
     this.state = {
       committed: false,
-      timelinePosition: props.initialTimelinePosition,
+      startTime: props.initialStartTime,
       trimmedStart: props.trimmedStart,
       trimmedEnd: props.trimmedEnd,
       tonePlayer: null,
       muted: false,
-      name: `Layer-${Date.now()}`,
+      name: props.name ?? `Layer-${Date.now()}`,
       fadeInDuration: props.fadeInDuration,
       fadeOutDuration: props.fadeOutDuration,
       reversed: props.reversed,
@@ -80,8 +85,9 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   }
 
   componentDidMount() {
+    console.log(this.props);
     if (this.state.tonePlayer === null) {
-      this.createTonePlayer(this.props.soundName, this.props.soundBuffer, this.props.bucketUrl);
+      this.createTonePlayer(this.props.fileName, this.props.soundBuffer, this.props.bucketUrl);
     }
     initResize(`timeline-layer-${this.state.name}`, TimelineLayer.layerMinWidth, this.state.layerMaxWidth,
       `resizer-l-${this.state.name}`, `resizer-r-${this.state.name}`, 
@@ -93,12 +99,13 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   }
 
   componentDidUpdate(prevProps:TimelineLayerProps, prevState:TimelineLayerState) {
+
     if (prevState.fadeInDuration !== this.state.fadeInDuration
       || prevState.fadeOutDuration !== this.state.fadeOutDuration
       || prevState.flaggedForDelete !== this.state.flaggedForDelete
       || prevState.name !== this.state.name
       || prevState.reversed !== this.state.reversed
-      || prevState.timelinePosition !== this.state.timelinePosition
+      || prevState.startTime !== this.state.startTime
       || prevState.trimmedStart !== this.state.trimmedStart
       || prevState.trimmedEnd !== this.state.trimmedEnd) {
       
@@ -106,8 +113,10 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
         committed: false,
       });
     }
+
     if (prevProps.duration !== this.props.duration 
-      || prevProps.timelineSeconds !== this.props.timelineSeconds) {
+      || prevProps.timelineSeconds !== this.props.timelineSeconds
+      || prevProps.timelineWidth !== this.props.timelineWidth) {
       
       this.setState({
         layerMaxWidth: (this.props.duration / this.props.timelineSeconds) * this.props.timelineWidth,
@@ -152,6 +161,21 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.setState({
       committed: true,
     });
+    const currentLayer: LayerInterface = {
+      layerId: this.props.layerId,
+      memberId: this.props.memberId ?? "", // ?? TimelineLayer.member.memberId,
+      name: this.state.name,
+      startTime: this.state.startTime,
+      duration: this.props.duration,
+      fileName: this.props.fileName,
+      bucketUrl: this.props.bucketUrl,
+      fadeInDuration: this.state.fadeInDuration,
+      fadeOutDuration: this.state.fadeOutDuration,
+      reversed: this.state.reversed,
+      trimmedStart: this.state.trimmedStart,
+      trimmedEnd: this.state.trimmedEnd,
+    };
+    this.props.commitLayer(currentLayer);
   };
 
   handlePlayer() {
@@ -341,7 +365,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
             <div className="timeline-layer-initials">
               <Badge.Anchor placement="bottomRight" className="timeline-layer-initials">
                 <Badge scale={0.1} type="warning">
-                  {this.props.soundName === null ? 
+                  {this.props.fileName === null ? 
                   <Mic size={16} color="white"/> :
                   <Music size={16} color="white"/>}
                 </Badge>

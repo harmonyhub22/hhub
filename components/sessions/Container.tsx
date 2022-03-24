@@ -9,7 +9,8 @@ interface NeverCommittedLayer {
   top: number,
   left: number,
 
-  stagingSoundName: string|null,
+  name: string|null,
+  stagingFileName: string|null,
   stagingSoundBuffer: Blob|null,
   stagingSoundBufferDate: string|null,
   duration: number;
@@ -64,36 +65,40 @@ class Container extends React.Component<ContainerProps, ContainerState> {
     }
   }
 
-  // componentDidMount() {
-    
+  componentDidMount() {
+    console.log(this.props);
+  }
+
+  // componentDidUpdate(prevProps:ContainerProps) {
   // }
 
   render() {
     return (
-      <div ref={null} style={{
-        height: this.props.layers.length * 60 + 60,
-        width: this.props.width,
-      }}>
+      <div className="layer-container">
 
         {this.props.layers.map((layer:LayerInterface, i:number) => {      
           return (
-            <TimelineLayer key={`layer-${i}`}
-              soundName={layer.fileName}
-              soundBufferDate={null}
-              soundBuffer={null}
-              bucketUrl={layer.bucketUrl}
-              duration={layer.duration}
-              initialTimelinePosition={layer.startTime}
-              creatorInitials={'aa'} // layer.initials}
-              timelineSeconds={this.props.seconds}
-              timelineWidth={this.props.width}
-              top={60} // need to figure out a better way for this
-              trimmedStart={layer.trimmedStart}
-              trimmedEnd={layer.trimmedEnd}
-              fadeInDuration={layer.fadeInDuration}
-              fadeOutDuration={layer.fadeOutDuration}
-              reversed={layer.reversed}
-            />
+          <TimelineLayer key={`layer-${i}`}
+            layerId={layer.layerId}
+            memberId={layer.memberId}
+            name={layer.name}
+            fileName={layer.fileName}
+            soundBufferDate={null}
+            soundBuffer={null}
+            bucketUrl={layer.bucketUrl}
+            duration={layer.duration}
+            initialStartTime={layer.startTime}
+            creatorInitials={'aa'} // layer.initials}
+            timelineSeconds={this.props.seconds}
+            timelineWidth={this.props.width}
+            top={60} // need to figure out a better way for this
+            trimmedStart={layer.trimmedStart}
+            trimmedEnd={layer.trimmedEnd}
+            fadeInDuration={layer.fadeInDuration}
+            fadeOutDuration={layer.fadeOutDuration}
+            reversed={layer.reversed}
+            commitLayer={this.props.commitLayer}
+          />
           )
         })}
 
@@ -101,11 +106,14 @@ class Container extends React.Component<ContainerProps, ContainerState> {
           return (
             <TimelineLayer 
               key={`never-comitted-layer-${i}`}
-              soundName={layer.stagingSoundName}
+              layerId={null}
+              memberId={null}
+              name={layer.name}
+              fileName={layer.stagingFileName}
               soundBufferDate={layer.stagingSoundBufferDate}
               soundBuffer={layer.stagingSoundBuffer}
               duration={layer.duration}
-              initialTimelinePosition={0} // need to change to whereever they drop it at
+              initialStartTime={0} // need to change to whereever they drop it at
               creatorInitials={'aa'} // `${member.firstname[0]}${member.lastname[0]}`}
               timelineSeconds={10}
               timelineWidth={883}
@@ -116,6 +124,7 @@ class Container extends React.Component<ContainerProps, ContainerState> {
               fadeInDuration={layer.fadeInDuration}
               fadeOutDuration={layer.fadeOutDuration}
               reversed={layer.reversed}
+              commitLayer={this.props.commitLayer}
             />
           )
         })}

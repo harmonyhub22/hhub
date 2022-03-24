@@ -7,12 +7,11 @@ import Session from "../../components/sessions/Session";
 import { useRouter } from "next/router";
 import { getLiveSession } from "../../api/Session";
 
-const SessionPage = () => {
+const SessionPage = (props:any) => {
   const { visible, setVisible, bindings } = useModal();
   const [showPalette, setShowPalette] = useState(false);
 
   const router = useRouter();
-  const sessionId = typeof router.query?.sid === "string" ? router.query.sid : window.localStorage.getItem('sid');
   const member = useContext(MemberContext);
   const socket = useContext(SocketContext);
 
@@ -20,12 +19,11 @@ const SessionPage = () => {
     if (typeof router.query?.sid === "string") {
       window.localStorage.setItem('sid', router.query.sid);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [router.query.sid]);
 
   return (
     <Page>
-      <Session sessionId={sessionId} member={member} socket={socket} />
+      <Session member={member} socket={socket} />
       <Drawer
         visible={showPalette}
         onClose={() => setShowPalette(false)}

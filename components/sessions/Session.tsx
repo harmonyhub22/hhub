@@ -7,7 +7,6 @@ import LayerInterface from "../../interfaces/models/LayerInterface";
 import Timeline from "./Timeline";
 
 interface SessionProps {
-  sessionId: string|null,
   member: any;
   socket: any;
 }
@@ -28,8 +27,9 @@ class Session extends Component<SessionProps, SessionState> {
   }
 
   async componentDidMount() {
-    if (this.props.sessionId === null) return;
-    const session: SessionInterface|null = await getSession(this.props.sessionId);
+    const sessionId = window.localStorage.getItem('sid');
+    if (sessionId === null) return;
+    const session: SessionInterface|null = await getSession(sessionId);
     if (session === null) return;
     this.setState({
       session: session,

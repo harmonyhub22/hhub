@@ -296,6 +296,65 @@ table.table-palette tfoot {
   background-size: contain;
 }
 
-#layer-section {
-  text-align: "center";
+.timeline-layer {
+  border-radius: 12px;
+  border: 1px solid #eaeaea;
+  min-width: 240px;
+  position: relative;
+}
+
+.timeline-layer-wav {
+  width: 74%;
+  background-image: url("../public/images/black_wave.svg");
+  height: 50px;
+  background-size: contain;
+}
+
+.timeline-muted-layer-wav {
+  width: 74%;
+  background-image: url("../public/images/grey_wave.svg");
+  height: 50px;
+  background-size: contain;
+}
+
+.timeline-layer-details {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-left: 22px;
+}
+
+.timeline-layer-commit-btn {
+  padding: 0px 5px 0px 0px;
+}
+
+.timeline-layer-initials {
+  padding: 0px 34px 8px 2px;
+};
+
+.timeline-layer-resizer {
+  cursor: col-resize;
+  height: 100%;
+  top: 0;
+  width: 24px;
+  position: absolute;
+  background-image: url("../public/images/re-order-dots.svg");
+}
+
+.timeline-layer-resizer-r {
+  right: 0;
+}
+
+.timeline-layer-resizer-l {
+  left: 0;
+}
+
+.timeline-wrapper {
+  //
+}
+
+.layer-container {
+  width: 100%;
 }
