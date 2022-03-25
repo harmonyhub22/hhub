@@ -2,7 +2,6 @@ import { Button } from "@geist-ui/core";
 import { PlayFill, PauseFill, Moon, Mic, Music } from '@geist-ui/icons'
 import React from "react";
 import * as Tone from "tone";
-import { PaletteDraggable } from "../sessions/PaletteDraggable";
 
 interface PaletteLayerProps {
   stagingSoundName: string|null,
@@ -188,4 +187,4 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
   };
 }
 
-export default PaletteDraggable(PaletteLayer);
+export default PaletteLayer;

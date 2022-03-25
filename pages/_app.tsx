@@ -8,9 +8,7 @@ import { SocketContext } from "../context/socket";
 import { createSocket } from "../api/InitSockets";
 import { MemberContext } from "../context/member";
 import { useRouter } from "next/router";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-// import "../components/temp.css";
+import { Toaster } from 'react-hot-toast';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [member, setMember] = useState<Member>({} as Member);
@@ -40,16 +38,20 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <GeistProvider>
-        <CssBaseline />
-        <MemberContext.Provider value={member}>
-          <SocketContext.Provider value={socket}>
-            <Component {...pageProps} />
-          </SocketContext.Provider>
-        </MemberContext.Provider>
-      </GeistProvider>
-    </DndProvider>
+    <GeistProvider>
+      <CssBaseline />
+      <MemberContext.Provider value={member}>
+        <SocketContext.Provider value={socket}>
+          <Component {...pageProps} />
+        </SocketContext.Provider>
+      </MemberContext.Provider>
+      <Toaster 
+        position="top-left"
+        toastOptions={{
+          className: '.toast-messages',
+          duration: Infinity,
+        }}/>
+    </GeistProvider>
   );
 }
 

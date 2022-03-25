@@ -12,7 +12,6 @@ interface TimelineLayerProps {
   timelineWidth: number,
   soundBufferDate: string|null,
   soundBuffer: Blob|null,
-  top: number,
   commitLayer: any,
 };
 
@@ -239,7 +238,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.setState(prevState => ({
       currentLayer:{
         ...prevState.currentLayer,
-        top: info.y,
+        y: info.y,
         startTime: info.x * (this.props.timelineDuration / this.props.timelineWidth)
       }
     }));
@@ -251,7 +250,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
         bounds=".layer-container" // "parent"
         handle=".timeline-layer-details"
         onStop={this.handleDragStop}
-        defaultPosition={{x: this.state.currentLayer.startTime * (this.props.timelineWidth / this.props.timelineDuration), y: this.props.top}}
+        defaultPosition={{x: this.state.currentLayer.startTime * (this.props.timelineWidth / this.props.timelineDuration), y: this.state.currentLayer.y}}
       >
         <div className="timeline-layer" id={`timeline-layer-${this.state.currentLayer.name}`} 
           style={{minWidth: TimelineLayer.layerMinWidth, maxWidth: this.state.layerMaxWidth, 
