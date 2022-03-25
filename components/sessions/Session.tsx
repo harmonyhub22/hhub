@@ -9,13 +9,13 @@ import SessionMembers from "./SessionMembers";
 import SessionOptions from "./SessionOptions";
 
 interface SessionProps {
-  member: any;
-  socket: any;
+  member: any,
+  socket: any,
 }
 
 interface SessionState {
-  session: SessionInterface|null;
-  partner: Member|null;
+  session: SessionInterface|null,
+  partner: Member|null,
 }
 
 class Session extends Component<SessionProps, SessionState> {
@@ -50,21 +50,6 @@ class Session extends Component<SessionProps, SessionState> {
   render() {
     return (
       <>
-        <Modal>
-          <Modal.Title>Finishing Song</Modal.Title>
-          <Modal.Content>
-            <p>Would you like to leave or download the song</p>
-          </Modal.Content>
-          <Modal.Action passive onClick={() => {}}>
-            Leave
-          </Modal.Action>
-          {
-            <Modal.Action passive onClick={() => {}}>
-              Download
-            </Modal.Action>
-          }
-        </Modal>
-
         <SessionMembers youMemberId={this.props.member.memberId}
           member1={this.state.session?.member1 ?? null} member2={this.state.session?.member2 ?? null} />
 
