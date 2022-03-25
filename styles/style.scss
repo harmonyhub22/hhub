@@ -329,7 +329,7 @@ table.table-palette tfoot {
 
 .timeline-layer-initials {
   padding: 0px 34px 8px 2px;
-};
+}
 
 .timeline-layer-resizer {
   cursor: col-resize;
@@ -561,12 +561,10 @@ $weekend: rgba(250, 246, 225, 0.5);
 }
 
 .navbar {
-  /* background-color: lightgray; */
   /* height: 80px; */
-  /* display: flex; */
-  justify-content: flex-start;
-  align-items: center;
   cursor: pointer;
+  overflow: hidden;
+  position: fixed;
 }
 
 .menu_bars {
@@ -576,7 +574,6 @@ $weekend: rgba(250, 246, 225, 0.5);
 }
 
 .nav_menu {
-  /* background-color: lightgray; */
   width: 250px;
   height: 100vh;
   display: flex;
@@ -613,9 +610,9 @@ $weekend: rgba(250, 246, 225, 0.5);
   border-radius: 4px;
 }
 
-.nav_text a:hover {
-  background-color: #1a83ff;
-}
+// .nav_text a:hover {
+//   background-color: #1a83ff;
+// }
 
 .nav_menu_items {
   width: 100%;

@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import Link from "next/link";
 import { IconContext } from "react-icons";
 import { MemberContext } from "../context/member";
+import { Drawer } from "@geist-ui/core";
 
 import React from "react";
 import * as FaIcons from "react-icons/fa";
