@@ -36,6 +36,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
   static socketEndpointUndoEndSession: string = 'session_unvote_end';
 
   static socketEndpointSendRoomMsg: string = 'session_room_message';
+  static sessionMsgInputId: string = "session-message-input";
 
   constructor(props:SessionOptionsProps) {
     super(props);
@@ -60,6 +61,16 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
       this.props.socket.on(SessionOptions.socketEndpointUndoEndSession, this.registerUnVoteEnd);
       this.props.socket.on(SessionOptions.socketEndpointSendRoomMsg, this.registerNewMsg);
     }
+
+    // Add enter option for message
+    const input = document.getElementById(SessionOptions.sessionMsgInputId);
+    if (input === null) return;
+    input.addEventListener("keyup", (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        this.sendMessage();
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -154,7 +165,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
         <Modal visible={this.state.isMessaging} onClose={this.handleMessaging}>
           <Modal.Title>Message</Modal.Title>
           <Modal.Content>
-            <Input clearable initialValue={this.state.currentMessage} placeholder="type message here" width="100%" onChange={(e) => this.setCurrentMessage(e.target.value)} />
+            <Input id={SessionOptions.sessionMsgInputId} clearable initialValue={this.state.currentMessage} placeholder="type message here" width="100%" onChange={(e) => this.setCurrentMessage(e.target.value)} />
           </Modal.Content>
           <Modal.Action passive onClick={this.handleMessaging}>Cancel</Modal.Action>
           <Modal.Action passive onClick={this.sendMessage}>Send</Modal.Action>

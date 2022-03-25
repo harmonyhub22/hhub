@@ -7,7 +7,6 @@ import LayerInterface from "../../interfaces/models/LayerInterface";
 import Timeline from "./Timeline";
 import SessionMembers from "./SessionMembers";
 import SessionOptions from "./SessionOptions";
-import Router from 'next/router'
 import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
 import Palette from "../ui/Palette";
 import { IoIosColorPalette } from "react-icons/io";
@@ -84,7 +83,7 @@ class Session extends Component<SessionProps, SessionState> {
       <>
         <Modal width="35rem" visible={this.state.mustReturnHome} disableBackdropClick>
           <Modal.Title>Return to Home Page</Modal.Title>
-          <Modal.Content>
+          <Modal.Content style={{textAlign: 'center'}}>
             <p>To rejoin your session please return home</p>
             <Button onClick={() => {window.location.assign("/")}}>Return Home</Button>
           </Modal.Content>
