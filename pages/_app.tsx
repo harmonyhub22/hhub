@@ -18,8 +18,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   const fetchCurrentMember = async () => {
+    console.log("fetching member");
     const fetchedMember = await getCurrentMember();
-    console.log(fetchedMember);
     if (fetchedMember !== undefined && fetchedMember !== null) {
       console.log(fetchedMember);
       setMember(fetchedMember);
@@ -27,7 +27,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         setSocket(createSocket(fetchedMember.memberId));
       }
     } else {
-      console.log("logging in");
+      console.log("routing to login page");
       router.push({
         pathname: "/login",
       });
