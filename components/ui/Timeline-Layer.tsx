@@ -65,11 +65,9 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     if (this.state.tonePlayer === null) {
       this.createTonePlayer(this.props.layer.fileName, this.props.soundBuffer, this.props.layer.bucketUrl);
     }
-    /*
     initResize(`timeline-layer-${this.state.currentLayer.name}`, TimelineLayer.layerMinWidth, this.state.layerMaxWidth,
       `resizer-l-${this.state.currentLayer.name}`, `resizer-r-${this.state.currentLayer.name}`, // need to fix cause name not unique
       this.updateTrimmedStart, this.updateTrimmedEnd);
-    */
   }
 
   componentWillUnmount() {

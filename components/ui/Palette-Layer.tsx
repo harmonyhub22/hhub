@@ -1,20 +1,24 @@
-import { Button } from "@geist-ui/core";
-import { PlayFill, PauseFill, Moon, Mic, Music } from '@geist-ui/icons'
+import { Button, Tooltip } from "@geist-ui/core";
+import { PlayFill, PauseFill, Moon, Mic, Music, ChevronLeft } from '@geist-ui/icons'
 import React from "react";
 import * as Tone from "tone";
+import LayerInterface from "../../interfaces/models/LayerInterface";
+import Member from "../../interfaces/models/Member";
+import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
+import { config } from "../config";
 
 interface PaletteLayerProps {
   stagingSoundName: string|null,
   stagingSoundBufferDate: string|null,
   stagingSoundBufferDuration: any,
   stagingSoundBuffer: Blob|null,
-  drag: any,
-  top: number,
-  left: number,
+  member: Member,
+  stageLayer: any,
+  showPalette: any,
+  localStorageKey: string,
 };
 
 interface PaletteLayerState {
-  stagingSoundBuffer: Blob|null,
   isPlaying: boolean,
   timer: any,
   tonePlayer: any,
@@ -32,7 +36,6 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
   constructor(props:PaletteLayerProps) {
     super(props);
     this.state = {
-      stagingSoundBuffer: null,
       isPlaying: false,
       timer: null,
       tonePlayer: null,
@@ -42,6 +45,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
     };
     this.handlePlayer = this.handlePlayer.bind(this);
     this.createTonePlayer = this.createTonePlayer.bind(this);
+    this.handleStageLayer = this.handleStageLayer.bind(this);
   }
 
   componentDidMount() {
@@ -80,7 +84,6 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
         };
         this.setState({
           tonePlayer: tonePlayer,
-          stagingSoundBuffer: buffer,
           duration: duration,
           isPlaying: false,
           currentSeconds: 0,
@@ -105,7 +108,6 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
       };
       this.setState({
         tonePlayer: tonePlayer,
-        stagingSoundBuffer: buffer,
         duration: duration,
         isPlaying: false,
         currentSeconds: 0,
@@ -163,11 +165,47 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
     });
   };
 
+  handleStageLayer() {
+    const layer: LayerInterface = {
+      layerId: null,
+      member: this.props.member,
+      name: `layer-${Date.now()}`,
+      startTime: 0,
+      duration: this.state.duration,
+      fileName: this.props.stagingSoundName,
+      bucketUrl: null,
+      fadeInDuration: 0,
+      fadeOutDuration: 0,
+      reversed: false,
+      trimmedStartDuration: 0,
+      trimmedEndDuration: 0,
+      y: 0
+    }
+    const newLayer: NeverCommittedLayer = {
+      layer: layer,
+      stagingSoundBuffer: this.props.stagingSoundBuffer,
+      stagingSoundBufferDate: this.props.stagingSoundBufferDate,
+    };
+    this.props.stageLayer(newLayer);
+    const genreData = {
+      genre: JSON.parse(window.localStorage.getItem(this.props.localStorageKey) ?? '')?.genre ?? Object.keys(config.sounds)[0],
+    }
+    window.localStorage.setItem(this.props.localStorageKey, JSON.stringify(genreData));
+    this.props.showPalette(false);
+  };
+
   render() {
     return (
       <>
-        <div ref={this.props.drag} className="palette-layer" style={{backgroundColor: this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor, border: this.state.tonePlayer === null ? "1px solid #eaeaea" : "none"}}>
+        <div className="palette-layer" style={{backgroundColor: this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor, border: this.state.tonePlayer === null ? "1px solid #eaeaea" : "none"}}>
           <div className="palette-layer-details">
+            {this.state.tonePlayer !== null && <Tooltip text={'Stage Layer'} type="dark">
+              <Button iconRight={<ChevronLeft color="white" />} auto
+                style={{backgroundColor: 'transparent', border: 'none', padding: '0px', height: '60px'
+                }}
+                onClick={this.handleStageLayer}
+              ></Button>
+            </Tooltip>}
             <div>
               <Button iconRight={this.state.tonePlayer === null ? <Moon/> : this.state.isPlaying ? 
                 <PauseFill color={PaletteLayer.hasPlayerIconColor} /> : <PlayFill color={PaletteLayer.hasPlayerIconColor}/>} auto scale={2/3} px={0.6}

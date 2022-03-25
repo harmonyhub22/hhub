@@ -1,30 +1,22 @@
 import React, { CSSProperties, FC, useCallback, useEffect, useState } from 'react'
 import TimelineLayer from '../ui/Timeline-Layer'
 import LayerInterface from '../../interfaces/models/LayerInterface';
-
-interface NeverCommittedLayer {
-  layer: LayerInterface, // put stagingFileName as fileName
-  stagingSoundBuffer: Blob|null,
-  stagingSoundBufferDate: string|null,
-}
+import NeverCommittedLayer from '../../interfaces/NeverComittedLayer';
 
 interface ContainerProps {
   layers: LayerInterface[],
+  neverCommittedLayers: NeverCommittedLayer[],
   commitLayer: any,
   width: number,
   seconds: number,
 }
 
 interface ContainerState {
-  neverCommittedLayers: NeverCommittedLayer[],
 }
 
 class Container extends React.Component<ContainerProps, ContainerState> {
   constructor(props: ContainerProps) {
     super(props);
-    this.state = {
-      neverCommittedLayers: [],
-    };
   };
 
   componentDidMount() {
@@ -49,7 +41,7 @@ class Container extends React.Component<ContainerProps, ContainerState> {
           )
         })}
 
-        {this.state.neverCommittedLayers.map((neverCommittedLayer:NeverCommittedLayer, i:number) => {
+        {this.props.neverCommittedLayers.map((neverCommittedLayer:NeverCommittedLayer, i:number) => {
           return (
             <TimelineLayer 
               key={`never-comitted-layer-${i}`}

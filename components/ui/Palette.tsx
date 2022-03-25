@@ -7,9 +7,13 @@ import React from "react";
 import { Mic, Music } from '@geist-ui/icons';
 import PaletteLayer from "./Palette-Layer";
 import PaletteRecorder from "./Palette-Recorder";
+import Member from "../../interfaces/models/Member";
 
 
 interface PaletteProps {
+  stageLayer: any,
+  showPalette: any,
+  member: Member,
 };
 
 interface PaletteState {
@@ -25,6 +29,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
   static sounds: any = config.sounds;
   static db_name: string = 'AUDIO_BUFFERS';
   static db_obj_store_name: string = 'AUDIO';
+  static local_storage_key: string = 'palette-staging-layer';
 
   constructor(props:PaletteProps) {
     super(props);
@@ -48,7 +53,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
   }
 
   componentDidMount() {
-    const data = window.localStorage.getItem('palette-staging-layer') || null;
+    const data = window.localStorage.getItem(Palette.local_storage_key) || null;
     if (data === null) return;
 
     // get data from local storage
@@ -56,7 +61,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
 
     // set the state
     this.setState({
-      stagingLayerSoundName: jsonData.name,
+      stagingLayerSoundName: jsonData.name || null,
       stagingLayerSoundBufferDate: jsonData.date || null,
       stagingLayerSoundBufferDuration: jsonData.duration || null,
       genre: jsonData.genre || Object.keys(config.sounds)[0],
@@ -125,7 +130,6 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
   }
 
   updateLayerSoundBuffer (stagingLayerSoundBuffer:Blob|null, duration:number|null) {
-    const oldBufferDate: string|null = this.state.stagingLayerSoundBufferDate;
     const request = indexedDB.open(Palette.db_name, 1);
     const newDate = Date.now().toString();
     request.onsuccess = (event) => {
@@ -188,16 +192,17 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
       <div style={{textAlign: "center"}}>
         <Drawer.Title>New Layer</Drawer.Title>
         {(this.state.stagingLayerSoundBufferDate === null && this.state.stagingLayerSoundName === null) ? 
-          <p>Choose a sound or make a recording</p> 
-          : <p>Drag and Drop on the session to stage the layer</p>}
+          <p>Choose a sound or make a recording</p>
+          : <p>Click the arrow below to stage the layer on the timeline</p>}
         <PaletteLayer
           stagingSoundBuffer={this.state.stagingLayerSoundBuffer}
           stagingSoundBufferDate={this.state.stagingLayerSoundBufferDate}
           stagingSoundBufferDuration={this.state.stagingLayerSoundBufferDuration}
           stagingSoundName={this.state.stagingLayerSoundName}
-          isDragging={false}
-          isDropped={false}
-          top={0}
+          member={this.props.member}
+          stageLayer={this.props.stageLayer}
+          showPalette={this.props.showPalette}
+          localStorageKey={Palette.local_storage_key}
         />
       </div>
     </>

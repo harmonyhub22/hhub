@@ -1,10 +1,13 @@
 import React from "react";
 import LayerInterface from "../../interfaces/models/LayerInterface";
+import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
 import Container from "./Container";
 
 interface TimelineProps {
   layers: LayerInterface[],
+  neverCommittedLayers: NeverCommittedLayer[],
   commitLayer: any,
+  stageLayer: any,
 };
 
 interface TimelineState {
@@ -39,8 +42,8 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   render() {
     return (
       <div className="timeline-wrapper" id={Timeline.TimelineWrapperId}>
-        <Container layers={this.props.layers} commitLayer={this.props.commitLayer} 
-          width={this.state.width} seconds={this.state.seconds} />
+        <Container layers={this.props.layers} neverCommittedLayers={this.props.neverCommittedLayers} 
+          commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds} />
       </div>
     );
   }
