@@ -3,6 +3,7 @@ import TimelineLayer from '../ui/Timeline-Layer'
 import { Layers } from '@geist-ui/icons';
 import { Droppable } from './Droppable';
 import LayerInterface from '../../interfaces/models/LayerInterface';
+import Draggable from 'react-draggable';
 
 interface NeverCommittedLayer {
   id: string,
@@ -69,16 +70,14 @@ class Container extends React.Component<ContainerProps, ContainerState> {
     console.log(this.props);
   }
 
-  // componentDidUpdate(prevProps:ContainerProps) {
-  // }
-
   render() {
     return (
       <div className="layer-container">
 
         {this.props.layers.map((layer:LayerInterface, i:number) => {      
           return (
-          <TimelineLayer key={`layer-${i}`}
+          <TimelineLayer
+            key={`layer-${i}`}
             layerId={layer.layerId}
             memberId={layer.memberId}
             name={layer.name}
@@ -133,4 +132,4 @@ class Container extends React.Component<ContainerProps, ContainerState> {
   }
 }
 
-export default Droppable(Container);
+export default Container;

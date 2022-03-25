@@ -1,6 +1,7 @@
 import { Badge, Button, Code, Description, Input, Modal, Popover, Slider, Tag, Tooltip } from "@geist-ui/core";
 import { Mic, Music, CheckInCircle, MoreVertical, Trash2, Copy, Repeat, VolumeX, Edit3, Info, Sunrise } from '@geist-ui/icons'
 import React from "react";
+import Draggable from "react-draggable";
 import * as Tone from "tone";
 import LayerInterface from "../../interfaces/models/LayerInterface";
 import { initResize } from "./helpers/resize";
@@ -81,6 +82,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.handleCommit = this.handleCommit.bind(this);
     this.updateTrimmedStart = this.updateTrimmedStart.bind(this);
     this.updateTrimmedEnd = this.updateTrimmedEnd.bind(this);
+    this.handleDragStop = this.handleDragStop.bind(this);
   }
 
   componentDidMount() {
@@ -261,21 +263,31 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     });
   };
 
+  handleDragStop = (event:any, info:any) => {
+    console.log('Event name: ', event.type);
+    console.log(event, info);
+  }
+
   render() {
     return (
-      <>
-        <Modal visible={this.state.renaming} onClose={this.handleRename}>
-          <Modal.Title>Rename Layer</Modal.Title>
-          <Modal.Content>
-            <Input clearable initialValue={this.state.newName} placeholder="name goes here" width="100%" onChange={this.setNewName} />
-          </Modal.Content>
-          <Modal.Action passive onClick={this.handleRename}>Cancel</Modal.Action>
-          <Modal.Action passive onClick={this.setName}>Submit</Modal.Action>
-        </Modal>
-
+      <Draggable
+        bounds=".layer-container" // "parent"
+        handle=".timeline-layer-drag"
+        onStop={this.handleDragStop}
+      >
         <div className="timeline-layer" id={`timeline-layer-${this.state.name}`} 
           style={{minWidth: TimelineLayer.layerMinWidth, maxWidth: this.state.layerMaxWidth, 
           width: (this.props.duration - this.state.trimmedStart - this.state.trimmedEnd) * (this.state.layerMaxWidth / this.props.duration)}}>
+          
+          <Modal visible={this.state.renaming} onClose={this.handleRename}>
+            <Modal.Title>Rename Layer</Modal.Title>
+            <Modal.Content>
+              <Input clearable initialValue={this.state.newName} placeholder="name goes here" width="100%" onChange={this.setNewName} />
+            </Modal.Content>
+            <Modal.Action passive onClick={this.handleRename}>Cancel</Modal.Action>
+            <Modal.Action passive onClick={this.setName}>Submit</Modal.Action>
+          </Modal>
+          
           <div className='timeline-layer-resizer timeline-layer-resizer-l' id={`resizer-l-${this.state.name}`}></div>
 
           <div className="timeline-layer-details">
@@ -289,7 +301,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
               </Tooltip>
             </div>}
 
-            {this.state.muted ? <div className="timeline-muted-layer-wav"></div> : <div className="timeline-layer-wav"></div>}
+            {this.state.muted ? <div className="timeline-layer-drag timeline-muted-layer-wav"></div>
+              : <div className="timeline-layer-drag timeline-layer-wav"></div>}
             
             <div>
               <Popover
@@ -375,7 +388,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
           <div className='timeline-layer-resizer timeline-layer-resizer-r' id={`resizer-r-${this.state.name}`}></div>
         </div>
-      </>
+      </Draggable>
     )
   };
 }
