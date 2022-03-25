@@ -1,6 +1,8 @@
+import Member from "./Member";
+
 export default interface LayerInterface {
     layerId: string|null,
-    memberId: string,
+    member: Member,
     name: string,
     startTime: number,
     duration: number,
@@ -9,6 +11,7 @@ export default interface LayerInterface {
     fadeInDuration: number,
     fadeOutDuration: number,
     reversed: boolean,
-    trimmedStartDuration: number, // ie. song is 10 seconds and they trim a second off of the beginning, trimmedStartDuration = 1
+    trimmedStartDuration: number,
     trimmedEndDuration: number,
+    top: number, // we'll add this to the db
 }

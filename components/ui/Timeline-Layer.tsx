@@ -1,4 +1,4 @@
-import { Badge, Button, Code, Description, Input, Modal, Popover, Slider, Tag, Tooltip } from "@geist-ui/core";
+import { Badge, Button, Code, Description, Input, Modal, Popover, Slider, Spacer, Tag, Tooltip } from "@geist-ui/core";
 import { Mic, Music, CheckInCircle, MoreVertical, Trash2, Copy, Repeat, VolumeX, Edit3, Info, Sunrise } from '@geist-ui/icons'
 import React from "react";
 import Draggable from "react-draggable";
@@ -7,38 +7,20 @@ import LayerInterface from "../../interfaces/models/LayerInterface";
 import { initResize } from "./helpers/resize";
 
 interface TimelineLayerProps {
-  layerId: string|null,
-  memberId: string|null,
-  name: string|null,
-  fileName: string|null,
+  layer: LayerInterface,
+  timelineDuration: number,
+  timelineWidth: number,
   soundBufferDate: string|null,
   soundBuffer: Blob|null,
-  bucketUrl: string|null,
-  duration: number,
-  initialStartTime: number,
-  creatorInitials: string,
-  timelineSeconds: number,
-  timelineWidth: number,
-  trimmedStart: number,
-  trimmedEnd: number,
-  fadeInDuration: number,
-  fadeOutDuration: number,
-  reversed: boolean,
   top: number,
   commitLayer: any,
 };
 
 interface TimelineLayerState {
+  currentLayer: LayerInterface,
   tonePlayer: any|null,
   committed: boolean|null, // if true, there partner should see it
-  startTime: number, // beats or seconds (tbd) from the beginning of timeline
-  trimmedStart: number, // ie. song is 10 seconds and they trim a second off of the beginning, trimmedStart = 1
-  trimmedEnd: number, // ie. song is 10 seconds and they trim 2 seconds off of the end, trimmedEnd = 2
   muted: boolean,
-  name: string,
-  fadeInDuration: number,
-  fadeOutDuration: number,
-  reversed: boolean,
   flaggedForDelete: boolean,
   renaming: boolean,
   newName: string,
@@ -47,25 +29,19 @@ interface TimelineLayerState {
 
 class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerState> {
 
-  static layerMinWidth: number = 240;
+  static layerMinWidth: number = 120;
 
   constructor(props:TimelineLayerProps) {
     super(props);
     this.state = {
-      committed: props.layerId !== null,
-      startTime: props.initialStartTime,
-      trimmedStart: props.trimmedStart,
-      trimmedEnd: props.trimmedEnd,
+      committed: (props.layer?.layerId ?? null) !== null,
+      currentLayer: props.layer,
       tonePlayer: null,
       muted: false,
-      name: props.name ?? `Layer-${Date.now()}`,
-      fadeInDuration: props.fadeInDuration,
-      fadeOutDuration: props.fadeOutDuration,
-      reversed: props.reversed,
       flaggedForDelete: false,
       renaming: false,
       newName: '',
-      layerMaxWidth: (props.duration / props.timelineSeconds) * props.timelineWidth,
+      layerMaxWidth: (props.layer.duration / props.timelineDuration) * props.timelineWidth,
     };
     this.handlePlayer = this.handlePlayer.bind(this);
     this.createTonePlayer = this.createTonePlayer.bind(this);
@@ -88,11 +64,13 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   componentDidMount() {
     console.log(this.props);
     if (this.state.tonePlayer === null) {
-      this.createTonePlayer(this.props.fileName, this.props.soundBuffer, this.props.bucketUrl);
+      this.createTonePlayer(this.props.layer.fileName, this.props.soundBuffer, this.props.layer.bucketUrl);
     }
-    initResize(`timeline-layer-${this.state.name}`, TimelineLayer.layerMinWidth, this.state.layerMaxWidth,
-      `resizer-l-${this.state.name}`, `resizer-r-${this.state.name}`, 
+    /*
+    initResize(`timeline-layer-${this.state.currentLayer.name}`, TimelineLayer.layerMinWidth, this.state.layerMaxWidth,
+      `resizer-l-${this.state.currentLayer.name}`, `resizer-r-${this.state.currentLayer.name}`, // need to fix cause name not unique
       this.updateTrimmedStart, this.updateTrimmedEnd);
+    */
   }
 
   componentWillUnmount() {
@@ -100,37 +78,28 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   }
 
   componentDidUpdate(prevProps:TimelineLayerProps, prevState:TimelineLayerState) {
-
-    if (prevState.fadeInDuration !== this.state.fadeInDuration
-      || prevState.fadeOutDuration !== this.state.fadeOutDuration
-      || prevState.flaggedForDelete !== this.state.flaggedForDelete
-      || prevState.name !== this.state.name
-      || prevState.reversed !== this.state.reversed
-      || prevState.startTime !== this.state.startTime
-      || prevState.trimmedStart !== this.state.trimmedStart
-      || prevState.trimmedEnd !== this.state.trimmedEnd) {
-      
+    if (JSON.stringify(prevState.currentLayer) !== JSON.stringify(this.state.currentLayer)) {
       this.setState({
         committed: false,
       });
     }
 
-    if (prevProps.duration !== this.props.duration 
-      || prevProps.timelineSeconds !== this.props.timelineSeconds
+    if (prevProps.layer.duration !== this.props.layer.duration 
+      || prevProps.timelineDuration !== this.props.timelineDuration
       || prevProps.timelineWidth !== this.props.timelineWidth) {
       
       this.setState({
-        layerMaxWidth: (this.props.duration / this.props.timelineSeconds) * this.props.timelineWidth,
+        layerMaxWidth: (this.props.layer.duration / this.props.timelineDuration) * this.props.timelineWidth,
       });
     }
   };
 
-  createTonePlayer(name: string|null, buffer: Blob|null, bucketUrl: string|null) {
+  createTonePlayer(fileName: string|null, buffer: Blob|null, bucketUrl: string|null) {
     if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
 
-    if (name !== null) {
+    if (fileName !== null) {
       this.setState({
-        tonePlayer: new Tone.Player('../../' + name + '.mp3').toDestination(),
+        tonePlayer: new Tone.Player('../../' + fileName + '.mp3').toDestination(),
       });
     } else if (buffer !== null) {
       this.setState({
@@ -148,11 +117,10 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       <Description title="Layer Info" style={{padding: '0px 10px 0px 10px'}} content={
       <>
         <p>Committed <Code>{this.state.committed ? "Yes" : "No"}</Code></p>
-        <p>Name <Code>{this.state.name}</Code></p>
-        <p>Created <Code>{this.state.name}</Code></p>
-        <p>Artist <Code>{this.state.name}</Code></p>
-        <p>Duration <Code>{this.props.duration - this.state.trimmedStart - this.state.trimmedEnd}</Code></p>
-        <p>Original Duration <Code>{this.props.duration}</Code></p>
+        <p>Name <Code>{this.state.currentLayer.name}</Code></p>
+        <p>Artist <Code>{this.state.currentLayer.member.firstname}{' '}{this.state.currentLayer.member.lastname}</Code></p>
+        <p>Duration <Code>{this.props.layer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration}</Code></p>
+        <p>Original Duration <Code>{this.props.layer.duration}</Code></p>
       </>
       }></Description>
     );
@@ -162,27 +130,13 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.setState({
       committed: true,
     });
-    const currentLayer: LayerInterface = {
-      layerId: this.props.layerId,
-      memberId: this.props.memberId ?? "", // ?? TimelineLayer.member.memberId,
-      name: this.state.name,
-      startTime: this.state.startTime,
-      duration: this.props.duration,
-      fileName: this.props.fileName,
-      bucketUrl: this.props.bucketUrl,
-      fadeInDuration: this.state.fadeInDuration,
-      fadeOutDuration: this.state.fadeOutDuration,
-      reversed: this.state.reversed,
-      trimmedStartDuration: this.state.trimmedStart,
-      trimmedEndDuration: this.state.trimmedEnd,
-    };
-    this.props.commitLayer(currentLayer);
+    this.props.commitLayer(this.state.currentLayer);
   };
 
   handlePlayer() {
     if (this.state.tonePlayer === null) return;
-    this.state.tonePlayer.start(0, this.state.trimmedStart, 
-      this.props.duration - this.state.trimmedStart - this.state.trimmedEnd);
+    this.state.tonePlayer.start(0, this.state.currentLayer.trimmedStartDuration, 
+      this.props.layer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration);
   };
 
   handleRename() {
@@ -199,11 +153,14 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
   setName() {
     if ((this.state.newName?.length ?? 0) === 0) return;
-    this.setState({
-      name: this.state.newName,
+    this.setState(prevState => ({
+      currentLayer:{
+        ...prevState.currentLayer,
+        name: this.state.newName,
+      },
       newName: '',
       renaming: false,
-    });
+    }));
   };
 
   handleMute(e:any) {
@@ -216,22 +173,30 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   handleFadeIn(val:number) {
-    this.setState({
-      fadeInDuration: val,
-    });
+    this.setState(prevState => ({
+      currentLayer:{
+        ...prevState.currentLayer,
+        fadeInDuration: val,
+      }
+    }));
   };
 
   handleFadeOut(val:number) {
-    this.setState({
-      fadeOutDuration: val,
-    });
+    this.setState(prevState => ({
+      currentLayer:{
+        ...prevState.currentLayer,
+        fadeOutDuration: val,
+      }
+    }));
   };
 
   handleReverse() {
-    console.log(this.state.reversed);
-    this.setState({
-      reversed: !this.state.reversed,
-    });
+    this.setState(prevState => ({
+      currentLayer:{
+        ...prevState.currentLayer,
+        reversed: !prevState.currentLayer.reversed,
+      }
+    }));
   };
 
   handleDuplicate() {
@@ -239,45 +204,60 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   }
 
   handleDelete() {
-    // delete the layer
     this.setState({
       flaggedForDelete: !this.state.flaggedForDelete,
     });
   };
 
   updateTrimmedStart(deltaX:number) {
-    let trimmedStart = this.state.trimmedStart + (deltaX * (this.props.duration / this.state.layerMaxWidth));
-    if (trimmedStart < 0) trimmedStart = 0;
-    else if (trimmedStart > this.props.duration) trimmedStart = this.props.duration;
-    this.setState({
-      trimmedStart: trimmedStart,
-    });
+    let trimmedStartDuration = this.state.currentLayer.trimmedStartDuration + (deltaX * (this.props.layer.duration / this.state.layerMaxWidth));
+    if (trimmedStartDuration < 0) trimmedStartDuration = 0;
+    else if (trimmedStartDuration > this.props.layer.duration) trimmedStartDuration = this.props.layer.duration;
+    this.setState(prevState => ({
+      currentLayer:{
+        ...prevState.currentLayer,
+        trimmedStartDuration: trimmedStartDuration,
+      }
+    }));
   };
 
   updateTrimmedEnd(deltaX:number) {
-    let trimmedEnd = this.state.trimmedEnd + (deltaX * (this.props.duration / this.state.layerMaxWidth));
-    if (trimmedEnd < 0) trimmedEnd = 0;
-    else if (trimmedEnd > this.props.duration) trimmedEnd = this.props.duration;
-    this.setState({
-      trimmedEnd: trimmedEnd,
-    });
+    let trimmedEndDuration = this.state.currentLayer.trimmedEndDuration + (deltaX * (this.props.layer.duration / this.state.layerMaxWidth));
+    if (trimmedEndDuration < 0) trimmedEndDuration = 0;
+    else if (trimmedEndDuration > this.props.layer.duration) trimmedEndDuration = this.props.layer.duration;
+    this.setState(prevState => ({
+      currentLayer:{
+        ...prevState.currentLayer,
+        trimmedEndDuration: trimmedEndDuration,
+      }
+    }));
   };
 
   handleDragStop = (event:any, info:any) => {
     console.log('Event name: ', event.type);
     console.log(event, info);
+    this.setState(prevState => ({
+      currentLayer:{
+        ...prevState.currentLayer,
+        top: info.y,
+        startTime: info.x * (this.props.timelineDuration / this.props.timelineWidth)
+      }
+    }));
   }
 
   render() {
     return (
       <Draggable
         bounds=".layer-container" // "parent"
-        handle=".timeline-layer-drag"
+        handle=".timeline-layer-details"
         onStop={this.handleDragStop}
+        defaultPosition={{x: this.state.currentLayer.startTime * (this.props.timelineWidth / this.props.timelineDuration), y: this.props.top}}
       >
-        <div className="timeline-layer" id={`timeline-layer-${this.state.name}`} 
+        <div className="timeline-layer" id={`timeline-layer-${this.state.currentLayer.name}`} 
           style={{minWidth: TimelineLayer.layerMinWidth, maxWidth: this.state.layerMaxWidth, 
-          width: (this.props.duration - this.state.trimmedStart - this.state.trimmedEnd) * (this.state.layerMaxWidth / this.props.duration)}}>
+          width: (this.props.layer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration) * (this.state.layerMaxWidth / this.props.layer.duration),
+        }}
+        >
           
           <Modal visible={this.state.renaming} onClose={this.handleRename}>
             <Modal.Title>Rename Layer</Modal.Title>
@@ -288,28 +268,36 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
             <Modal.Action passive onClick={this.setName}>Submit</Modal.Action>
           </Modal>
           
-          <div className='timeline-layer-resizer timeline-layer-resizer-l' id={`resizer-l-${this.state.name}`}></div>
+          <div className='timeline-layer-resizer timeline-layer-resizer-l' id={`resizer-l-${this.state.currentLayer.name}`}></div>
 
           <div className="timeline-layer-details">
             {this.state.committed === false && <div>
-              <Tooltip text={'Commit - let your partner see your layer'} 
-                placement="bottomStart" type="dark" className="timeline-layer-commit-btn">
-                <Button style={{backgroundColor: this.state.flaggedForDelete ? "red" : "green", border: "none", borderRadius: '50%'}} iconRight={
-                  <CheckInCircle color="white" size={40} />
-                } auto px={0.7}
+              <Tooltip text={'Commit - let your partner see your layer'}
+                placement="bottomStart" type="dark" className="timeline-layer-commit-tooltip">
+                <Button style={{backgroundColor: this.state.flaggedForDelete ? "red" : "green"}} iconRight={
+                  <CheckInCircle color="white" scale={0.25}/>
+                } auto px={0.7} className="timeline-layer-commit-btn"
                 onClick={this.handleCommit}/>
               </Tooltip>
             </div>}
 
-            {this.state.muted ? <div className="timeline-layer-drag timeline-muted-layer-wav"></div>
-              : <div className="timeline-layer-drag timeline-layer-wav"></div>}
+            {this.state.muted ? <div className="timeline-muted-layer-wav"></div>
+              : <div className="timeline-layer-wav"></div>}
             
             <div>
               <Popover
                 content={
                   <>
                   <Popover.Item title style={{justifyContent: 'center'}}>
-                    Layer Options
+                    Layer Details
+                    <Spacer w={3}/>
+                    <Popover
+                      content={this.getInfo()}
+                      style={{display: 'flex', paddingRight: '5px'}}
+                      placement="rightStart"
+                      >
+                      <Info />
+                    </Popover>
                   </Popover.Item>
                   <Popover.Item style={{justifyContent: 'center', minWidth: '170px'}}>
                     <Button auto icon={<Edit3 />} type="secondary" ghost onClick={this.handleRename} style={{width: '100%', height: '100%'}}>
@@ -326,20 +314,20 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
                     Fade In
                   </Popover.Item>
                   <Popover.Item>
-                    <Slider value={this.state.fadeInDuration} min={0} max={this.props.duration} 
+                    <Slider value={this.state.currentLayer.fadeInDuration} min={0} max={this.props.layer.duration} 
                       step={0.5} onChange={this.handleFadeIn} />
                   </Popover.Item>
                   <Popover.Item style={{justifyContent: 'center'}}>
                     Fade Out
                   </Popover.Item>
                   <Popover.Item>
-                    <Slider value={this.state.fadeOutDuration} min={0} max={this.props.duration} 
+                    <Slider value={this.state.currentLayer.fadeOutDuration} min={0} max={this.props.layer.duration} 
                       step={0.5} onChange={this.handleFadeOut} />
                   </Popover.Item>
                   <Popover.Item style={{justifyContent: 'center'}}>
                     <Button auto icon={<Repeat />} 
                       onClick={this.handleReverse} style={{width: '100%', height: '100%'}}>
-                      {this.state.reversed ?
+                      {this.state.currentLayer.reversed ?
                       "Unreverse" : "Reverse"}
                     </Button>
                   </Popover.Item>
@@ -365,28 +353,20 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
                 <MoreVertical />
               </Popover>
             </div>
-            
-            <div>
-              <Popover
-                content={this.getInfo()}
-                style={{display: 'flex', paddingRight: '5px'}}>
-                <Info />
-              </Popover>
-            </div>
 
             <div className="timeline-layer-initials">
               <Badge.Anchor placement="bottomRight" className="timeline-layer-initials">
                 <Badge scale={0.1} type="warning">
-                  {this.props.fileName === null ? 
+                  {this.props.layer.fileName === null ? 
                   <Mic size={16} color="white"/> :
                   <Music size={16} color="white"/>}
                 </Badge>
-                <Tag type="default" invert>{this.props.creatorInitials}</Tag>
+                <Tag type="default" invert>{this.props.layer.member.firstname[0]}{this.props.layer.member.lastname[0]}</Tag>
               </Badge.Anchor>
             </div>
           </div>
 
-          <div className='timeline-layer-resizer timeline-layer-resizer-r' id={`resizer-r-${this.state.name}`}></div>
+          <div className='timeline-layer-resizer timeline-layer-resizer-r' id={`resizer-r-${this.state.currentLayer.name}`}></div>
         </div>
       </Draggable>
     )

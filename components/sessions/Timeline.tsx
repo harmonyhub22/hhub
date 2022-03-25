@@ -19,8 +19,8 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   constructor(props:TimelineProps) {
     super(props);
     this.state = {
-      width: 1000,
-      seconds: 30,
+      width: 885, // change
+      seconds: 10, // change
     };
   };
 
