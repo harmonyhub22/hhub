@@ -44,7 +44,6 @@ class Container extends React.Component<ContainerProps, ContainerState> {
             soundBuffer={null}
             timelineDuration={this.props.seconds}
             timelineWidth={this.props.width}
-            top={60} // need to figure out a better way for this
             commitLayer={this.props.commitLayer}
           />
           )
@@ -59,7 +58,6 @@ class Container extends React.Component<ContainerProps, ContainerState> {
               soundBuffer={neverCommittedLayer.stagingSoundBuffer}
               timelineDuration={this.props.seconds}
               timelineWidth={this.props.width}
-              top={60}
               commitLayer={this.props.commitLayer}
             />
           )

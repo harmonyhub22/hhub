@@ -13,5 +13,5 @@ export default interface LayerInterface {
     reversed: boolean,
     trimmedStartDuration: number,
     trimmedEndDuration: number,
-    top: number, // we'll add this to the db
+    y: number
 }

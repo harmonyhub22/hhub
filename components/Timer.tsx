@@ -110,4 +110,4 @@ const Timer = ({initialMinutes = 0,initialSeconds = 10,}) => {
     );
   };
   export default Timer;
-  */
+*/
