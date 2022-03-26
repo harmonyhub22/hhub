@@ -11,7 +11,7 @@ import * as MdIcons from "react-icons/md";
 import * as CgIcons from "react-icons/cg";
 import * as GiIcons from "react-icons/gi";
 
-export const SidebarData = [
+const SidebarData = [
   {
     title: "Home",
     path: "/",

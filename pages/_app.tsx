@@ -10,7 +10,7 @@ import { MemberContext } from "../context/member";
 import { useRouter } from "next/router";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-// import "../components/temp.css";
+import { AnimatePresence } from "framer-motion";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [member, setMember] = useState<Member>({} as Member);
@@ -45,7 +45,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <CssBaseline />
         <MemberContext.Provider value={member}>
           <SocketContext.Provider value={socket}>
-            <Component {...pageProps} />
+            <AnimatePresence exitBeforeEnter>
+              <Component {...pageProps} key={router.pathname} />
+            </AnimatePresence>
           </SocketContext.Provider>
         </MemberContext.Provider>
       </GeistProvider>
