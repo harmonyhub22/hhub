@@ -57,7 +57,12 @@ const Home = () => {
     <>
       <Navbar />
       <motion.div className="home">
-        <motion.div variants={slider} initial="hidden" animate="show">
+        <motion.div
+          className="home-single-image"
+          variants={slider}
+          initial="hidden"
+          animate="show"
+        >
           <SingleHomeAnimation />
         </motion.div>
         <motion.div className="home-button">

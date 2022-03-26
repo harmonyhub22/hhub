@@ -2,7 +2,7 @@
   z-index: 1;
   min-height: 100vh;
   width: 100%;
-  margin-left: -3rem;
+  margin-left: auto;
   @include flex(space-between, center, row);
   @media (max-width: 1300px) {
     display: block;
@@ -13,6 +13,10 @@
       display: none;
     }
   }
+}
+
+.home-single-image {
+  overflow: hidden;
 }
 
 #man {

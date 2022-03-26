@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 import Link from "next/link";
 import { IconContext } from "react-icons";
 import { MemberContext } from "../context/member";
-import { Drawer } from "@geist-ui/core";
 
 import React from "react";
 import * as FaIcons from "react-icons/fa";
@@ -12,7 +11,7 @@ import * as MdIcons from "react-icons/md";
 import * as CgIcons from "react-icons/cg";
 import * as GiIcons from "react-icons/gi";
 
-export const SidebarData = [
+const SidebarData = [
   {
     title: "Home",
     path: "/",
@@ -61,7 +60,7 @@ const Navbar = () => {
     <>
       <IconContext.Provider value={{ color: "black" }}>
         <div className="navbar">
-          <Link href="/" passHref>
+          <Link href="#" passHref>
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
           <nav className={sidebar ? "nav_menu_active" : "nav_menu"}>

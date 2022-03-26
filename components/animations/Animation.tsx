@@ -19,10 +19,9 @@ export const photoAnim = {
 };
 
 export const slider = {
-  hidden: { x: "-130%", skew: "45deg" },
+  hidden: { x: "-130%" },
   show: {
     x: "0%",
-    skew: "0deg",
     transition: { ease: "easeOut", duration: 1 },
   },
 };
@@ -43,10 +42,9 @@ export const imgVariant = {
 };
 
 export const homeSlider = {
-  hidden: { x: "130%", skew: "45deg" },
+  hidden: { x: "130%" },
   show: {
     x: "0%",
-    skew: "0deg",
     transition: { ease: "easeOut", duration: 1 },
   },
 };

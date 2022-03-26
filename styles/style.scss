@@ -408,8 +408,8 @@ table.table-palette tfoot {
   top: 32vh;
   right: 0;
 }
-
 .navbar {
+  z-index: 10;
   /* height: 80px; */
   cursor: pointer;
   overflow: hidden;
@@ -479,7 +479,6 @@ table.table-palette tfoot {
 .navbar_item_label {
   margin-left: 16px;
   color: black;
-  cursor: pointer;
 }
 
 .nav_text:before {
