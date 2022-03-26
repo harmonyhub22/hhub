@@ -1,4 +1,6 @@
 import { Card, Modal, Text, Button, Input } from "@geist-ui/core";
+import { X } from '@geist-ui/icons'
+import toast from 'react-hot-toast';
 import React from "react";
 
 interface SessionOptionsProps {
@@ -14,7 +16,28 @@ interface SessionOptionsState {
   currentMessage: string,
 };
 
+interface SessionSendMsg {
+  sessionId: string,
+  message: string,
+}
+
+interface SessionReceiveMsg {
+  name: string,
+  message: string,
+}
+
+interface EndSessionMsg {
+  sessionId: string,
+}
+
 class SessionOptions extends React.Component<SessionOptionsProps, SessionOptionsState> {
+
+  static socketEndpointEndSession: string = 'session_vote_end';
+  static socketEndpointUndoEndSession: string = 'session_unvote_end';
+
+  static socketEndpointSendRoomMsg: string = 'session_room_message';
+  static sessionMsgInputId: string = "session-message-input";
+
   constructor(props:SessionOptionsProps) {
     super(props);
     this.state = {
@@ -29,19 +52,37 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
     this.handleMessaging = this.handleMessaging.bind(this);
     this.setCurrentMessage = this.setCurrentMessage.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
+    this.registerNewMsg = this.registerNewMsg.bind(this);
   }
 
   componentDidMount() {
     if (this.props.socket !== undefined && this.props.socket !== null) {
-      this.props.socket.on("session_vote_end", this.registerVoteEnd);
-      this.props.socket.on("session_unvote_end", this.registerUnVoteEnd);
+      this.props.socket.on(SessionOptions.socketEndpointEndSession, this.registerVoteEnd);
+      this.props.socket.on(SessionOptions.socketEndpointUndoEndSession, this.registerUnVoteEnd);
+      this.props.socket.on(SessionOptions.socketEndpointSendRoomMsg, this.registerNewMsg);
     }
+
+    // Add enter option for message
+    const input = document.getElementById(SessionOptions.sessionMsgInputId);
+    if (input === null) return;
+    input.addEventListener("keyup", (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        this.sendMessage();
+      }
+    });
   }
 
   componentWillUnmount() {
     if (this.props.socket !== undefined && this.props.socket !== null) {
-      this.props.socket.off("session_vote_end", this.registerVoteEnd);
-      this.props.socket.off("session_unvote_end", this.registerUnVoteEnd);
+      this.props.socket.off(SessionOptions.socketEndpointEndSession, this.registerVoteEnd);
+      this.props.socket.off(SessionOptions.socketEndpointUndoEndSession, this.registerUnVoteEnd);
+    }
+  }
+
+  componentDidUpdate(prevProps:SessionOptionsProps, prevState:SessionOptionsState) {
+    if (prevState.endSessionVotes !== this.state.endSessionVotes && this.state.endSessionVotes >= 2) {
+      // redirect to finish session page
     }
   }
 
@@ -55,9 +96,40 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
     this.setState({
       endSessionVotes: this.state.endSessionVotes - 1,
     });
+  };
+
+  registerNewMsg(data: SessionReceiveMsg) {
+    toast((t) => (
+      <>
+        <div style={{marginRight: "10px"}}>
+          <Text h5 my={0}>{data.name}</Text>
+          <span>{data.message}</span>
+        </div>
+        <div style={{marginLeft: "10px"}}>
+          <Button onClick={() => toast.dismiss(t.id)} iconRight={<X color="white" />} auto scale={2/3} px={0.6}
+            style={{backgroundColor: 'transparent', borderRadius: '50%'}}
+          ></Button>
+        </div>
+      </>
+    ), 
+    { icon: '💬',
+      style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+      }
+    });
   }
 
   voteToEndSession() {
+    const data: EndSessionMsg = {
+      sessionId: this.props.sessionId ?? ''
+    }
+    if (this.state.youVotedToEnd) {
+      this.props.socket.emit(SessionOptions.socketEndpointUndoEndSession, data);
+    } else {
+      this.props.socket.emit(SessionOptions.socketEndpointEndSession, data);
+    }
     this.setState({
       youVotedToEnd: !this.state.youVotedToEnd,
     });
@@ -70,9 +142,13 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
   };
 
   sendMessage() {
-    this.props.socket.emit("room-message", { message: this.state.currentMessage });
+    const data: SessionSendMsg = {
+      sessionId: this.props.sessionId ?? '',
+      message: this.state.currentMessage,
+    }
+    this.props.socket.emit(SessionOptions.socketEndpointSendRoomMsg, data);
     this.setState({
-      currentMessage: "",
+      currentMessage: '',
       isMessaging: false,
     });
   };
@@ -89,7 +165,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
         <Modal visible={this.state.isMessaging} onClose={this.handleMessaging}>
           <Modal.Title>Message</Modal.Title>
           <Modal.Content>
-            <Input clearable initialValue={this.state.currentMessage} placeholder="type message here" width="100%" onChange={(e) => this.setCurrentMessage(e.target.value)} />
+            <Input id={SessionOptions.sessionMsgInputId} clearable initialValue={this.state.currentMessage} placeholder="type message here" width="100%" onChange={(e) => this.setCurrentMessage(e.target.value)} />
           </Modal.Content>
           <Modal.Action passive onClick={this.handleMessaging}>Cancel</Modal.Action>
           <Modal.Action passive onClick={this.sendMessage}>Send</Modal.Action>

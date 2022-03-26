@@ -141,5 +141,5 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   }
 
   // Add listener
-  leftResizer.addEventListener('mousedown', leftMouseDownHandler);
+  // leftResizer.addEventListener('mousedown', leftMouseDownHandler);
 };

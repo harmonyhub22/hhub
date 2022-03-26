@@ -4,4 +4,5 @@ export default interface Member {
     firstname: string;
     lastname: string;
     isOnline: boolean;
+    sid: string;
 };

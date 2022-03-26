@@ -8,9 +8,8 @@ import { SocketContext } from "../context/socket";
 import { createSocket } from "../api/InitSockets";
 import { MemberContext } from "../context/member";
 import { useRouter } from "next/router";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { AnimatePresence } from "framer-motion";
+import { Toaster } from 'react-hot-toast';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [member, setMember] = useState<Member>({} as Member);
@@ -18,8 +17,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   const fetchCurrentMember = async () => {
+    console.log("fetching member");
     const fetchedMember = await getCurrentMember();
-    console.log(fetchedMember);
     if (fetchedMember !== undefined && fetchedMember !== null) {
       console.log(fetchedMember);
       setMember(fetchedMember);
@@ -27,7 +26,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         setSocket(createSocket(fetchedMember.memberId));
       }
     } else {
-      console.log("logging in");
+      console.log("routing to login page");
       router.push({
         pathname: "/login",
       });
@@ -40,18 +39,22 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <GeistProvider>
-        <CssBaseline />
-        <MemberContext.Provider value={member}>
-          <SocketContext.Provider value={socket}>
+    <GeistProvider>
+      <CssBaseline />
+      <MemberContext.Provider value={member}>
+        <SocketContext.Provider value={socket}>
             <AnimatePresence exitBeforeEnter>
               <Component {...pageProps} key={router.pathname} />
             </AnimatePresence>
-          </SocketContext.Provider>
-        </MemberContext.Provider>
-      </GeistProvider>
-    </DndProvider>
+        </SocketContext.Provider>
+      </MemberContext.Provider>
+      <Toaster 
+        position="top-left"
+        toastOptions={{
+          className: '.toast-messages',
+          duration: Infinity,
+        }}/>
+    </GeistProvider>
   );
 }
 
