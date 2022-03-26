@@ -60,7 +60,7 @@ const Navbar = () => {
     <>
       <IconContext.Provider value={{ color: "black" }}>
         <div className="navbar">
-          <Link href="#" passHref>
+          <Link href="/" passHref>
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
           <nav className={sidebar ? "nav_menu_active" : "nav_menu"}>
