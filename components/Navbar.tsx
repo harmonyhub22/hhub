@@ -15,37 +15,37 @@ const SidebarData = [
   {
     title: "Home",
     path: "/",
-    icon: <AiIcons.AiFillHome />,
+    icon: <AiIcons.AiFillHome color="white" />,
     cName: "nav_text",
   },
   {
     title: "Discover",
     path: "/discover",
-    icon: <IoIcons.IoMdGlobe />,
+    icon: <IoIcons.IoMdGlobe color="white" />,
     cName: "nav_text",
   },
   {
     title: "Library",
     path: "/library",
-    icon: <MdIcons.MdLibraryMusic />,
+    icon: <MdIcons.MdLibraryMusic color="white" />,
     cName: "nav_text",
   },
   {
     title: "Learn",
     path: "/learn",
-    icon: <GiIcons.GiMusicalScore />,
+    icon: <GiIcons.GiMusicalScore color="white" />,
     cName: "nav_text",
   },
   {
     title: "Tutorial",
     path: "/tutorial",
-    icon: <IoIcons.IoMdHelpCircleOutline />,
+    icon: <IoIcons.IoMdHelpCircleOutline color="white" />,
     cName: "nav_text",
   },
   {
     title: "Profile",
     path: "/profile",
-    icon: <CgIcons.CgProfile />,
+    icon: <CgIcons.CgProfile color="white" />,
     cName: "nav_text",
   },
 ];
@@ -60,43 +60,47 @@ const Navbar = () => {
     <>
       <IconContext.Provider value={{ color: "black" }}>
         <div className="navbar">
-          <Link href="/" passHref>
-            <FaIcons.FaBars onClick={showSidebar} />
-          </Link>
-          <nav className={sidebar ? "nav_menu_active" : "nav_menu"}>
-            <ul className="nav_menu_items">
-              <li className="navbar_toggle">
-                <Link href="/" passHref>
-                  <AiIcons.AiOutlineClose onClick={showSidebar} />
-                </Link>
-              </li>
-              {SidebarData.map((item, index) => {
-                return (
-                  <li key={index} className={item.cName}>
-                    {item.icon}
-                    <Link href={item.path} passHref>
-                      <span className="navbar_item_label">{item.title}</span>
+          <div className="menu_bars">
+            <Link href="/" passHref>
+              <FaIcons.FaBars onClick={showSidebar} />
+            </Link>
+          </div>
+          <div className="menu_items">
+            <nav className={sidebar ? "nav_menu_active" : "nav_menu"}>
+              <ul className="nav_menu_items">
+                <li className="navbar_toggle">
+                  <Link href="/" passHref>
+                    <AiIcons.AiOutlineClose onClick={showSidebar} />
+                  </Link>
+                </li>
+                {SidebarData.map((item, index) => {
+                  return (
+                    <li key={index} className={item.cName}>
+                      {item.icon}
+                      <Link href={item.path} passHref>
+                        <span className="navbar_item_label">{item.title}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+                {(member?.memberId ?? undefined) === undefined ? (
+                  <li key={SidebarData.length} className={SidebarData[0].cName}>
+                    <CgIcons.CgLogIn color="white" />
+                    <Link href={"/login"} passHref>
+                      <span className="navbar_item_label">{"Login"}</span>
                     </Link>
                   </li>
-                );
-              })}
-              {(member?.memberId ?? undefined) === undefined ? (
-                <li key={SidebarData.length} className={SidebarData[0].cName}>
-                  <CgIcons.CgLogIn />
-                  <Link href={"/login"} passHref>
-                    <span className="navbar_item_label">{"Login"}</span>
-                  </Link>
-                </li>
-              ) : (
-                <li key={SidebarData.length} className={SidebarData[0].cName}>
-                  <CgIcons.CgLogOut />
-                  <Link href={"/logout"} passHref>
-                    <span className="navbar_item_label">{"Logout"}</span>
-                  </Link>
-                </li>
-              )}
-            </ul>
-          </nav>
+                ) : (
+                  <li key={SidebarData.length} className={SidebarData[0].cName}>
+                    <CgIcons.CgLogOut color="white" />
+                    <Link href={"/logout"} passHref>
+                      <span className="navbar_item_label">{"Logout"}</span>
+                    </Link>
+                  </li>
+                )}
+              </ul>
+            </nav>
+          </div>
         </div>
       </IconContext.Provider>
     </>
