@@ -7,6 +7,7 @@ interface SessionOptionsProps {
   socket: any,
   sessionId: string|null,
   partnerFirstname: string,
+  endSession: any,
 };
 
 interface SessionOptionsState {
@@ -82,7 +83,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
 
   componentDidUpdate(prevProps:SessionOptionsProps, prevState:SessionOptionsState) {
     if (prevState.endSessionVotes !== this.state.endSessionVotes && this.state.endSessionVotes >= 2) {
-      // redirect to finish session page
+      this.props.endSession()
     }
   }
 
