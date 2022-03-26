@@ -8,6 +8,7 @@ import { SocketContext } from "../context/socket";
 import { createSocket } from "../api/InitSockets";
 import { MemberContext } from "../context/member";
 import { useRouter } from "next/router";
+import { AnimatePresence } from "framer-motion";
 import { Toaster } from 'react-hot-toast';
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -42,7 +43,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       <CssBaseline />
       <MemberContext.Provider value={member}>
         <SocketContext.Provider value={socket}>
-          <Component {...pageProps} />
+            <AnimatePresence exitBeforeEnter>
+              <Component {...pageProps} key={router.pathname} />
+            </AnimatePresence>
         </SocketContext.Provider>
       </MemberContext.Provider>
       <Toaster 

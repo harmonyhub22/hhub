@@ -4,6 +4,8 @@ import { useState } from "react";
 import { login } from "../api/Helper";
 import Wave from "../components/animations/Wave";
 import { LoginAnimation } from "../components/animations/AnimationPic";
+import { imgVariant, titleSlider } from "../components/animations/Animation";
+import { motion } from "framer-motion";
 
 const Login = (): React.ReactNode => {
   const router = useRouter();
@@ -34,10 +36,13 @@ const Login = (): React.ReactNode => {
   };
 
   return (
-    <div className="intro">
-      <div className="intro-login">
-        <h1>Harmony Hub</h1>
-        <div>
+    <motion.div className="intro">
+      <motion.div className="intro-login">
+        <motion.h1 variants={titleSlider} initial="hidden" animate="show">
+          Harmony Hub
+        </motion.h1>
+
+        <motion.div>
           <Input
             clearable
             label="Email"
@@ -70,13 +75,18 @@ const Login = (): React.ReactNode => {
           >
             Login
           </Button>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
       <Wave />
-      <div className="intro-images">
+      <motion.div
+        className="intro-images"
+        variants={imgVariant}
+        initial="initial"
+        animate="animate"
+      >
         <LoginAnimation />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
