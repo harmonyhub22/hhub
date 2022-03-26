@@ -104,6 +104,7 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
 
   const leftMouseUpHandler = function () {
     deltaX -= ele.getBoundingClientRect().width;
+    console.log(deltaX);
     setDeltaXLeft(deltaX);
     // Remove the handlers of `mousemove` and `mouseup`
     document.removeEventListener('mousemove', leftMouseMoveHandler);

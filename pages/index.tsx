@@ -1,16 +1,22 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button, Spacer } from "@geist-ui/core";
+import { Button } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
-import { getLiveSession } from "../api/Session";
 import { SocketContext } from "../context/socket";
-import * as Tone from "tone";
+import { getLiveSession } from "../api/Session";
+import SessionInterface from "../interfaces/models/SessionInterface";
 import {
+  DoubleHomeAnimation,
+  DoubleNote,
   SingleHomeAnimation,
   SingleNode,
-  DoubleNote,
-  DoubleHomeAnimation,
 } from "../components/animations/AnimationPic";
+import { motion } from "framer-motion";
+import {
+  titleAnim,
+  homeSlider,
+  slider,
+} from "../components/animations/Animation";
 
 const Home = () => {
   const [liveSessionId, setLiveSessionId] = useState<string>();
@@ -26,8 +32,8 @@ const Home = () => {
   };
 
   const checkLiveSession = async () => {
-    const liveSession = await getLiveSession();
-    if (liveSession === null || liveSession === undefined) return;
+    const liveSession: SessionInterface | null = await getLiveSession();
+    if (liveSession === null) return;
     setLiveSessionId(liveSession.sessionId);
   };
 
@@ -50,14 +56,14 @@ const Home = () => {
   return (
     <>
       <Navbar />
-      <div className="home">
-        <div className="button-images">
+      <motion.div className="home">
+        <motion.div variants={slider} initial="hidden" animate="show">
           <SingleHomeAnimation />
-        </div>
-        <div className="home-button">
+        </motion.div>
+        <motion.div className="home-button">
           <SingleNode />
-          <div className="button-middle">
-            <div className="button1">
+          <motion.div className="button-middle">
+            <motion.div className="button1">
               {(liveSessionId === null || liveSessionId === undefined) && (
                 <Button
                   shadow
@@ -68,8 +74,8 @@ const Home = () => {
                   Join a New Session
                 </Button>
               )}
-            </div>
-            <div className="button2">
+            </motion.div>
+            <motion.div className="button2">
               {liveSessionId !== null && liveSessionId !== undefined && (
                 <Button
                   shadow
@@ -80,8 +86,8 @@ const Home = () => {
                   Join your Live Session
                 </Button>
               )}
-            </div>
-            <div className="button3">
+            </motion.div>
+            <motion.div className="button3">
               <Button
                 shadow
                 type="secondary"
@@ -90,14 +96,19 @@ const Home = () => {
               >
                 Ping Message
               </Button>
-            </div>
+            </motion.div>
             <DoubleNote />
-          </div>
-        </div>
-        <div className="home-images">
+          </motion.div>
+        </motion.div>
+        <motion.div
+          className="home-images"
+          variants={homeSlider}
+          initial="hidden"
+          animate="show"
+        >
           <DoubleHomeAnimation />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </>
   );
 };

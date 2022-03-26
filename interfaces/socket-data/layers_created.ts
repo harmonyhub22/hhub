@@ -1,3 +1,3 @@
 export default interface LayersCreated {
-    layerIds: string[];
+  layerIds: string[];
 }

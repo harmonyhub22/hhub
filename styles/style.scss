@@ -24,10 +24,13 @@
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 100%;
+  border: 2px solid #461664;
   td,
   th {
-    border: 3px solid #dddddd;
+    border: 2px solid #461664;
     text-align: left;
+  }
+  th {
     padding: 8px;
   }
   tr:nth-child(even) {
@@ -297,7 +300,9 @@ table.table-palette tfoot {
   border-radius: 12px;
   border: 1px solid #eaeaea;
   min-width: 240px;
-  position: relative;
+  position: absolute;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 .timeline-layer-wav {
@@ -305,6 +310,8 @@ table.table-palette tfoot {
   background-image: url("../public/images/black_wave.svg");
   height: 50px;
   background-size: contain;
+  background-repeat: repeat-x;
+  background-position: center;
 }
 
 .timeline-muted-layer-wav {
@@ -312,6 +319,8 @@ table.table-palette tfoot {
   background-image: url("../public/images/grey_wave.svg");
   height: 50px;
   background-size: contain;
+  background-repeat: repeat-x;
+  background-position: center;
 }
 
 .timeline-layer-details {
@@ -321,14 +330,23 @@ table.table-palette tfoot {
   align-items: center;
   width: 100%;
   padding-left: 22px;
+  padding-right: 22px;
+}
+
+.timeline-layer-commit-tooltip {
+  padding-right: 1px;
 }
 
 .timeline-layer-commit-btn {
   padding: 0px 5px 0px 0px;
+  border: none !important;
+  border-radius: 50% !important;
+  padding: 5px !important;
+  height: auto !important;
 }
 
 .timeline-layer-initials {
-  padding: 0px 34px 8px 2px;
+  padding: 0px 8px 8px 2px;
 }
 
 .timeline-layer-resizer {
@@ -348,216 +366,47 @@ table.table-palette tfoot {
   left: 0;
 }
 
-.palette-recording-tab {
-  min-height: 300px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-direction: column;
+.timeline-wrapper {
+  border-radius: 20px;
+  border: 1px solid #eaeaea;
+  min-height: 80vh;
+  position: relative;
 }
 
-.palette-metronome {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 10px;
-  border: 1px solid #f5a623;
-  padding: 16px;
-  width: 80%;
-}
-
-.palette-recording-details {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+.layer-container {
   width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
 }
 
-.record-btn {
-  width: 100% !important;
-  min-height: 60px;
-  border-radius: 20px !important;
+.session-members {
+  display: inline-table;
+  position: fixed;
+  right: 0;
+  top: 0;
+  border-radius: 0px 0px 0px 6px !important;
 }
 
-@keyframes recording-pulse {
-  0% {
-    border-color: #e00;
-  }
-  50% {
-    border-color: white;
-  }
-  100% {
-    border-color: #e00;
-  }
+.session-options {
+  text-align: center;
+  position: fixed;
+  bottom: 3vh;
+  border: none !important;
+  opacity: 100;
+  pointer-events: none;
+  background: transparent !important;
+  padding: 0px !important;
+  display: flex;
+  justify-content: center;
 }
 
-.record-timer {
-  animation-name: recording-pulse;
-  animation-duration: 3s;
-  animation-iteration-count: infinite;
-}
-
-$item-color: white;
-$item-background: #2196f3;
-$item-border: 1px solid #1a6fb3;
-$item-selected-color: white;
-$item-selected-background: #ffc107;
-$item-selected-border: 1px solid #ff9800;
-
-$row-background-even: transparent;
-$row-background-odd: rgba(0, 0, 0, 0.05);
-
-$border-color: #bbb;
-$border-width: 1px;
-$thick-border-width: 2px;
-$sidebar-color: #5c3294;
-$sidebar-background-color: #23b1b6;
-$list-item-padding: 0 4px;
-$weekend: rgba(250, 246, 225, 0.5);
-
-.react-calendar-timeline {
-  * {
-    box-sizing: border-box;
-  }
-
-  .rct-outer {
-    display: block;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-
-  .rct-scroll {
-    display: inline-block;
-    white-space: normal; // was set to nowrap in .rct-outer
-    vertical-align: top;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    -ms-touch-action: none;
-    touch-action: none;
-  }
-
-  .rct-item {
-    &:hover {
-      z-index: 88;
-    }
-
-    .rct-item-content {
-      position: sticky;
-      position: -webkit-sticky;
-      left: 0px;
-      overflow: hidden;
-      display: inline-block;
-      border-radius: 2px;
-      padding: 0 6px;
-      height: 100%;
-    }
-  }
-
-  .rct-sidebar {
-    overflow: hidden;
-    white-space: normal; // was set to nowrap in .rct-outer
-    display: inline-block;
-    vertical-align: top;
-    position: relative;
-    box-sizing: border-box;
-    border-right: $border-width solid $border-color;
-
-    &.rct-sidebar-right {
-      border-right: 0;
-      border-left: $border-width solid $border-color;
-    }
-
-    .rct-sidebar-row {
-      padding: $list-item-padding;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      box-sizing: border-box;
-      margin: 0;
-      border-bottom: $border-width solid $border-color;
-
-      &.rct-sidebar-row-odd {
-        background: $row-background-odd;
-      }
-      &.rct-sidebar-row-even {
-        background: $row-background-even;
-      }
-    }
-  }
-
-  // TODO: rename or remove once we make breaking change to rename vertical lines
-  // to columns
-  .rct-vertical-lines {
-    .rct-vl {
-      position: absolute;
-      border-left: 1px solid $border-color;
-      z-index: 30;
-      &.rct-vl-first {
-        border-left-width: 2px;
-      }
-      &.rct-day-6,
-      &.rct-day-0 {
-        background: $weekend;
-      }
-    }
-  }
-
-  .rct-horizontal-lines {
-    -webkit-user-select: none;
-    -moz-user-select: -moz-none;
-    -ms-user-select: none;
-    user-select: none;
-
-    .rct-hl-even,
-    .rct-hl-odd {
-      border-bottom: $border-width solid $border-color;
-      box-sizing: border-box;
-      z-index: 40;
-    }
-    .rct-hl-odd {
-      background: $row-background-odd;
-    }
-    .rct-hl-even {
-      background: $row-background-even;
-    }
-  }
-
-  .rct-cursor-line {
-    position: absolute;
-    width: 2px;
-    background: $item-background;
-    z-index: 51;
-  }
-
-  .rct-dateHeader {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    border-bottom: 1px solid #bbb;
-    cursor: pointer;
-    font-size: 14px;
-    background-color: rgb(240, 240, 240);
-    border-left: 2px solid #bbb;
-  }
-
-  .rct-dateHeader-primary {
-    background-color: initial;
-    border-left: 1px solid #bbb;
-    border-right: 1px solid #bbb;
-    color: #fff;
-  }
-
-  .rct-header-root {
-    background: #267051;
-    border-bottom: 1px solid #bbb;
-  }
-
-  .rct-calendar-header {
-    border: 1px solid #bbb;
-  }
+.palette-open-button {
+  position: fixed;
+  transform-origin: bottom right;
+  transform: rotateZ(-90deg);
+  top: 32vh;
+  right: 0;
 }
 
 .navbar {
