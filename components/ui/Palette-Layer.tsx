@@ -208,7 +208,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
       reversed: false,
       trimmedStartDuration: 0,
       trimmedEndDuration: 0,
-      y: 0
+      y: 0,
     }
     const newLayer: NeverCommittedLayer = {
       layer: layer,

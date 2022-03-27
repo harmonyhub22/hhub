@@ -1,5 +1,5 @@
 export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: number,
-  leftResizerId:string, rightResizerId:string,
+  leftResizerClass:string, rightResizerClass:string,
   setDeltaXLeft:any, setDeltaXRight:any) => {
 
   // Query the element
@@ -114,7 +114,7 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   // Query right resizer
   let rightResizer: Element|null = null;
   try {
-    rightResizer = ele.querySelector(`#${rightResizerId}`);
+    rightResizer = ele.querySelector(`.${rightResizerClass}`);
   } catch (e:any) {
     console.log('right resizer id invalid');
   }
@@ -130,7 +130,7 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   // Query left resizer
   let leftResizer: Element|null = null;
   try {
-    leftResizer = ele.querySelector(`#${leftResizerId}`);
+    leftResizer = ele.querySelector(`.${leftResizerClass}`);
   } catch (e:any) {
     console.log('left resizer id invalid');
   }

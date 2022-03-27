@@ -54,6 +54,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
     this.setCurrentMessage = this.setCurrentMessage.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
     this.registerNewMsg = this.registerNewMsg.bind(this);
+    this.onEnterSubmit = this.onEnterSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -62,16 +63,6 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
       this.props.socket.on(SessionOptions.socketEndpointUndoEndSession, this.registerUnVoteEnd);
       this.props.socket.on(SessionOptions.socketEndpointSendRoomMsg, this.registerNewMsg);
     }
-
-    // Add enter option for message
-    const input = document.getElementById(SessionOptions.sessionMsgInputId);
-    if (input === null) return;
-    input.addEventListener("keyup", (event) => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        this.sendMessage();
-      }
-    });
   }
 
   componentWillUnmount() {
@@ -83,7 +74,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
 
   componentDidUpdate(prevProps:SessionOptionsProps, prevState:SessionOptionsState) {
     if (prevState.endSessionVotes !== this.state.endSessionVotes && this.state.endSessionVotes >= 2) {
-      this.props.endSession()
+      this.props.endSession();
     }
   }
 
@@ -100,6 +91,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
   };
 
   registerNewMsg(data: SessionReceiveMsg) {
+    console.log('got new message');
     toast((t) => (
       <>
         <div style={{marginRight: "10px"}}>
@@ -160,13 +152,22 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
     });
   };
 
+  onEnterSubmit(e:any) {
+    if(e.key === 'Enter') {  
+      e.preventDefault();
+      this.sendMessage();     
+    }
+  }
+
   render() {
     return (
       <>
         <Modal visible={this.state.isMessaging} onClose={this.handleMessaging}>
           <Modal.Title>Message</Modal.Title>
           <Modal.Content>
-            <Input id={SessionOptions.sessionMsgInputId} clearable initialValue={this.state.currentMessage} placeholder="type message here" width="100%" onChange={(e) => this.setCurrentMessage(e.target.value)} />
+            <Input id={SessionOptions.sessionMsgInputId} clearable initialValue={this.state.currentMessage} 
+              placeholder="type message here" width="100%" onChange={(e) => this.setCurrentMessage(e.target.value)}
+              onKeyDown={this.onEnterSubmit} />
           </Modal.Content>
           <Modal.Action passive onClick={this.handleMessaging}>Cancel</Modal.Action>
           <Modal.Action passive onClick={this.sendMessage}>Send</Modal.Action>
