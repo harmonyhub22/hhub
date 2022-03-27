@@ -4,6 +4,7 @@ import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
 import Container from "./Container";
 import { Button, Tooltip } from "@geist-ui/core";
 import { ChevronLeft, ChevronRight } from "@geist-ui/icons";
+import { initResizeTimeline } from "../ui/helpers/resize";
 
 interface TimelineProps {
   layers: LayerInterface[],
@@ -32,25 +33,33 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     };
     this.increaseTimeline = this.increaseTimeline.bind(this);
     this.decreaseTimeline = this.decreaseTimeline.bind(this);
-    this.getRange = this.getRange.bind(this);
+    this.updateTimelineWidth = this.updateTimelineWidth.bind(this);
   };
 
   componentDidMount() {
-    let ele = null;
-    let timelineWidth = 400;
-    try {
-      ele = document.getElementById(Timeline.TimelineWrapperId);
-      timelineWidth = parseInt(ele?.style.width.slice(0,-2) || "400px", 10);
-    } catch (e) {/* do nothing */}
-    this.setState({
-      width: timelineWidth,
-    });
+    this.updateTimelineWidth();
+    initResizeTimeline(this.updateTimelineWidth);
   };
 
   componentDidUpdate(prevProps:TimelineProps) {
     if (prevProps.layers.length !== this.props.layers.length) {
       console.log('got new layer');
     }
+  }
+
+  updateTimelineWidth() {
+    let ele = null;
+    let timelineWidth = 400;
+    try {
+      ele = document.getElementById(Timeline.TimelineWrapperId);
+      timelineWidth = ele?.getBoundingClientRect()?.width || 400;
+      console.log(timelineWidth);
+    } catch (e) {
+      console.log(e);
+    }
+    this.setState({
+      width: timelineWidth,
+    });
   }
 
   increaseTimeline() {
@@ -63,25 +72,13 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     this.setState({
       seconds: this.state.seconds - 1,
     });
-    console.log(this.state.seconds - 1);
   }
-
-  getRange() {
-    const start = 0;
-    const stop = Timeline.MaxTimelinePoints;
-    const step = Math.floor(this.state.seconds / Timeline.MaxTimelinePoints);
-    const arr = [];
-    for (var i=start;i<stop;i+=step){
-      arr.push(i);
-    }
-    return arr;
-  };
 
   render() {
     return (
       <div key={`${this.props.layers.length}-${this.props.neverCommittedLayers.length}`} className="timeline-wrapper" id={Timeline.TimelineWrapperId}>
         <div key={`${this.state.seconds}-${this.state.width}`}className="timeline-details">
-          {this.getRange().map((seconds:number) => {
+          {Array(this.state.seconds).fill(0).map((_, seconds:number) => {
             return (
               <div key={seconds} className="one-timeline-interval" style={{content: `${seconds}`, width: `${this.state.seconds / Timeline.MaxTimelinePoints * 100}%`}}>
                 <div className="timeline-interval-seconds">
@@ -94,11 +91,11 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
           <div className="timeline-duration-modifier">
             <Tooltip text={'Decrease Duration'} type="dark">
               <Button iconRight={<ChevronLeft color="#320f48" />} auto scale={2/3} 
-                px={0.6} className="toggle-timeline-duration-btn" onClick={this.decreaseTimeline} />
+                className="toggle-timeline-duration-btn" onClick={this.decreaseTimeline} />
             </Tooltip>
             <Tooltip text={'Increase Duration'} type="dark">
               <Button iconRight={<ChevronRight color="#320f48" />} auto scale={2/3} 
-                px={0.6} className="toggle-timeline-duration-btn" onClick={this.increaseTimeline} />
+                className="toggle-timeline-duration-btn" onClick={this.increaseTimeline} />
             </Tooltip>
           </div>
         </div>
