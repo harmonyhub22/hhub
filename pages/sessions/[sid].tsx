@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Page } from "@geist-ui/core";
+import { Page, Text } from "@geist-ui/core";
 import { MemberContext } from "../../context/member";
 import { SocketContext } from "../../context/socket";
 import Session from "../../components/sessions/Session";
@@ -19,6 +19,7 @@ const SessionPage = () => {
 
   return (
     <Page>
+      <Text h4 style={{textAlign: 'center'}}>Your Collaborative Session</Text>
       <Session member={member} socket={socket}  />
     </Page>
   );

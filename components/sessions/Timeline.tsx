@@ -28,6 +28,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
 
   static TimelineWrapperId: string = "timeline-wrapper";
   static MaxTimelinePoints: number = 10;
+  static SecondWidth: number = 30;
 
   constructor(props:TimelineProps) {
     super(props);
@@ -56,6 +57,14 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   componentDidUpdate(prevProps:TimelineProps, prevState:TimelineState) {
     if (prevProps.layers.length !== this.props.layers.length) {
       console.log('got new layer');
+    }
+    if (prevState.seconds !== this.state.seconds) {
+      /*if (prevState.seconds < this.state.seconds) {
+        const offset = document.getElementById(Timeline.TimelineWrapperId)?.offsetTop;
+        console.log('offset', offset);
+      } */
+      this.updateTimelineWidth();
+
     }
     if (Object.keys(prevState.buffermap).length !== Object.keys(this.state.buffermap).length) {
       console.log(this.state.buffermap);
@@ -124,12 +133,12 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
 
   render() {
     return (
-      <div key={`${this.props.layers.length}-${this.props.neverCommittedLayers.length}`} className="timeline-wrapper" id={Timeline.TimelineWrapperId}>
-        <Button onClick={this.getSongsoFar}></Button>
+      <div key={`${this.props.layers.length}-${this.props.neverCommittedLayers.length}`} className="timeline-wrapper" id={Timeline.TimelineWrapperId} style={{width: `${this.state.seconds * 50}px`}}>
+      <Button onClick={this.getSongsoFar}></Button>
         <div key={`${this.state.seconds}-${this.state.width}`}className="timeline-details">
           {Array(this.state.seconds).fill(0).map((_, seconds:number) => {
             return (
-              <div key={seconds} className="one-timeline-interval" style={{content: `${seconds}`, width: `${this.state.seconds / Timeline.MaxTimelinePoints * 100}%`}}>
+              <div key={seconds} className="one-timeline-interval" style={{width: `${this.state.seconds / Timeline.MaxTimelinePoints * 100}%`}}>
                 <div className="timeline-interval-seconds">
                   <span>{seconds !== 0 && seconds}</span>
                 </div>
@@ -138,13 +147,15 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
             )
           })}
           <div className="timeline-duration-modifier">
-            <Tooltip text={'Decrease Duration'} type="dark">
-              <Button iconRight={<ChevronLeft color="#320f48" />} auto scale={2/3} 
-                className="toggle-timeline-duration-btn" onClick={this.decreaseTimeline} />
+            {/*<span>Adjust Timeline Duration</span>*/}
+            <Tooltip text={'Decrease Duration'} type="dark" placement="leftStart">
+              <Button iconRight={<ChevronLeft color="black" />} auto scale={2/3} 
+                className="toggle-timeline-duration-btn" onClick={this.decreaseTimeline} shadow type="secondary">
+              </Button>
             </Tooltip>
-            <Tooltip text={'Increase Duration'} type="dark">
-              <Button iconRight={<ChevronRight color="#320f48" />} auto scale={2/3} 
-                className="toggle-timeline-duration-btn" onClick={this.increaseTimeline} />
+            <Tooltip text={'Increase Duration'} type="dark" placement="topEnd">
+              <Button iconRight={<ChevronRight color="black" />} auto scale={2/3} 
+                className="toggle-timeline-duration-btn" onClick={this.increaseTimeline} shadow type="secondary" />
             </Tooltip>
           </div>
         </div>

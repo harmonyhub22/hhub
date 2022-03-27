@@ -151,5 +151,5 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
 };
 
 export const initResizeTimeline = (updateTimelineWidth:any) => {
-  window.addEventListener('resize', updateTimelineWidth)
+  window.addEventListener('resize', updateTimelineWidth);
 };
