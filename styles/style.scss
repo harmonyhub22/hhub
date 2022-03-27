@@ -492,6 +492,43 @@ table.table-palette tfoot {
   background-color: #320f48;
   color: white;
   border-radius: 20px 20px 0px 0px;
+  position: relative;
+}
+
+.one-timeline-interval {
+  border-left: 1px solid whitesmoke;
+  height: 100%;
+}
+
+.half-timeline-interval {
+  border-right: 1px solid #7f4ba1;
+  height: 50%;
+  width: 50%;
+}
+
+.timeline-interval-seconds {
+  position: absolute;
+  top: 70%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.timeline-duration-modifier {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.toggle-timeline-duration-btn {
+  padding: 0px !important;
+  margin-right: 7px !important;
+  background-color: white !important;
 }
 
 @import "./intro";
