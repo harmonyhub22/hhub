@@ -2,6 +2,7 @@ import React from "react";
 import LayerInterface from "../../interfaces/models/LayerInterface";
 import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
 import Container from "./Container";
+import Crunker from "crunker"
 import { Button, Tooltip } from "@geist-ui/core";
 import { ChevronLeft, ChevronRight } from "@geist-ui/icons";
 import { initResizeTimeline } from "../ui/helpers/resize";
@@ -18,6 +19,8 @@ interface TimelineProps {
 interface TimelineState {
   width: number,
   seconds: number,
+  buffer: any,
+  crunker:any,
 };
 
 class Timeline extends React.Component<TimelineProps, TimelineState> {
@@ -30,13 +33,18 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     this.state = {
       width: 885, // change
       seconds: 20, // change
+      buffer: null,
+      crunker: null,
     };
+    this.addBuffer = this.addBuffer.bind(this);
+    this.getSongsoFar = this.getSongsoFar.bind(this);
     this.increaseTimeline = this.increaseTimeline.bind(this);
     this.decreaseTimeline = this.decreaseTimeline.bind(this);
     this.updateTimelineWidth = this.updateTimelineWidth.bind(this);
   };
 
   componentDidMount() {
+    const crunker = new Crunker()
     this.updateTimelineWidth();
     initResizeTimeline(this.updateTimelineWidth);
   };
@@ -74,6 +82,19 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     });
   }
 
+  addBuffer(startTime:number, buffer:AudioBuffer) {
+    const temp = this.state.crunker.padAudio(buffer,0,startTime)
+
+    this.setState({
+      buffer: this.state.crunker.mergeAudio([temp,buffer])
+    })
+
+  }
+  getSongsoFar(){
+    this.state.crunker.play(this.state.buffer)
+  }
+
+
   render() {
     return (
       <div key={`${this.props.layers.length}-${this.props.neverCommittedLayers.length}`} className="timeline-wrapper" id={Timeline.TimelineWrapperId}>
@@ -102,7 +123,8 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
         <Container layers={this.props.layers} neverCommittedLayers={this.props.neverCommittedLayers} 
           commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds}
           duplicateLayer={this.props.duplicateLayer}
-          deleteLayer={this.props.deleteLayer} />
+          deleteLayer={this.props.deleteLayer}
+          addBuffer={this.addBuffer}/>
       </div>
     );
   }

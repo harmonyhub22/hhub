@@ -15,6 +15,7 @@ interface TimelineLayerProps {
   commitLayer: any,
   deleteLayer: any,
   duplicateLayer: any,
+  addBuffer: any,
 };
 
 interface TimelineLayerState {
@@ -84,7 +85,12 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
         committed: false,
       });
     }
-
+    if (prevState.currentLayer.reversed !== this.state.currentLayer.reversed 
+      || prevState.currentLayer.fadeOutDuration!== this.state.currentLayer.fadeOutDuration 
+      || prevState.currentLayer.fadeInDuration !== this.state.currentLayer.fadeInDuration
+      ||prevState.currentLayer.trimmedStartDuration !== this.state.currentLayer.trimmedStartDuration){
+      this.createTonePlayer(this.props.layer.fileName, this.props.soundBuffer, this.props.layer.bucketUrl);
+    }
     if (prevProps.layer.duration !== this.props.layer.duration 
       || prevProps.timelineDuration !== this.props.timelineDuration
       || prevProps.timelineWidth !== this.props.timelineWidth) {
@@ -97,22 +103,29 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
   createTonePlayer(fileName: string|null, buffer: Blob|null, bucketUrl: string|null) {
     if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
-
+    let tonePlayer: Tone.Player | null = null;
     if (fileName !== null) {
-      this.setState({
-        tonePlayer: new Tone.Player('../../' + fileName + '.mp3').toDestination(),
-      });
+      tonePlayer = new Tone.Player('../../' + fileName + '.mp3').toDestination();
     } else if (buffer !== null) {
-      this.setState({
-        tonePlayer: new Tone.Player(URL.createObjectURL(buffer)).toDestination(),
-      });
+      tonePlayer = new Tone.Player(URL.createObjectURL(buffer)).toDestination();
     } else if (bucketUrl !== null) {
-      this.setState({
-        tonePlayer: new Tone.Player(bucketUrl).toDestination(),
-      });
+      tonePlayer = new Tone.Player(bucketUrl).toDestination();
     }
+    if (tonePlayer === null) return;
+    tonePlayer.buffer.onload = () => {
+      console.log("check")
+      if (tonePlayer === null) return;
+      tonePlayer.reverse = this.state.currentLayer.reversed;
+      tonePlayer.buffer.reverse = this.state.currentLayer.reversed;
+      tonePlayer.fadeIn = this.state.currentLayer.fadeInDuration;
+      tonePlayer.fadeOut = this.state.currentLayer.fadeOutDuration;
+      tonePlayer.buffer = tonePlayer.buffer.slice(this.state.currentLayer.trimmedStartDuration,this.state.currentLayer.duration - this.state.currentLayer.trimmedEndDuration);
+      this.props.addBuffer(this.state.currentLayer.startTime, tonePlayer.buffer);
+    }
+    this.setState({
+      tonePlayer: tonePlayer
+    })
   }
-
   getInfo() {
     return (
       <Description title="Layer Info" style={{padding: '0px 10px 0px 10px'}} content={
@@ -140,8 +153,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
   handlePlayer() {
     if (this.state.tonePlayer === null) return;
-    this.state.tonePlayer.start(0, this.state.currentLayer.trimmedStartDuration, 
-      this.props.layer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration);
+    this.state.tonePlayer.start(0); /*, this.state.currentLayer.trimmedStartDuration, 
+      this.props.layer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration);*/
   };
 
   handleRename() {
@@ -251,6 +264,9 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       }
     }));
   }
+  test(){
+    this.state.tonePlayer.buffer
+  }
 
   render() {
     return (
@@ -305,6 +321,10 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
                       >
                       <Info />
                     </Popover>
+                  </Popover.Item>
+                  <Popover.Item>
+                    <Button onClick={this.handlePlayer}>Play</Button>
+                    <Button onClick={this.test}>test player buffer transfer</Button>
                   </Popover.Item>
                   {this.props.layer.layerId !== null && <Popover.Item style={{justifyContent: 'center', minWidth: '170px'}}>
                     <Button auto icon={<Edit3 />} type="secondary" ghost onClick={this.handleRename} style={{width: '100%', height: '100%'}}>

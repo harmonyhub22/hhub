@@ -12,9 +12,6 @@ import Palette from "../ui/Palette";
 import { IoIosColorPalette } from "react-icons/io";
 import End from "./End";
 
-interface SessionPullLayer {
-  layer: LayerInterface,
-}
 
 interface SessionProps {
   member: any,
