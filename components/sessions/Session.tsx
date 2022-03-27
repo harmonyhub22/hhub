@@ -10,6 +10,7 @@ import SessionOptions from "./SessionOptions";
 import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
 import Palette from "../ui/Palette";
 import { IoIosColorPalette } from "react-icons/io";
+import End from "./End";
 
 interface SessionProps {
   member: any,
@@ -22,6 +23,7 @@ interface SessionState {
   mustReturnHome: boolean,
   neverCommittedLayers: NeverCommittedLayer[],
   showPalette: boolean,
+  sessionEnded: boolean,
 }
 
 class Session extends Component<SessionProps, SessionState> {
@@ -33,10 +35,12 @@ class Session extends Component<SessionProps, SessionState> {
       mustReturnHome: false,
       neverCommittedLayers: [],
       showPalette: false,
+      sessionEnded: false,
     };
     this.commitLayer = this.commitLayer.bind(this);
     this.stageLayer = this.stageLayer.bind(this);
     this.showPalette = this.showPalette.bind(this);
+    this.endSession = this.endSession.bind(this);
   }
 
   async componentDidMount() {
@@ -59,11 +63,9 @@ class Session extends Component<SessionProps, SessionState> {
   };
 
   async commitLayer(layerData:LayerInterface) {
-    if (layerData.layerId === null) { // add new layer
-
-    } else { // edit existing layer
-
-    }
+    if (layerData.layerId === null) { 
+      
+    } 
   }
 
   stageLayer(newLayer:NeverCommittedLayer) {
@@ -78,6 +80,12 @@ class Session extends Component<SessionProps, SessionState> {
     });
   };
 
+  endSession(){
+    this.setState({
+      sessionEnded: true,
+    });
+  }
+
   render() {
     return (
       <>
@@ -86,6 +94,13 @@ class Session extends Component<SessionProps, SessionState> {
           <Modal.Content style={{textAlign: 'center'}}>
             <p>To rejoin your session please return home</p>
             <Button onClick={() => {window.location.assign("/")}}>Return Home</Button>
+          </Modal.Content>
+        </Modal>
+
+        <Modal width="35rem" visible={this.state.sessionEnded} disableBackdropClick>
+          <Modal.Title>Return to Home Page</Modal.Title>
+          <Modal.Content style={{textAlign: 'center'}}>
+            <End member = {this.props.member} session = {this.state.session}/>
           </Modal.Content>
         </Modal>
 
@@ -98,7 +113,7 @@ class Session extends Component<SessionProps, SessionState> {
           commitLayer={this.commitLayer} stageLayer={this.stageLayer} />
 
         <SessionOptions socket={this.props.socket} sessionId={this.state.session?.sessionId ?? null}
-          partnerFirstname={this.state.partner?.firstname ?? ""} />
+          partnerFirstname={this.state.partner?.firstname ?? ""} endSession={this.endSession} />
 
         <div className="palette-open-button">
           <Button type="secondary-light" style={{borderRadius: '6px 6px 0px 0px'}}
