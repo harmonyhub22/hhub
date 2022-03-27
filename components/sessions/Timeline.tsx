@@ -20,6 +20,7 @@ interface TimelineState {
   width: number,
   seconds: number,
   buffer: any,
+  buffermap: any,
   crunker:any,
 };
 
@@ -32,9 +33,10 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     super(props);
     this.state = {
       width: 885, // change
-      seconds: 20, // change
+      seconds: 20, // changee
       buffer: null,
-      crunker: null,
+      buffermap: {},
+      crunker:null,
     };
     this.addBuffer = this.addBuffer.bind(this);
     this.getSongsoFar = this.getSongsoFar.bind(this);
@@ -44,16 +46,23 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   };
 
   componentDidMount() {
-    const crunker = new Crunker()
+    this.setState({
+      crunker: new Crunker(),
+    })
     this.updateTimelineWidth();
     initResizeTimeline(this.updateTimelineWidth);
   };
 
-  componentDidUpdate(prevProps:TimelineProps) {
+  componentDidUpdate(prevProps:TimelineProps, prevState:TimelineState) {
     if (prevProps.layers.length !== this.props.layers.length) {
       console.log('got new layer');
     }
+    if (Object.keys(prevState.buffermap).length !== Object.keys(this.state.buffermap).length) {
+      console.log(this.state.buffermap);
+    }
+
   }
+  
 
   updateTimelineWidth() {
     let ele = null;
@@ -82,22 +91,41 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     });
   }
 
-  addBuffer(startTime:number, buffer:AudioBuffer) {
-    const temp = this.state.crunker.padAudio(buffer,0,startTime)
-
+  addBuffer(startTime:number, buffer:AudioBuffer, layerId:number | null , layerName:string | null) {
+    const crunker = new Crunker()
+    const temp = crunker.padAudio(buffer,0,startTime);
+    const keyValue = layerId === null ? layerName : layerId;
+    if (keyValue === null) return;
+    const bufferMap = this.state.buffermap;
+    if (layerId !== null && layerName !== null) {
+      delete bufferMap.layerName;
+    }
+    console.log(bufferMap)
+    bufferMap[keyValue] = temp;
+    console.log(bufferMap)
     this.setState({
-      buffer: this.state.crunker.mergeAudio([temp,buffer])
-    })
-
+      buffermap: bufferMap,
+    });
+    if (Object.keys(bufferMap).length === (this.props.layers.length + this.props.neverCommittedLayers.length)){
+      // let crunker = new Crunker();
+      // this.setState({
+      //   buffer: crunker.mergeAudio(Object.values(bufferMap)),
+      // });
+      console.log("buffer",buffer)
+    }
   }
+  
   getSongsoFar(){
-    this.state.crunker.play(this.state.buffer)
+    // console.log(this.state.buffer)
+    // let crunker = new Crunker();
+    // crunker.play(this.state.buffer)
   }
 
 
   render() {
     return (
       <div key={`${this.props.layers.length}-${this.props.neverCommittedLayers.length}`} className="timeline-wrapper" id={Timeline.TimelineWrapperId}>
+        <Button onClick={this.getSongsoFar}></Button>
         <div key={`${this.state.seconds}-${this.state.width}`}className="timeline-details">
           {Array(this.state.seconds).fill(0).map((_, seconds:number) => {
             return (

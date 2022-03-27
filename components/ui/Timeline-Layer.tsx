@@ -113,14 +113,13 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     }
     if (tonePlayer === null) return;
     tonePlayer.buffer.onload = () => {
-      console.log("check")
       if (tonePlayer === null) return;
       tonePlayer.reverse = this.state.currentLayer.reversed;
       tonePlayer.buffer.reverse = this.state.currentLayer.reversed;
       tonePlayer.fadeIn = this.state.currentLayer.fadeInDuration;
       tonePlayer.fadeOut = this.state.currentLayer.fadeOutDuration;
       tonePlayer.buffer = tonePlayer.buffer.slice(this.state.currentLayer.trimmedStartDuration,this.state.currentLayer.duration - this.state.currentLayer.trimmedEndDuration);
-      this.props.addBuffer(this.state.currentLayer.startTime, tonePlayer.buffer);
+      this.props.addBuffer(this.state.currentLayer.startTime, tonePlayer.buffer, this.state.currentLayer.layerId,this.state.currentLayer.name);
     }
     this.setState({
       tonePlayer: tonePlayer
@@ -264,9 +263,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       }
     }));
   }
-  test(){
-    this.state.tonePlayer.buffer
-  }
 
   render() {
     return (
@@ -324,7 +320,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
                   </Popover.Item>
                   <Popover.Item>
                     <Button onClick={this.handlePlayer}>Play</Button>
-                    <Button onClick={this.test}>test player buffer transfer</Button>
                   </Popover.Item>
                   {this.props.layer.layerId !== null && <Popover.Item style={{justifyContent: 'center', minWidth: '170px'}}>
                     <Button auto icon={<Edit3 />} type="secondary" ghost onClick={this.handleRename} style={{width: '100%', height: '100%'}}>
