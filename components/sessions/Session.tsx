@@ -157,7 +157,7 @@ class Session extends Component<SessionProps, SessionState> {
 
   render() {
     return (
-      <>
+      <div style={{overflowX: 'scroll', overflowY: 'hidden'}}>
         <Modal width="35rem" visible={this.state.mustReturnHome} disableBackdropClick>
           <Modal.Title>Return to Home Page</Modal.Title>
           <Modal.Content style={{textAlign: 'center'}}>
@@ -175,8 +175,6 @@ class Session extends Component<SessionProps, SessionState> {
 
         <SessionMembers youMemberId={this.props.member.memberId}
           member1={this.state.session?.member1 ?? null} member2={this.state.session?.member2 ?? null} />
-
-        <Text h4 style={{textAlign: 'center'}}>Your Collaborative Session</Text>
 
         <Timeline layers={this.state.session?.layers ?? []} neverCommittedLayers={this.state.neverCommittedLayers} 
           commitLayer={this.commitLayer} duplicateLayer={this.duplicateLayer}
@@ -202,7 +200,7 @@ class Session extends Component<SessionProps, SessionState> {
             <Palette stageLayer={this.stageLayer} showPalette={this.showPalette} member={this.props.member} />
           </Drawer.Content>
         </Drawer>
-      </>
+      </div>
     );
   }
 }
