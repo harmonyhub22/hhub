@@ -410,14 +410,13 @@ table.table-palette tfoot {
 }
 .navbar {
   z-index: 10;
-  /* height: 80px; */
   cursor: pointer;
   overflow: hidden;
   position: fixed;
 }
 
 .menu_bars {
-  margin-left: 2rem;
+  margin-left: 1rem;
   font-size: 2rem;
   background: none;
 }
@@ -433,9 +432,14 @@ table.table-palette tfoot {
   transition: 850ms;
 }
 
+.menu_items {
+  background: linear-gradient(#733d97, #512957, #831b77);
+  border-radius: 10% 20%;
+}
+
 .nav_menu_active {
   left: 0;
-  transition: 350ms;
+  transition: 200ms;
 }
 
 .nav_text {
@@ -447,9 +451,13 @@ table.table-palette tfoot {
   height: 60px;
 }
 
+.item_icon {
+  color: white;
+}
+
 .nav_text a {
   text-decoration: none;
-  color: black;
+  color: white;
   font-size: 18px;
   width: 95%;
   height: 100%;
@@ -474,11 +482,12 @@ table.table-palette tfoot {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  color: white;
 }
 
 .navbar_item_label {
   margin-left: 16px;
-  color: black;
+  color: white;
 }
 
 .nav_text:before {
