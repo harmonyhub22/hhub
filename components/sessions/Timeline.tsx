@@ -50,6 +50,13 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   render() {
     return (
       <div key={`${this.props.layers.length}-${this.props.neverCommittedLayers.length}`} className="timeline-wrapper" id={Timeline.TimelineWrapperId}>
+        <div className="timeline-details">
+          {Array.from(Array(this.state.seconds).keys()).map((seconds:number) => {
+            return (
+              <>{seconds}</>
+            )
+          })}
+        </div>
         <Container layers={this.props.layers} neverCommittedLayers={this.props.neverCommittedLayers} 
           commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds}
           duplicateLayer={this.props.duplicateLayer}

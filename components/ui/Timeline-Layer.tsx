@@ -79,6 +79,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   componentDidUpdate(prevProps:TimelineLayerProps, prevState:TimelineLayerState) {
     if (JSON.stringify(prevState.currentLayer) !== JSON.stringify(this.state.currentLayer) 
       || (prevState.flaggedForDelete !== this.state.flaggedForDelete && this.state.flaggedForDelete === true)) {
+      console.log('updated layer', this.state.currentLayer);
       this.setState({
         committed: false,
       });
@@ -214,6 +215,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   updateTrimmedStart(deltaX:number) {
+    const startTimeChange = deltaX * (this.props.layer.duration / this.state.layerMaxWidth);
     let trimmedStartDuration = this.state.currentLayer.trimmedStartDuration + (deltaX * (this.props.layer.duration / this.state.layerMaxWidth));
     if (trimmedStartDuration < 0) trimmedStartDuration = 0;
     else if (trimmedStartDuration > this.props.layer.duration) trimmedStartDuration = this.props.layer.duration;
@@ -221,6 +223,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       currentLayer:{
         ...prevState.currentLayer,
         trimmedStartDuration: trimmedStartDuration,
+        startTime: prevState.currentLayer.startTime + startTimeChange < 0 ? 0.0 : prevState.currentLayer.startTime + startTimeChange,
       }
     }));
   };
@@ -258,7 +261,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
         defaultPosition={{x: this.state.currentLayer.startTime * (this.props.timelineWidth / this.props.timelineDuration), y: this.state.currentLayer.y}}
       >
         <div className="timeline-layer" id={`timeline-layer-${this.props.layer.layerId === null ? this.state.currentLayer.name : this.props.layer.layerId}`} 
-          style={{minWidth: TimelineLayer.layerMinWidth, maxWidth: this.state.layerMaxWidth, 
+          style={{minWidth: `${TimelineLayer.layerMinWidth}px`, maxWidth: `${this.state.layerMaxWidth}px`, 
           width: (this.props.layer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration) * (this.state.layerMaxWidth / this.props.layer.duration),
         }}
         >

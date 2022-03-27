@@ -113,6 +113,7 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, upda
 
   let url = config.server_url + "api/session/" + sessionId + "/layers";
   if (layerData.layerId !== null) url += "/" + layerData.layerId;
+  console.log('post layer data', layerData);
   fetch(
     url,
     {

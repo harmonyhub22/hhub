@@ -5,7 +5,6 @@ const Library = () => {
   const Router = useRouter();
   return (
     <>
-      <Navbar />
       <h1>Your Library</h1>
     </>
   );

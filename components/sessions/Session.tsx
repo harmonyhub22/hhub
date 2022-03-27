@@ -102,6 +102,7 @@ class Session extends Component<SessionProps, SessionState> {
   }
 
   commitLayer(layerData:LayerInterface) {
+    console.log('commit layer', layerData);
     if (this.state.session === null || this.state.session === undefined) return;
     syncPostLayer(this.state.session.sessionId, layerData, this.updateSession);
     if (layerData.layerId === null) { // its a never comitted layer

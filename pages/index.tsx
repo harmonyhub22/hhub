@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button } from "@geist-ui/core";
+import { Button, Text } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import { SocketContext } from "../context/socket";
@@ -55,7 +55,36 @@ const Home = () => {
 
   return (
     <>
-      <Navbar />
+      <div style={{position: 'fixed', top: '5vh', width: '100%', textAlign: 'center', zIndex: '100'}}>
+        <Text h1 style={{textAlign: 'center', color: '#320f48'}}>Harmony Hub</Text>
+        <Text h4 style={{textAlign: 'center', color: '#c563c5'}}>Make Music with Friends</Text>
+      </div>
+      <div style={{position: 'fixed', bottom: '10vh', width: '100%', textAlign: 'center', zIndex: '100'}}>
+        {(liveSessionId === null || liveSessionId === undefined) &&
+          <Button
+            shadow
+            type="secondary"
+            id="btn-new-session"
+            onClick={enterQueue}
+            style={{backgroundColor: 'white'}}
+            scale={2.0}
+          >
+            Join a New Session
+          </Button>
+        }
+        {liveSessionId !== null && liveSessionId !== undefined &&
+          <Button
+            shadow
+            type="success"
+            id="btn-new-session"
+            onClick={enterLiveSession}
+            style={{backgroundColor: 'white'}}
+            scale={2.0}
+          >
+            Join your Live Session
+          </Button>
+        }
+      </div>
       <motion.div className="home">
         <motion.div
           className="home-single-image"
@@ -64,46 +93,6 @@ const Home = () => {
           animate="show"
         >
           <SingleHomeAnimation />
-        </motion.div>
-        <motion.div className="home-button">
-          <SingleNode />
-          <motion.div className="button-middle">
-            <motion.div className="button1">
-              {(liveSessionId === null || liveSessionId === undefined) && (
-                <Button
-                  shadow
-                  type="secondary"
-                  id="btn-new-session"
-                  onClick={enterQueue}
-                >
-                  Join a New Session
-                </Button>
-              )}
-            </motion.div>
-            <motion.div className="button2">
-              {liveSessionId !== null && liveSessionId !== undefined && (
-                <Button
-                  shadow
-                  type="success"
-                  id="btn-new-session"
-                  onClick={enterLiveSession}
-                >
-                  Join your Live Session
-                </Button>
-              )}
-            </motion.div>
-            <motion.div className="button3">
-              <Button
-                shadow
-                type="secondary"
-                id="btn-new-session"
-                onClick={sendMsg}
-              >
-                Ping Message
-              </Button>
-            </motion.div>
-            <DoubleNote />
-          </motion.div>
         </motion.div>
         <motion.div
           className="home-images"

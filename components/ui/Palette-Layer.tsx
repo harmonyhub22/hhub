@@ -228,13 +228,15 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
       <>
         <div className="palette-layer" style={{backgroundColor: this.state.tonePlayer === null ? "" : PaletteLayer.hasPlayerColor, border: this.state.tonePlayer === null ? "1px solid #eaeaea" : "none"}}>
           <div className="palette-layer-details">
+            <div>
             {this.state.tonePlayer !== null && <Tooltip text={'Stage Layer'} type="dark">
               <Button iconRight={<ChevronLeft color="white" />} auto
-                style={{backgroundColor: 'transparent', border: 'none', padding: '0px', height: '60px'
+                style={{backgroundColor: 'transparent', padding: '2px', position: 'relative'
                 }}
                 onClick={this.handleStageLayer}
               ></Button>
             </Tooltip>}
+            </div>
             <div>
               <Button
                 iconRight={

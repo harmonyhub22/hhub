@@ -10,6 +10,7 @@ import { MemberContext } from "../context/member";
 import { useRouter } from "next/router";
 import { AnimatePresence } from "framer-motion";
 import { Toaster } from 'react-hot-toast';
+import Navbar from "../components/Navbar";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [member, setMember] = useState<Member>({} as Member);
@@ -43,9 +44,10 @@ function MyApp({ Component, pageProps }: AppProps) {
       <CssBaseline />
       <MemberContext.Provider value={member}>
         <SocketContext.Provider value={socket}>
-            <AnimatePresence exitBeforeEnter>
-              <Component {...pageProps} key={router.pathname} />
-            </AnimatePresence>
+          <Navbar />
+          <AnimatePresence exitBeforeEnter>
+            <Component {...pageProps} key={router.pathname} />
+          </AnimatePresence>
         </SocketContext.Provider>
       </MemberContext.Provider>
       <Toaster 

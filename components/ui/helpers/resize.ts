@@ -13,14 +13,15 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   // The current position of mouse
   let x: number = 0;
 
+  // The current position of the div
+  let y: number = 0;
+  let initialX: number = 0;
+
   // The dimension of the element
   let w: number = 0;
 
   // The overall change in X for either left of right (only one will move at a time)
   let deltaX: number = 0;
-
-  // x position of the element
-  let posX: number = ele.parentElement?.getBoundingClientRect().x || 0;
 
   // Handle the mousedown event
   // that's triggered when user drags the resizer
@@ -50,6 +51,13 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
 
     // reset deltaX
     deltaX = ele.getBoundingClientRect().width;
+
+    // get y transform
+    console.log('transform', ele.style.transform);
+    const transform = new WebKitCSSMatrix(ele.style.transform)
+    initialX = transform.m41;
+    y = transform.m42;
+    console.log('translate: ', initialX, y);
 
     // Attach the listeners to `document`
     document.addEventListener('mousemove', leftMouseMoveHandler);
@@ -81,21 +89,19 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
       ele.style.width = `${maxWidth}px`;
       return;
     }
+
     if (w - dx < minWidth) {
       ele.style.width = `${minWidth}px`;
       return;
     }
 
-    // reset the offset of the parent
-    posX = ele?.parentElement?.getBoundingClientRect().x || 0;
-
     // Adjust the position and dimension of the element on the x axis
-    ele.style.cssText = `left: ${e.clientX - posX}px; width: ${w-dx}px`;
+    ele.style.cssText = `transform: translate(${initialX + dx}px, ${y}px); width: ${w-dx}px`;
   };
 
   const rightMouseUpHandler = function () {
     deltaX -= ele.getBoundingClientRect().width;
-    console.log(deltaX);
+    console.log('deltaX', deltaX);
     setDeltaXRight(deltaX);
     // Remove the handlers of `mousemove` and `mouseup`
     document.removeEventListener('mousemove', rightMouseMoveHandler);
@@ -104,7 +110,7 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
 
   const leftMouseUpHandler = function () {
     deltaX -= ele.getBoundingClientRect().width;
-    console.log(deltaX);
+    console.log('deltaX', deltaX);
     setDeltaXLeft(deltaX);
     // Remove the handlers of `mousemove` and `mouseup`
     document.removeEventListener('mousemove', leftMouseMoveHandler);
@@ -141,5 +147,5 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   }
 
   // Add listener
-  // leftResizer.addEventListener('mousedown', leftMouseDownHandler);
+  leftResizer.addEventListener('mousedown', leftMouseDownHandler);
 };
