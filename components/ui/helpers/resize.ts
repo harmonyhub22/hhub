@@ -149,3 +149,7 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   // Add listener
   leftResizer.addEventListener('mousedown', leftMouseDownHandler);
 };
+
+export const initResizeTimeline = (updateTimelineWidth:any) => {
+  window.addEventListener('resize', updateTimelineWidth)
+};
