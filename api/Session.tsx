@@ -1,8 +1,8 @@
 import { io } from "socket.io-client";
-import Layer from "../interfaces/models/LayerInterface";
 import Queue from "../interfaces/models/Queue";
 import SessionInterface from "../interfaces/models/SessionInterface";
 import { config } from "../components/config";
+import LayerInterface from "../interfaces/models/LayerInterface";
 
 export const joinWaitQueue = async () => {
   try {
@@ -69,19 +69,38 @@ export const getSession = async (sessionId: string) => {
   }
 };
 
-export const postLayer = async (sessionId: string, layerData: any) => {
+export const syncGetSession = (sessionId: string, setSession: any) => {
+  fetch(
+    config.server_url + "api/session/" + sessionId,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  ).then((response:any) => response.json())
+  .then((data:SessionInterface) => {
+    setSession(data);
+  });
+};
+
+export const postLayer = async (sessionId: string, layerData: LayerInterface) => {
   try {
+    let url = config.server_url + "api/session/" + sessionId + "/layers";
+    if (layerData.layerId !== null) url += "/" + layerData.layerId;
     const response = await fetch(
-      config.server_url + "api/session/" + sessionId + "/layers",
+      url,
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(layerData),
       }
     );
-    const l: Layer = await response.json();
+    const l: LayerInterface = await response.json();
     console.log(l);
     return l;
   } catch (e) {
@@ -90,29 +109,24 @@ export const postLayer = async (sessionId: string, layerData: any) => {
   }
 };
 
-export const postLayerRecording = async (
-  sessionId: string,
-  layerId: string,
-  formData: FormData
-) => {
-  try {
-    const response = await fetch(
-      config.server_url + "api/session/" + sessionId + "/layers/" + layerId,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData,
-      }
-    );
-    const l: Layer = await response.json();
-    console.log(l);
-    return l;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
+export const syncPostLayer = (sessionId: string, layerData: LayerInterface, updateSession:any) => {
+
+  let url = config.server_url + "api/session/" + sessionId + "/layers";
+  if (layerData.layerId !== null) url += "/" + layerData.layerId;
+  console.log('post layer data', layerData);
+  fetch(
+    url,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(layerData),
+    }
+  ).then((response:any) => {
+    if (response.ok) updateSession();
+  })
 };
 
 export const getLayerById = async (sessionId: string, layerId: string) => {
@@ -130,7 +144,7 @@ export const getLayerById = async (sessionId: string, layerId: string) => {
     if (!response.ok) {
       throw new Error(await response.json());
     }
-    const l: Layer = await response.json();
+    const l: LayerInterface = await response.json();
     console.log(l);
     return l;
   } catch (e) {
@@ -138,3 +152,42 @@ export const getLayerById = async (sessionId: string, layerId: string) => {
     return null;
   }
 };
+
+export const deleteLayer = async (sessionId:string, layerId:string) => {
+  try {
+    const response = await fetch(
+      config.server_url + "api/session/" + sessionId + "/layers/" + layerId,
+      {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error(await response.json());
+    }
+    const l: LayerInterface = await response.json();
+    console.log(l);
+    return l;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+
+export const syncDeleteLayer = (sessionId:string, layerId:string, updateSession:any) => {
+  fetch(
+    config.server_url + "api/session/" + sessionId + "/layers/" + layerId,
+    {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  ).then((response:any) => {
+    if (response.ok) updateSession();
+  });
+}

@@ -13,6 +13,8 @@ interface TimelineLayerProps {
   soundBufferDate: string|null,
   soundBuffer: Blob|null,
   commitLayer: any,
+  deleteLayer: any,
+  duplicateLayer: any,
 };
 
 interface TimelineLayerState {
@@ -61,12 +63,12 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   }
 
   componentDidMount() {
-    console.log(this.props);
     if (this.state.tonePlayer === null) {
       this.createTonePlayer(this.props.layer.fileName, this.props.soundBuffer, this.props.layer.bucketUrl);
     }
-    initResize(`timeline-layer-${this.state.currentLayer.name}`, TimelineLayer.layerMinWidth, this.state.layerMaxWidth,
-      `resizer-l-${this.state.currentLayer.name}`, `resizer-r-${this.state.currentLayer.name}`, // need to fix cause name not unique
+    initResize(`timeline-layer-${this.props.layer.layerId === null ? this.state.currentLayer.name : this.props.layer.layerId}`, 
+      TimelineLayer.layerMinWidth, this.state.layerMaxWidth,
+      'timeline-layer-resizer-l', 'timeline-layer-resizer-r',
       this.updateTrimmedStart, this.updateTrimmedEnd);
   }
 
@@ -75,7 +77,9 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   }
 
   componentDidUpdate(prevProps:TimelineLayerProps, prevState:TimelineLayerState) {
-    if (JSON.stringify(prevState.currentLayer) !== JSON.stringify(this.state.currentLayer)) {
+    if (JSON.stringify(prevState.currentLayer) !== JSON.stringify(this.state.currentLayer) 
+      || (prevState.flaggedForDelete !== this.state.flaggedForDelete && this.state.flaggedForDelete === true)) {
+      console.log('updated layer', this.state.currentLayer);
       this.setState({
         committed: false,
       });
@@ -124,10 +128,14 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   handleCommit() {
+    if (this.state.flaggedForDelete === true) {
+      this.props.deleteLayer(this.state.currentLayer);
+    } else {
+      this.props.commitLayer(this.state.currentLayer);
+    }
     this.setState({
       committed: true,
     });
-    this.props.commitLayer(this.state.currentLayer);
   };
 
   handlePlayer() {
@@ -197,7 +205,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   handleDuplicate() {
-    // duplicate
+    this.props.duplicateLayer(this.state.currentLayer);
   }
 
   handleDelete() {
@@ -207,6 +215,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   updateTrimmedStart(deltaX:number) {
+    const startTimeChange = deltaX * (this.props.layer.duration / this.state.layerMaxWidth);
     let trimmedStartDuration = this.state.currentLayer.trimmedStartDuration + (deltaX * (this.props.layer.duration / this.state.layerMaxWidth));
     if (trimmedStartDuration < 0) trimmedStartDuration = 0;
     else if (trimmedStartDuration > this.props.layer.duration) trimmedStartDuration = this.props.layer.duration;
@@ -214,6 +223,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       currentLayer:{
         ...prevState.currentLayer,
         trimmedStartDuration: trimmedStartDuration,
+        startTime: prevState.currentLayer.startTime + startTimeChange < 0 ? 0.0 : prevState.currentLayer.startTime + startTimeChange,
       }
     }));
   };
@@ -231,8 +241,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   handleDragStop = (event:any, info:any) => {
-    console.log('Event name: ', event.type);
-    console.log(event, info);
+    // console.log('Event name: ', event.type);
+    // console.log(event, info);
     this.setState(prevState => ({
       currentLayer:{
         ...prevState.currentLayer,
@@ -250,8 +260,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
         onStop={this.handleDragStop}
         defaultPosition={{x: this.state.currentLayer.startTime * (this.props.timelineWidth / this.props.timelineDuration), y: this.state.currentLayer.y}}
       >
-        <div className="timeline-layer" id={`timeline-layer-${this.state.currentLayer.name}`} 
-          style={{minWidth: TimelineLayer.layerMinWidth, maxWidth: this.state.layerMaxWidth, 
+        <div className="timeline-layer" id={`timeline-layer-${this.props.layer.layerId === null ? this.state.currentLayer.name : this.props.layer.layerId}`} 
+          style={{minWidth: `${TimelineLayer.layerMinWidth}px`, maxWidth: `${this.state.layerMaxWidth}px`, 
           width: (this.props.layer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration) * (this.state.layerMaxWidth / this.props.layer.duration),
         }}
         >
@@ -265,7 +275,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
             <Modal.Action passive onClick={this.setName}>Submit</Modal.Action>
           </Modal>
           
-          <div className='timeline-layer-resizer timeline-layer-resizer-l' id={`resizer-l-${this.state.currentLayer.name}`}></div>
+          <div className='timeline-layer-resizer timeline-layer-resizer-l'></div>
 
           <div className="timeline-layer-details">
             {this.state.committed === false && <div>
@@ -296,11 +306,11 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
                       <Info />
                     </Popover>
                   </Popover.Item>
-                  <Popover.Item style={{justifyContent: 'center', minWidth: '170px'}}>
+                  {this.props.layer.layerId !== null && <Popover.Item style={{justifyContent: 'center', minWidth: '170px'}}>
                     <Button auto icon={<Edit3 />} type="secondary" ghost onClick={this.handleRename} style={{width: '100%', height: '100%'}}>
                       Rename
                     </Button>
-                  </Popover.Item>
+                  </Popover.Item>}
                   <Popover.Item style={{justifyContent: 'center'}}>
                     <Button auto icon={<VolumeX />} type="warning" ghost onClick={this.handleMute} style={{width: '100%', height: '100%'}}>
                       {this.state.muted ?
@@ -363,7 +373,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
             </div>
           </div>
 
-          <div className='timeline-layer-resizer timeline-layer-resizer-r' id={`resizer-r-${this.state.currentLayer.name}`}></div>
+          <div className='timeline-layer-resizer timeline-layer-resizer-r'></div>
         </div>
       </Draggable>
     )

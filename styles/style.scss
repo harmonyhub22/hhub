@@ -432,23 +432,13 @@ table.table-palette tfoot {
   transition: 850ms;
 }
 
-.menu_items {
-  background: linear-gradient(#733d97, #512957, #831b77);
-  border-radius: 10% 20%;
-}
-
-.nav_menu_active {
-  left: 0;
-  transition: 200ms;
-}
-
 .nav_text {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  padding: 8px 0px 8px 16px;
   list-style: none;
   height: 60px;
+  margin: 0;
 }
 
 .item_icon {
@@ -492,6 +482,16 @@ table.table-palette tfoot {
 
 .nav_text:before {
   content: "";
+}
+
+.timeline-details {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 40px;
+  background-color: #320f48;
+  color: white;
+  border-radius: 20px 20px 0px 0px;
 }
 
 @import "./intro";

@@ -9,7 +9,6 @@ import PaletteLayer from "./Palette-Layer";
 import PaletteRecorder from "./Palette-Recorder";
 import Member from "../../interfaces/models/Member";
 
-
 interface PaletteProps {
   stageLayer: any,
   showPalette: any,

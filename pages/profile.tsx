@@ -5,7 +5,6 @@ const Profile = () => {
   const Router = useRouter();
   return (
     <>
-      <Navbar />
       <h1>Profile Settings</h1>
     </>
   );

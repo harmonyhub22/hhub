@@ -6,7 +6,6 @@ const Learn = () => {
   const Router = useRouter();
   return (
     <Page>
-      <Navbar />
       <Text h1>Learn Music Theory</Text>
       <Text h4>Looking to learn what things mean? We got your back!</Text>
 
@@ -129,7 +128,7 @@ const Learn = () => {
         <Grid xs={18}>
           <Card shadow width="100%" height="100%">
             <Text>
-              A songs melody is a combination of the notes' pitches and rhythm. Think of that Twinkle Twinkle Little Star 
+              A songs melody is a combination of the notes&apos pitches and rhythm. Think of that Twinkle Twinkle Little Star 
               that you heard as a kid. Remember how it goes? You can probably hum it despite that you forgot much 
               of the lyrics (lyrics are the words that are said in the song). As you hum the notes, you are humming 
               the melody!

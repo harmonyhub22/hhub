@@ -7,6 +7,8 @@ interface TimelineProps {
   layers: LayerInterface[],
   neverCommittedLayers: NeverCommittedLayer[],
   commitLayer: any,
+  duplicateLayer: any,
+  deleteLayer: any,
   stageLayer: any,
 };
 
@@ -39,11 +41,26 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     });
   };
 
+  componentDidUpdate(prevProps:TimelineProps) {
+    if (prevProps.layers.length !== this.props.layers.length) {
+      console.log('got new layer');
+    }
+  }
+
   render() {
     return (
-      <div className="timeline-wrapper" id={Timeline.TimelineWrapperId}>
+      <div key={`${this.props.layers.length}-${this.props.neverCommittedLayers.length}`} className="timeline-wrapper" id={Timeline.TimelineWrapperId}>
+        <div className="timeline-details">
+          {Array.from(Array(this.state.seconds).keys()).map((seconds:number) => {
+            return (
+              <>{seconds}</>
+            )
+          })}
+        </div>
         <Container layers={this.props.layers} neverCommittedLayers={this.props.neverCommittedLayers} 
-          commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds} />
+          commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds}
+          duplicateLayer={this.props.duplicateLayer}
+          deleteLayer={this.props.deleteLayer} />
       </div>
     );
   }

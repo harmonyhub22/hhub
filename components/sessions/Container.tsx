@@ -7,6 +7,8 @@ interface ContainerProps {
   layers: LayerInterface[],
   neverCommittedLayers: NeverCommittedLayer[],
   commitLayer: any,
+  duplicateLayer: any,
+  deleteLayer: any,
   width: number,
   seconds: number,
 }
@@ -20,7 +22,7 @@ class Container extends React.Component<ContainerProps, ContainerState> {
   };
 
   componentDidMount() {
-    console.log(this.props);
+    // console.log(this.props);
   }
 
   render() {
@@ -37,6 +39,8 @@ class Container extends React.Component<ContainerProps, ContainerState> {
             timelineDuration={this.props.seconds}
             timelineWidth={this.props.width}
             commitLayer={this.props.commitLayer}
+            duplicateLayer={this.props.duplicateLayer}
+            deleteLayer={this.props.deleteLayer}
           />
           )
         })}
@@ -51,6 +55,8 @@ class Container extends React.Component<ContainerProps, ContainerState> {
               timelineDuration={this.props.seconds}
               timelineWidth={this.props.width}
               commitLayer={this.props.commitLayer}
+              duplicateLayer={this.props.duplicateLayer}
+              deleteLayer={this.props.deleteLayer}
             />
           )
         })}
