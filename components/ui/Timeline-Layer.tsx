@@ -233,31 +233,23 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   updateTrimmedStart(deltaX:number) {
-    console.log('trimmed start');
-    console.log('previous offsets', {
-      'trimmedEndDuration': this.state.currentLayer.trimmedEndDuration,
-      'trimmedStartDuration': this.state.currentLayer.trimmedStartDuration,
-    });
     const deltaTime = deltaX * (this.props.layer.duration / this.state.layerMaxWidth);
     let trimmedStartDuration = this.state.currentLayer.trimmedStartDuration + deltaTime;
     trimmedStartDuration = Math.round(trimmedStartDuration * 1000000 + Number.EPSILON ) / 1000000;
     let trimmedEndDuration = this.state.currentLayer.trimmedEndDuration;
-    if (trimmedStartDuration < 0.0) {
-      const leftOverDuration = this.state.currentLayer.trimmedStartDuration + trimmedStartDuration;
+    if (trimmedStartDuration < 0) {
+      const leftOverDuration = this.state.currentLayer.trimmedStartDuration - trimmedStartDuration;
       trimmedStartDuration = 0.0;
-      console.log('leftover duration', leftOverDuration);
-      trimmedEndDuration += leftOverDuration;
-      if (trimmedEndDuration < 0.0) {
-        trimmedEndDuration = 0.0;
+      if (trimmedEndDuration > 0.0) {
+        trimmedEndDuration -= leftOverDuration;
+        if (trimmedEndDuration < 0) {
+          trimmedEndDuration = 0.0;
+        }
       }
     }
     else if (trimmedStartDuration > (this.props.layer.duration - trimmedEndDuration)) {
       trimmedStartDuration = this.props.layer.duration - trimmedEndDuration;
     }
-    console.log('post offsets', {
-      'trimmedEndDuration': trimmedEndDuration,
-      'trimmedStartDuration': trimmedStartDuration,
-    });
     let startTime = this.state.currentLayer.startTime + deltaTime;
     this.setState({
       currentLayer:{
@@ -270,10 +262,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   updateTrimmedEnd(deltaX:number) {
-    console.log('previous offsets', {
-      'trimmedEndDuration': this.state.currentLayer.trimmedEndDuration,
-      'trimmedStartDuration': this.state.currentLayer.trimmedStartDuration,
-    });
     const deltaTime = deltaX * (this.props.layer.duration / this.state.layerMaxWidth);
     let trimmedEndDuration = this.state.currentLayer.trimmedEndDuration + deltaTime;
     trimmedEndDuration = Math.round(trimmedEndDuration * 1000000 + Number.EPSILON ) / 1000000;
@@ -281,7 +269,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     if (trimmedEndDuration < 0.0) {
       const leftOverDuration = this.state.currentLayer.trimmedEndDuration + trimmedEndDuration;
       trimmedEndDuration = 0.0;
-      console.log('leftover duration', leftOverDuration);
       if (trimmedStartDuration > 0.0) {
         trimmedStartDuration -= leftOverDuration;
         if (trimmedStartDuration < 0.0) {
@@ -291,10 +278,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     } else if (trimmedEndDuration > (this.props.layer.duration - trimmedStartDuration)) {
       trimmedEndDuration = this.props.layer.duration - trimmedStartDuration
     }
-    console.log('post offsets', {
-      'trimmedEndDuration': trimmedEndDuration,
-      'trimmedStartDuration': trimmedStartDuration,
-    });
     this.setState({
       currentLayer:{
         ...this.state.currentLayer,
@@ -305,8 +288,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   handleDragStop = (event:any, info:any) => {
-    // console.log('Event name: ', event.type);
-    // console.log(event, info);
     console.log('got drag stop');
     this.setState({
       currentLayer:{
