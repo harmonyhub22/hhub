@@ -16,6 +16,7 @@ interface TimelineLayerProps {
   deleteLayer: any,
   duplicateLayer: any,
   addBuffer: any,
+  deleteBuffer:  any,
 };
 
 interface TimelineLayerState {
@@ -88,7 +89,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     if (prevState.currentLayer.reversed !== this.state.currentLayer.reversed 
       || prevState.currentLayer.fadeOutDuration!== this.state.currentLayer.fadeOutDuration 
       || prevState.currentLayer.fadeInDuration !== this.state.currentLayer.fadeInDuration
-      ||prevState.currentLayer.trimmedStartDuration !== this.state.currentLayer.trimmedStartDuration){
+      || prevState.currentLayer.trimmedStartDuration !== this.state.currentLayer.trimmedStartDuration
+      || prevState.currentLayer.startTime!=this.state.currentLayer.startTime){
       this.createTonePlayer(this.props.layer.fileName, this.props.soundBuffer, this.props.layer.bucketUrl);
     }
     if (prevProps.layer.duration !== this.props.layer.duration 
@@ -119,7 +121,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       tonePlayer.fadeIn = this.state.currentLayer.fadeInDuration;
       tonePlayer.fadeOut = this.state.currentLayer.fadeOutDuration;
       tonePlayer.buffer = tonePlayer.buffer.slice(this.state.currentLayer.trimmedStartDuration,this.state.currentLayer.duration - this.state.currentLayer.trimmedEndDuration);
-      this.props.addBuffer(this.state.currentLayer.startTime, tonePlayer.buffer);
+      this.props.addBuffer(this.state.currentLayer.startTime, tonePlayer.buffer, this.state.currentLayer.layerId,this.state.currentLayer.name);
     }
     this.setState({
       tonePlayer: tonePlayer
@@ -141,6 +143,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
   handleCommit() {
     if (this.state.flaggedForDelete === true) {
+      this.props.deleteBuffer(this.state.currentLayer.layerId,this.state.currentLayer.name)
       this.props.deleteLayer(this.state.currentLayer);
     } else {
       console.log('comitting', this.state.currentLayer);
@@ -292,9 +295,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       }
     });
   }
-  test(){
-    this.state.tonePlayer.buffer
-  }
 
   render() {
     return (
@@ -354,7 +354,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
                   </Popover.Item>
                   <Popover.Item>
                     <Button onClick={this.handlePlayer}>Play</Button>
-                    <Button onClick={this.test}>test player buffer transfer</Button>
                   </Popover.Item>
                   {this.props.layer.layerId !== null && <Popover.Item style={{justifyContent: 'center', minWidth: '170px'}}>
                     <Button auto icon={<Edit3 />} type="secondary" ghost onClick={this.handleRename} style={{width: '100%', height: '100%'}}>

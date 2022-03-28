@@ -6,6 +6,7 @@ import Crunker from "crunker"
 import { Button, Tooltip } from "@geist-ui/core";
 import { ChevronLeft, ChevronRight } from "@geist-ui/icons";
 import { initResizeTimeline } from "../ui/helpers/resize";
+var util = require("audio-buffer-utils")
 
 interface TimelineProps {
   layers: LayerInterface[],
@@ -20,6 +21,7 @@ interface TimelineState {
   width: number,
   seconds: number,
   buffer: any,
+  buffermap: any,
   crunker:any,
 };
 
@@ -33,11 +35,13 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     super(props);
     this.state = {
       width: 885, // change
-      seconds: 20, // change
+      seconds: 20, // changee
       buffer: null,
-      crunker: null,
+      buffermap: {},
+      crunker:null,
     };
     this.addBuffer = this.addBuffer.bind(this);
+    this.deleteBuffer = this.deleteBuffer.bind(this);
     this.getSongsoFar = this.getSongsoFar.bind(this);
     this.increaseTimeline = this.increaseTimeline.bind(this);
     this.decreaseTimeline = this.decreaseTimeline.bind(this);
@@ -45,20 +49,44 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   };
 
   componentDidMount() {
-    const crunker = new Crunker()
+    let crunker = null;
+    try {
+      try {
+        crunker = new Crunker();
+      } catch (e) {
+        // do nothing
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    // console.log("util",util);
+    // const buf = util.create();
+    // console.log("buf", buf);
+    this.setState({
+      crunker: crunker,
+    });
     this.updateTimelineWidth();
     initResizeTimeline(this.updateTimelineWidth);
   };
 
   componentDidUpdate(prevProps:TimelineProps, prevState:TimelineState) {
+    if (prevProps.layers.length !== this.props.layers.length) {
+      console.log('got new layer');
+    }
     if (prevState.seconds !== this.state.seconds) {
       /*if (prevState.seconds < this.state.seconds) {
         const offset = document.getElementById(Timeline.TimelineWrapperId)?.offsetTop;
         console.log('offset', offset);
       } */
       this.updateTimelineWidth();
+
     }
+    if (Object.keys(prevState.buffermap).length !== Object.keys(this.state.buffermap).length) {
+      console.log(this.state.buffermap);
+    }
+
   }
+  
 
   updateTimelineWidth() {
     let ele = null;
@@ -87,15 +115,52 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     });
   }
 
-  addBuffer(startTime:number, buffer:AudioBuffer) {
-    const temp = this.state.crunker.padAudio(buffer,0,startTime)
-
+  addBuffer(startTime:number, buffer:AudioBuffer, layerId:number | null , layerName:string | null) {
+    if (this.state.crunker === null) {
+      console.log('crunker undefined');
+      return;
+    }
+    const temp = this.state.crunker.padAudio(buffer,0,startTime);
+    const keyValue = layerId === null ? layerName : layerId;
+    if (keyValue === null) return;
+    const bufferMap = this.state.buffermap;
+    if (layerId !== null && layerName !== null) {
+      delete bufferMap[layerName];
+    }
+    bufferMap[keyValue] = temp;
+    console.log("buffermap",bufferMap)
     this.setState({
-      buffer: this.state.crunker.mergeAudio([temp,buffer])
-    })
-
+      buffermap: bufferMap,
+    });
+    if (Object.keys(bufferMap).length === (this.props.layers.length + this.props.neverCommittedLayers.length)){
+      this.setState({
+        buffer: this.state.crunker.mergeAudio(Object.values(bufferMap)),
+      });
+      console.log("buffer",buffer)
+    }
   }
+  deleteBuffer(layerId: string | null, layerName: string | null){
+    const bufferMap = this.state.buffermap;
+    if(layerId!==null){
+      delete bufferMap[layerId];
+      this.setState({
+        buffermap: bufferMap,
+      });
+    }
+    else if(layerName!==null){
+      delete bufferMap[layerName];
+      this.setState({
+        buffermap: bufferMap,
+      });
+    }
+    this.setState({
+      buffer: this.state.crunker.mergeAudio(Object.values(bufferMap)),
+    });
+  }
+  
   getSongsoFar(){
+    console.log("current buffer",this.state.buffer)
+
     this.state.crunker.play(this.state.buffer)
   }
 
@@ -133,7 +198,8 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
             commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds}
             duplicateLayer={this.props.duplicateLayer}
             deleteLayer={this.props.deleteLayer}
-            addBuffer={this.addBuffer} />
+            addBuffer={this.addBuffer}
+            deleteBuffer={this.deleteBuffer} />
         </div>
       </div>
     );

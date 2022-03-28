@@ -12,6 +12,7 @@ interface ContainerProps {
   width: number,
   seconds: number,
   addBuffer: any,
+  deleteBuffer:any,
 }
 
 interface ContainerState {
@@ -43,6 +44,7 @@ class Container extends React.Component<ContainerProps, ContainerState> {
             duplicateLayer={this.props.duplicateLayer}
             deleteLayer={this.props.deleteLayer}
             addBuffer={this.props.addBuffer}
+            deleteBuffer={this.props.deleteBuffer}
           />
           )
         })}
@@ -60,6 +62,7 @@ class Container extends React.Component<ContainerProps, ContainerState> {
               duplicateLayer={this.props.duplicateLayer}
               deleteLayer={this.props.deleteLayer}
               addBuffer={this.props.addBuffer}
+              deleteBuffer={this.props.deleteBuffer}
             />
           )
         })}
