@@ -174,7 +174,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
         </Modal>
   
         <Card className="session-options">
-          <Button auto onClick={this.voteToEndSession} type={this.state.youVotedToEnd ? "error" : "secondary"} style={{marginRight: '5px'}}>
+          <Button auto onClick={this.voteToEndSession} type="error" style={{marginRight: '5px'}}>
             End Session {this.state.endSessionVotes > 0 ? this.state.endSessionVotes : ""}
           </Button>
           <Button auto onClick={this.handleMessaging} type="warning">

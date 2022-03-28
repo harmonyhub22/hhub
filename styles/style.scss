@@ -38,10 +38,6 @@
   }
 }
 
-#session-timeline-div {
-  overflow-x: scroll;
-}
-
 table.table-pianoroll {
   width: 400px;
   height: 200px;
@@ -299,10 +295,10 @@ table.table-palette tfoot {
 .timeline-layer {
   border-radius: 12px;
   border: 1px solid #eaeaea;
-  min-width: 240px;
   position: absolute;
   margin-top: 2px;
   margin-bottom: 2px;
+  background-color: white;
 }
 
 .timeline-layer-wav {
@@ -331,6 +327,7 @@ table.table-palette tfoot {
   width: 100%;
   padding-left: 22px;
   padding-right: 22px;
+  box-sizing: border-box !important;
 }
 
 .timeline-layer-commit-tooltip {
@@ -347,6 +344,11 @@ table.table-palette tfoot {
 
 .timeline-layer-initials {
   padding: 0px 8px 8px 2px;
+  pointer-events: none;
+  -webkit-user-select: none; /* Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
 }
 
 .timeline-layer-resizer {
@@ -378,20 +380,33 @@ table.table-palette tfoot {
   height: 100%;
   display: block;
   position: absolute;
+  // background-image:
+    // linear-gradient(to right, grey 1px, transparent 1px),
+    // linear-gradient(to bottom, grey 1px, transparent 1px);
 }
 
 .session-members {
+  padding: 5px !important;
   display: inline-table;
   position: fixed;
   right: 0;
   top: 0;
+  font-size: calc(1 * 13px) !important;
   border-radius: 0px 0px 0px 6px !important;
+  z-index: 2000;
+  background-color: white;
+  .view {
+    .subtitle {
+      display: none !important;
+    }
+  }
 }
 
 .session-options {
+  width: 100vw !important;
   text-align: center;
   position: fixed;
-  bottom: 3vh;
+  bottom: 0vh;
   border: none !important;
   opacity: 100;
   pointer-events: none;
@@ -399,6 +414,8 @@ table.table-palette tfoot {
   padding: 0px !important;
   display: flex;
   justify-content: center;
+  // background-color: #320f48 !important;
+  border-radius: 0px !important;
 }
 
 .palette-open-button {
@@ -492,7 +509,7 @@ table.table-palette tfoot {
   background-color: #320f48;
   color: white;
   border-radius: 20px 20px 0px 0px;
-  position: relative;
+  position: absolute;
 }
 
 .one-timeline-interval {
@@ -514,21 +531,24 @@ table.table-palette tfoot {
 }
 
 .timeline-duration-modifier {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: 50px;
+  right: 6vw;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  top: 6vh;
+  position: absolute;
+  z-index: 1000;
 }
 
 .toggle-timeline-duration-btn {
   padding: 0px !important;
   margin-right: 7px !important;
   background-color: white !important;
+}
+
+.draggable-wav {
+  cursor: move;
 }
 
 @import "./intro";

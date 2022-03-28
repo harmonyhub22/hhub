@@ -152,6 +152,8 @@ class Session extends Component<SessionProps, SessionState> {
     });
   }
 
+  // style={{overflowX: 'scroll', overflowY: 'hidden'}}
+
   render() {
     return (
       <>
@@ -173,12 +175,12 @@ class Session extends Component<SessionProps, SessionState> {
         <SessionMembers youMemberId={this.props.member.memberId}
           member1={this.state.session?.member1 ?? null} member2={this.state.session?.member2 ?? null} />
 
-        <Text h4 style={{textAlign: 'center'}}>Your Collaborative Session</Text>
-
-        <Timeline layers={this.state.session?.layers ?? []} neverCommittedLayers={this.state.neverCommittedLayers} 
-          commitLayer={this.commitLayer} duplicateLayer={this.duplicateLayer}
-          deleteLayer={this.deleteLayer}
-          stageLayer={this.stageLayer} />
+        <div style={{display: 'flex', justifyContent: 'center', borderRadius: '20px', paddingLeft: '5vw', paddingRight: '5vw'}}>
+          <Timeline layers={this.state.session?.layers ?? []} neverCommittedLayers={this.state.neverCommittedLayers} 
+            commitLayer={this.commitLayer} duplicateLayer={this.duplicateLayer}
+            deleteLayer={this.deleteLayer}
+            stageLayer={this.stageLayer} />
+        </div>
 
         <SessionOptions socket={this.props.socket} sessionId={this.state.session?.sessionId ?? null}
           partnerFirstname={this.state.partner?.firstname ?? ""} endSession={this.endSession} />

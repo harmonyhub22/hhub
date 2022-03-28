@@ -23,45 +23,57 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   // The overall change in X for either left of right (only one will move at a time)
   let deltaX: number = 0;
 
+  let mouseDown: boolean = false;
+
   // Handle the mousedown event
   // that's triggered when user drags the resizer
   const rightMouseDownHandler = function (e:any) {
-    // Get the current mouse position
-    x = e.clientX;
 
-    // Calculate the dimension of element
-    w = parseInt(window.getComputedStyle(ele).width, 10);
+    if (!mouseDown) {
+      mouseDown = true;
 
-    // reset deltaX
-    deltaX = ele.getBoundingClientRect().width;
+      // Get the current mouse position
+      x = e.clientX;
 
-    // Attach the listeners to `document`
-    document.addEventListener('mousemove', rightMouseMoveHandler);
-    document.addEventListener('mouseup', rightMouseUpHandler);
+      // Calculate the dimension of element
+      w = parseInt(window.getComputedStyle(ele).width, 10);
+
+      // reset deltaX
+      deltaX = ele.getBoundingClientRect().width;
+
+      // Attach the listeners to `document`
+      document.addEventListener('mousemove', rightMouseMoveHandler);
+      document.addEventListener('mouseup', rightMouseUpHandler);
+    }
   };
 
   // Handle the mousedown event
   // that's triggered when user drags the resizer
   const leftMouseDownHandler = function (e:any) {
-    // Get the current mouse position
-    x = e.clientX;
 
-    // Calculate the dimension of element
-    w = parseInt(window.getComputedStyle(ele).width, 10);
+    if (!mouseDown) {
+      // Get the current mouse position
+      x = e.clientX;
 
-    // reset deltaX
-    deltaX = ele.getBoundingClientRect().width;
+      // Calculate the dimension of element
+      w = parseInt(window.getComputedStyle(ele).width, 10);
 
-    // get y transform
-    console.log('transform', ele.style.transform);
-    const transform = new WebKitCSSMatrix(ele.style.transform)
-    initialX = transform.m41;
-    y = transform.m42;
-    console.log('translate: ', initialX, y);
+      // reset deltaX
+      deltaX = ele.getBoundingClientRect().width;
 
-    // Attach the listeners to `document`
-    document.addEventListener('mousemove', leftMouseMoveHandler);
-    document.addEventListener('mouseup', leftMouseUpHandler);
+      // get y transform
+      console.log('transform', ele.style.transform);
+      const transform = new WebKitCSSMatrix(ele.style.transform)
+      initialX = transform.m41;
+      y = transform.m42;
+      console.log('translate: ', initialX, y);
+
+      console.log('minWidth', minWidth);
+
+      // Attach the listeners to `document`
+      document.addEventListener('mousemove', leftMouseMoveHandler);
+      document.addEventListener('mouseup', leftMouseUpHandler);
+    }
   };
 
   const rightMouseMoveHandler = function (e:any) {
@@ -100,21 +112,23 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   };
 
   const rightMouseUpHandler = function () {
-    deltaX -= ele.getBoundingClientRect().width;
-    console.log('deltaX', deltaX);
-    setDeltaXRight(deltaX);
     // Remove the handlers of `mousemove` and `mouseup`
     document.removeEventListener('mousemove', rightMouseMoveHandler);
     document.removeEventListener('mouseup', rightMouseUpHandler);
+    mouseDown = false;
+    deltaX -= ele.getBoundingClientRect().width;
+    console.log('deltaX', deltaX);
+    setDeltaXRight(deltaX);
   };
 
   const leftMouseUpHandler = function () {
-    deltaX -= ele.getBoundingClientRect().width;
-    console.log('deltaX', deltaX);
-    setDeltaXLeft(deltaX);
     // Remove the handlers of `mousemove` and `mouseup`
     document.removeEventListener('mousemove', leftMouseMoveHandler);
     document.removeEventListener('mouseup', leftMouseUpHandler);
+    mouseDown = false;
+    deltaX -= ele.getBoundingClientRect().width;
+    console.log('deltaX', deltaX);
+    setDeltaXLeft(deltaX);
   };
 
   // Query right resizer
@@ -151,5 +165,5 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
 };
 
 export const initResizeTimeline = (updateTimelineWidth:any) => {
-  window.addEventListener('resize', updateTimelineWidth)
+  window.addEventListener('resize', updateTimelineWidth);
 };

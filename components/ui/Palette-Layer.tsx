@@ -172,6 +172,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
 
   handlePlayer() {
     if (this.state.tonePlayer === null) return;
+    if (this.state.tonePlayer.loaded === false) return;
     if (this.state.tonePlayer.state === "started") {
       this.setState({
         paused: true,
@@ -208,7 +209,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
       reversed: false,
       trimmedStartDuration: 0,
       trimmedEndDuration: 0,
-      y: 0,
+      y: 30,
     }
     const newLayer: NeverCommittedLayer = {
       layer: layer,
