@@ -6,6 +6,7 @@ import Crunker from "crunker"
 import { Button, Tooltip } from "@geist-ui/core";
 import { ChevronLeft, ChevronRight } from "@geist-ui/icons";
 import { initResizeTimeline } from "../ui/helpers/resize";
+var util = require("audio-buffer-utils")
 
 interface TimelineProps {
   layers: LayerInterface[],
@@ -40,6 +41,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
       crunker:null,
     };
     this.addBuffer = this.addBuffer.bind(this);
+    this.deleteBuffer = this.deleteBuffer.bind(this);
     this.getSongsoFar = this.getSongsoFar.bind(this);
     this.increaseTimeline = this.increaseTimeline.bind(this);
     this.decreaseTimeline = this.decreaseTimeline.bind(this);
@@ -47,9 +49,22 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   };
 
   componentDidMount() {
+    let crunker = null;
+    try {
+      try {
+        crunker = new Crunker();
+      } catch (e) {
+        // do nothing
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    // console.log("util",util);
+    // const buf = util.create();
+    // console.log("buf", buf);
     this.setState({
-      crunker: new Crunker(),
-    })
+      crunker: crunker,
+    });
     this.updateTimelineWidth();
     initResizeTimeline(this.updateTimelineWidth);
   };
@@ -101,33 +116,52 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   }
 
   addBuffer(startTime:number, buffer:AudioBuffer, layerId:number | null , layerName:string | null) {
-    const crunker = new Crunker()
-    const temp = crunker.padAudio(buffer,0,startTime);
+    if (this.state.crunker === null) {
+      console.log('crunker undefined');
+      return;
+    }
+    const temp = this.state.crunker.padAudio(buffer,0,startTime);
     const keyValue = layerId === null ? layerName : layerId;
     if (keyValue === null) return;
     const bufferMap = this.state.buffermap;
     if (layerId !== null && layerName !== null) {
-      delete bufferMap.layerName;
+      delete bufferMap[layerName];
     }
-    console.log(bufferMap)
     bufferMap[keyValue] = temp;
-    console.log(bufferMap)
+    console.log("buffermap",bufferMap)
     this.setState({
       buffermap: bufferMap,
     });
     if (Object.keys(bufferMap).length === (this.props.layers.length + this.props.neverCommittedLayers.length)){
-      // let crunker = new Crunker();
-      // this.setState({
-      //   buffer: crunker.mergeAudio(Object.values(bufferMap)),
-      // });
+      this.setState({
+        buffer: this.state.crunker.mergeAudio(Object.values(bufferMap)),
+      });
       console.log("buffer",buffer)
     }
   }
+  deleteBuffer(layerId: string | null, layerName: string | null){
+    const bufferMap = this.state.buffermap;
+    if(layerId!==null){
+      delete bufferMap[layerId];
+      this.setState({
+        buffermap: bufferMap,
+      });
+    }
+    else if(layerName!==null){
+      delete bufferMap[layerName];
+      this.setState({
+        buffermap: bufferMap,
+      });
+    }
+    this.setState({
+      buffer: this.state.crunker.mergeAudio(Object.values(bufferMap)),
+    });
+  }
   
   getSongsoFar(){
-    // console.log(this.state.buffer)
-    // let crunker = new Crunker();
-    // crunker.play(this.state.buffer)
+    console.log("current buffer",this.state.buffer)
+
+    this.state.crunker.play(this.state.buffer)
   }
 
 
@@ -163,7 +197,8 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
           commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds}
           duplicateLayer={this.props.duplicateLayer}
           deleteLayer={this.props.deleteLayer}
-          addBuffer={this.addBuffer}/>
+          addBuffer={this.addBuffer}
+          deleteBuffer={this.deleteBuffer}/>
       </div>
     );
   }

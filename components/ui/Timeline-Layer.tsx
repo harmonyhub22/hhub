@@ -16,6 +16,7 @@ interface TimelineLayerProps {
   deleteLayer: any,
   duplicateLayer: any,
   addBuffer: any,
+  deleteBuffer:  any,
 };
 
 interface TimelineLayerState {
@@ -88,7 +89,8 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     if (prevState.currentLayer.reversed !== this.state.currentLayer.reversed 
       || prevState.currentLayer.fadeOutDuration!== this.state.currentLayer.fadeOutDuration 
       || prevState.currentLayer.fadeInDuration !== this.state.currentLayer.fadeInDuration
-      ||prevState.currentLayer.trimmedStartDuration !== this.state.currentLayer.trimmedStartDuration){
+      || prevState.currentLayer.trimmedStartDuration !== this.state.currentLayer.trimmedStartDuration
+      || prevState.currentLayer.startTime!=this.state.currentLayer.startTime){
       this.createTonePlayer(this.props.layer.fileName, this.props.soundBuffer, this.props.layer.bucketUrl);
     }
     if (prevProps.layer.duration !== this.props.layer.duration 
@@ -141,6 +143,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
   handleCommit() {
     if (this.state.flaggedForDelete === true) {
+      this.props.deleteBuffer(this.state.currentLayer.layerId,this.state.currentLayer.name)
       this.props.deleteLayer(this.state.currentLayer);
     } else {
       this.props.commitLayer(this.state.currentLayer);
