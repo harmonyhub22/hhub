@@ -233,21 +233,31 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   updateTrimmedStart(deltaX:number) {
+    console.log('trimmed start');
+    console.log('previous offsets', {
+      'trimmedEndDuration': this.state.currentLayer.trimmedEndDuration,
+      'trimmedStartDuration': this.state.currentLayer.trimmedStartDuration,
+    });
     const deltaTime = deltaX * (this.props.layer.duration / this.state.layerMaxWidth);
     let trimmedStartDuration = this.state.currentLayer.trimmedStartDuration + deltaTime;
+    trimmedStartDuration = Math.round(trimmedStartDuration * 1000000 + Number.EPSILON ) / 1000000;
     let trimmedEndDuration = this.state.currentLayer.trimmedEndDuration;
-    if (trimmedStartDuration < 0) {
+    if (trimmedStartDuration < 0.0) {
       const leftOverDuration = this.state.currentLayer.trimmedStartDuration + trimmedStartDuration;
-      trimmedStartDuration = 0;
+      trimmedStartDuration = 0.0;
       console.log('leftover duration', leftOverDuration);
       trimmedEndDuration += leftOverDuration;
-      if (trimmedEndDuration < 0) {
-        trimmedEndDuration = 0;
+      if (trimmedEndDuration < 0.0) {
+        trimmedEndDuration = 0.0;
       }
     }
-    else if (trimmedStartDuration > (this.props.layer.duration - this.state.currentLayer.trimmedStartDuration)) {
-      trimmedStartDuration = this.props.layer.duration - this.state.currentLayer.trimmedStartDuration;
+    else if (trimmedStartDuration > (this.props.layer.duration - trimmedEndDuration)) {
+      trimmedStartDuration = this.props.layer.duration - trimmedEndDuration;
     }
+    console.log('post offsets', {
+      'trimmedEndDuration': trimmedEndDuration,
+      'trimmedStartDuration': trimmedStartDuration,
+    });
     let startTime = this.state.currentLayer.startTime + deltaTime;
     this.setState({
       currentLayer:{
@@ -266,17 +276,20 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     });
     const deltaTime = deltaX * (this.props.layer.duration / this.state.layerMaxWidth);
     let trimmedEndDuration = this.state.currentLayer.trimmedEndDuration + deltaTime;
+    trimmedEndDuration = Math.round(trimmedEndDuration * 1000000 + Number.EPSILON ) / 1000000;
     let trimmedStartDuration = this.state.currentLayer.trimmedStartDuration;
-    if (trimmedEndDuration < 0) {
+    if (trimmedEndDuration < 0.0) {
       const leftOverDuration = this.state.currentLayer.trimmedEndDuration + trimmedEndDuration;
-      trimmedEndDuration = 0;
+      trimmedEndDuration = 0.0;
       console.log('leftover duration', leftOverDuration);
-      trimmedStartDuration += leftOverDuration;
-      if (trimmedStartDuration < 0) {
-        trimmedStartDuration = 0;
+      if (trimmedStartDuration > 0.0) {
+        trimmedStartDuration -= leftOverDuration;
+        if (trimmedStartDuration < 0.0) {
+          trimmedStartDuration = 0.0;
+        }
       }
-    } else if (trimmedEndDuration > (this.props.layer.duration - this.state.currentLayer.trimmedStartDuration)) {
-      trimmedEndDuration = this.props.layer.duration - this.state.currentLayer.trimmedStartDuration
+    } else if (trimmedEndDuration > (this.props.layer.duration - trimmedStartDuration)) {
+      trimmedEndDuration = this.props.layer.duration - trimmedStartDuration
     }
     console.log('post offsets', {
       'trimmedEndDuration': trimmedEndDuration,
