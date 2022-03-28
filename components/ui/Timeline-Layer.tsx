@@ -125,7 +125,9 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       tonePlayer.fadeOut = this.state.currentLayer.fadeOutDuration;
       tonePlayer.mute = this.state.muted;
       tonePlayer.buffer = tonePlayer.buffer.slice(this.state.currentLayer.trimmedStartDuration,this.state.currentLayer.duration - this.state.currentLayer.trimmedEndDuration);
-      this.props.addBuffer(this.state.currentLayer.startTime, tonePlayer.buffer, this.state.currentLayer.layerId,this.state.currentLayer.name);
+      this.props.addBuffer(this.state.currentLayer.startTime, tonePlayer.buffer, 
+        this.state.currentLayer.layerId, this.state.currentLayer.name, 
+        this.state.currentLayer.duration - this.state.currentLayer.trimmedStartDuration- this.state.currentLayer.trimmedEndDuration);
     }
     this.setState({
       tonePlayer: tonePlayer

@@ -135,7 +135,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
       delete bufferMap[layerName];
     }
     bufferMap[keyValue] = temp;
-    console.log("buffermap",bufferMap)
     this.setState({
       buffermap: bufferMap,
     });
@@ -145,7 +144,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
         this.state.tonePlayer.dispose();
       } catch (e) { /* do nothing */ }
       if (buffer.numberOfChannels !== 0) {
-        console.log('creating toneplayer');
         const player = new Tone.Player(buffer).toDestination();
         player.onstop = () => {
           clearInterval(this.state.timer);
