@@ -270,7 +270,8 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
             duplicateLayer={this.props.duplicateLayer}
             deleteLayer={this.props.deleteLayer}
             addBuffer={this.addBuffer}
-            deleteBuffer={this.deleteBuffer} />
+            deleteBuffer={this.deleteBuffer}
+            increaseTimeline={this.increaseTimeline} />
         </div>
         <div style={{position: 'absolute', bottom: '5vh'}}>
           <Button

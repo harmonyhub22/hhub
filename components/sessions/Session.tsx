@@ -186,7 +186,8 @@ class Session extends Component<SessionProps, SessionState> {
         </Modal>
 
         <SessionMembers youMemberId={this.props.member.memberId}
-          member1={this.state.session?.member1 ?? null} member2={this.state.session?.member2 ?? null} />
+          member1={this.state.session?.member1 ?? null} member2={this.state.session?.member2 ?? null}
+          startTime={this.state.session?.startTime ?? null} />
 
         <div style={{display: 'flex', justifyContent: 'center', borderRadius: '20px', paddingLeft: '5vw', paddingRight: '5vw'}}>
           <Timeline

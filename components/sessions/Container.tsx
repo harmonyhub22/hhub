@@ -12,7 +12,8 @@ interface ContainerProps {
   width: number,
   seconds: number,
   addBuffer: any,
-  deleteBuffer:any,
+  deleteBuffer: any,
+  increaseTimeline: any,
 }
 
 interface ContainerState {
@@ -24,12 +25,12 @@ class Container extends React.Component<ContainerProps, ContainerState> {
   };
 
   componentDidMount() {
-    // console.log(this.props);
+    console.log(this.props);
   }
 
   render() {
     return (
-      <div key={`${this.props.seconds}-${this.props.width}`} className="layer-container">
+      <div className="layer-container">
 
         {this.props.layers.map((layer:LayerInterface, i:number) => {      
           return (
@@ -45,6 +46,7 @@ class Container extends React.Component<ContainerProps, ContainerState> {
             deleteLayer={this.props.deleteLayer}
             addBuffer={this.props.addBuffer}
             deleteBuffer={this.props.deleteBuffer}
+            increaseTimeline={this.props.increaseTimeline}
           />
           )
         })}
@@ -63,9 +65,12 @@ class Container extends React.Component<ContainerProps, ContainerState> {
               deleteLayer={this.props.deleteLayer}
               addBuffer={this.props.addBuffer}
               deleteBuffer={this.props.deleteBuffer}
+              increaseTimeline={this.props.increaseTimeline}
             />
           )
         })}
+
+        <div id="extend-timeline-zone" className="extend-timeline-zone" style={{width: `${(this.props.width / this.props.seconds) * 2}px`}}></div>
       </div>
     );
   }

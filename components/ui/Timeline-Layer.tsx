@@ -16,7 +16,8 @@ interface TimelineLayerProps {
   deleteLayer: any,
   duplicateLayer: any,
   addBuffer: any,
-  deleteBuffer:  any,
+  deleteBuffer: any,
+  increaseTimeline: any,
 };
 
 interface TimelineLayerState {
@@ -33,6 +34,7 @@ interface TimelineLayerState {
 class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerState> {
 
   static layerMinWidth: number = 120;
+  static DraggableZoneId: string = 'extend-timeline-zone';
 
   constructor(props:TimelineLayerProps) {
     super(props);
@@ -62,6 +64,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.updateTrimmedStart = this.updateTrimmedStart.bind(this);
     this.updateTrimmedEnd = this.updateTrimmedEnd.bind(this);
     this.handleDragStop = this.handleDragStop.bind(this);
+    this.handleDrag = this.handleDrag.bind(this);
   }
 
   componentDidMount() {
@@ -299,13 +302,22 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     });
   }
 
+  handleDrag = (event:any, info:any) => {
+    // console.log(event.target);
+    if (event.target.id === TimelineLayer.DraggableZoneId) {
+      // const layerWidth = event.target.getBoundingClientRect().width;
+      // console.log('class', event.target.id);
+      this.props.increaseTimeline();
+    }
+  };
+
   render() {
     return (
       <Draggable
         bounds=".layer-container" // "parent"
         handle=".draggable-wav"
-
         onStop={this.handleDragStop}
+        onDrag={this.handleDrag}
         defaultPosition={{x: this.state.currentLayer.startTime * (this.props.timelineWidth / this.props.timelineDuration), y: this.state.currentLayer.y}}
       >
         <div

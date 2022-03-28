@@ -1,4 +1,4 @@
-import { Card, Dot, Text, Collapse, Divider } from "@geist-ui/core";
+import { Card, Dot, Text, Collapse, Divider, Code } from "@geist-ui/core";
 import React from "react";
 import Member from "../../interfaces/models/Member";
 
@@ -6,6 +6,7 @@ interface SessionMembersProps {
   youMemberId: string,
   member1: Member|null,
   member2: Member|null,
+  startTime: Date|null,
 };
 
 class SessionMembers extends React.Component<SessionMembersProps> {
@@ -18,6 +19,7 @@ class SessionMembers extends React.Component<SessionMembersProps> {
       <Collapse shadow title="Session Info" className="session-members" subtitle="Session Info">
         <Card style={{backgroundColor: "white"}}>
           <Card.Content>
+            Members<br></br>
             {this.props.member1 !== null && this.props.member2 !== null && 
             (this.props.member1.memberId === this.props.youMemberId ?
               <>
@@ -31,6 +33,10 @@ class SessionMembers extends React.Component<SessionMembersProps> {
                 <Dot type="warning"><Text small>{this.props.member1.firstname}{' '}{this.props.member1.lastname}</Text></Dot>
               </>
             )}
+          </Card.Content>
+          <Divider h="1px" my={0} />
+          <Card.Content>
+            <Text>Start time<br></br><Code>{this.props.startTime ?? ""}</Code></Text>
           </Card.Content>
         </Card>
       </Collapse>

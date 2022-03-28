@@ -62,13 +62,9 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
       deltaX = ele.getBoundingClientRect().width;
 
       // get y transform
-      console.log('transform', ele.style.transform);
       const transform = new WebKitCSSMatrix(ele.style.transform)
       initialX = transform.m41;
       y = transform.m42;
-      console.log('translate: ', initialX, y);
-
-      console.log('minWidth', minWidth);
 
       // Attach the listeners to `document`
       document.addEventListener('mousemove', leftMouseMoveHandler);

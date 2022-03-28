@@ -559,6 +559,13 @@ table.table-palette tfoot {
   position: absolute;
 }
 
+.extend-timeline-zone {
+  background-color: rgba(0, 0, 0, 0.2);
+  position: absolute;
+  height: 100%;
+  right: 0;
+}
+
 @import "./intro";
 @import "./home";
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300&family=Lobster&display=swap");
