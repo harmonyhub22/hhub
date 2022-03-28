@@ -2,19 +2,19 @@ import React, { Component } from "react";
 import { Button, Drawer, Modal, Text } from "@geist-ui/core";
 import SessionInterface from "../../interfaces/models/SessionInterface";
 import { config } from "../config";
-import Router from "next/router";
+import Crunker from "crunker"
 
 
 interface EndProps {
   member: any,
   session: SessionInterface|null
-  // songBuffer:any, TBD maybe
+  songBuffer: AudioBuffer|null,
 }
 
 interface EndState {
   savedToLibrary: boolean,
   downloadedSong: boolean,
-  congratsIndex:number
+  congratsIndex: number
 } 
 class End extends Component<EndProps, EndState> {
   static congratulatory: string[] = config.congrats;
@@ -24,32 +24,57 @@ class End extends Component<EndProps, EndState> {
     this.state = {
       savedToLibrary: false,
       downloadedSong:false,
-      congratsIndex:0
+      congratsIndex: 0,
     };
     this.saveSong = this.saveSong.bind(this);
-    // this.downloadSong = this.downloadSong.bind(this);
-    //this.Leave = this.Leave.bind(this);
+    this.goHome = this.goHome.bind(this);
+    this.downloadSong = this.downloadSong.bind(this);
   }
-  componentDidMount(){
-    // this.setState({
-    //   congratsIndex: Math.floor(Math.random() * (End.congratulatory.length + 1)),
-    // )};
-  }
-  async saveSong(){
+
+  componentDidMount() {
+    this.setState({
+      congratsIndex: Math.floor(Math.random() * (End.congratulatory.length + 1)),
+    });
+  };
+  
+  saveSong() {
+    // todo
     this.setState({
       savedToLibrary: true,
-    })
+    });
   }
-  async downloadSong(){
-    this.setState({
-      downloadedSong: true,
-    })
+  
+  downloadSong(){
+    console.log(this.props.songBuffer);
+    if (this.props.songBuffer !== null && this.props.session !== null) {
+      const crunker = new Crunker();
+      const blob = crunker.export(this.props.songBuffer, 'audio/mpeg');
+      crunker.download(blob.blob, `session-${this.props.session.sessionId}`);
+      this.setState({
+        downloadedSong: true,
+      });
+    } else {
+      alert('could not download, please try again');
+    }
   }
-  async Leave(){
-    Router.push({
-      pathname: "index"
-    })
+
+  goHome() {
+    if (!this.state.downloadedSong || !this.state.savedToLibrary) {
+      let str = "Are you sure you want to leave without";
+      if (!this.state.downloadedSong) {
+        str += this.state.savedToLibrary ? " downloading?" : " downloading or";
+      }
+      if (!this.state.savedToLibrary) {
+        str += " saving this to your library?";
+      }
+      if (confirm(str)) {
+        window.location.assign("/");
+      }
+    } else {
+      window.location.assign("/");
+    }
   }
+
   render(){
     return(
       
@@ -59,9 +84,17 @@ class End extends Component<EndProps, EndState> {
         Congrats {this.props.member.firstname}. 
       </Text>
       <Text>{End.congratulatory[this.state.congratsIndex]}</Text>
-      <Button onClick={this.downloadSong}>Download the Song?</Button>
-      <Button onClick={this.saveSong}>Save the Song?</Button>
-      <Button onClick={this.Leave}>Leave?</Button>
+      {this.state.downloadedSong ? 
+        <Button disabled>Download Song</Button>
+        :
+        <Button onClick={this.downloadSong}>Download Song</Button>
+      }
+      {this.state.savedToLibrary ?
+        <Button disabled>Save Song to Library</Button>
+        :
+        <Button onClick={this.saveSong}>Save Song to Library</Button>
+      }
+      <Button onClick={this.goHome}>Go Home</Button>
     </div>
     )
   }

@@ -6,6 +6,7 @@ import Wave from "../components/animations/Wave";
 import { LoginAnimation } from "../components/animations/AnimationPic";
 import { imgVariant, titleSlider } from "../components/animations/Animation";
 import { motion } from "framer-motion";
+import Navbar from "../components/Navbar";
 
 const Login = (): React.ReactNode => {
   const router = useRouter();
@@ -36,6 +37,8 @@ const Login = (): React.ReactNode => {
   };
 
   return (
+    <>
+    <Navbar />
     <motion.div className="intro">
       <motion.div className="intro-login">
         <motion.h1 variants={titleSlider} initial="hidden" animate="show">
@@ -48,7 +51,7 @@ const Login = (): React.ReactNode => {
             label="Email"
             placeholder="someone@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e:any) => setEmail(e.target.value)}
             style={{ backgroundColor: "white" }}
           />
           <Spacer h={0.75} />
@@ -57,7 +60,7 @@ const Login = (): React.ReactNode => {
             label="First Name"
             placeholder="Harmony"
             value={firstname}
-            onChange={(e) => setFirstname(e.target.value)}
+            onChange={(e:any) => setFirstname(e.target.value)}
             style={{ backgroundColor: "white" }}
           />
           <Spacer h={0.75} />
@@ -66,7 +69,7 @@ const Login = (): React.ReactNode => {
             label="Last Name"
             placeholder="Hub"
             value={lastname}
-            onChange={(e) => setLastname(e.target.value)}
+            onChange={(e:any) => setLastname(e.target.value)}
             style={{ backgroundColor: "white" }}
           />
           <Spacer h={0.75} />
@@ -90,6 +93,7 @@ const Login = (): React.ReactNode => {
         <LoginAnimation />
       </motion.div>
     </motion.div>
+    </>
   );
 };
 

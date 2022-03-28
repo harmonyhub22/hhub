@@ -551,6 +551,14 @@ table.table-palette tfoot {
   cursor: move;
 }
 
+.timeline-player-bar {
+  width: 3px;
+  top: 7vh;
+  background-color: #7f4ba1;
+  height: 80vh;
+  position: absolute;
+}
+
 @import "./intro";
 @import "./home";
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300&family=Lobster&display=swap");

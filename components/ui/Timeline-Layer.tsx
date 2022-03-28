@@ -147,7 +147,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       this.props.deleteLayer(this.state.currentLayer);
     } else {
       console.log('comitting', this.state.currentLayer);
-      this.props.commitLayer(this.state.currentLayer);
+      this.props.commitLayer(this.state.currentLayer, this.props.soundBuffer);
     }
     this.setState({
       committed: true,

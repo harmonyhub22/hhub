@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { joinWaitQueue } from "../api/Session";
 import { SocketContext } from "../context/socket";
 import SessionMade from "../interfaces/socket-data/session_made";
+import Navbar from "../components/Navbar";
 
 const Queue = (): React.ReactNode => {
   const [joinedTime, setJoinedTime] = useState<Date>();
@@ -33,6 +34,7 @@ const Queue = (): React.ReactNode => {
 
   return (
     <>
+      <Navbar />
       <h1>Queue Loading Page</h1>
       <p>Join at time: {joinedTime}</p>
     </>

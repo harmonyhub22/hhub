@@ -109,7 +109,7 @@ export const postLayer = async (sessionId: string, layerData: LayerInterface) =>
   }
 };
 
-export const syncPostLayer = (sessionId: string, layerData: LayerInterface, updateSession:any) => {
+export const syncPostLayer = (sessionId: string, layerData: LayerInterface, layerBlob: Blob|null, updateSession:any) => {
 
   let url = config.server_url + "api/session/" + sessionId + "/layers";
   if (layerData.layerId !== null) url += "/" + layerData.layerId;
@@ -125,8 +125,30 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, upda
       body: JSON.stringify(layerData),
     }
   ).then((response:any) => {
-    if (response.ok) updateSession();
-  })
+    if (response.ok) {
+      return response.json();
+    }
+  }).then((data:LayerInterface) => {
+    if (layerBlob !== null && data.layerId !== null) {
+      const fileUploadUrl = layerData.layerId !== null ? `${url}/upload` : `${url}/${data.layerId}/upload`;
+      const formData = new FormData();
+      formData.append('file', layerBlob, 'file');
+      fetch(fileUploadUrl, {
+        method: "PUT", 
+        credentials: "include",
+        body: formData,
+      })
+      .then(response => {
+        if (response.ok) updateSession();
+        else throw Error(`Server returned ${response.status}: ${response.statusText}`)
+      })
+      .catch(err => {
+        alert('Could not upload recording :(');
+      });
+    } else {
+      updateSession();
+    }
+  });
 };
 
 export const getLayerById = async (sessionId: string, layerId: string) => {
