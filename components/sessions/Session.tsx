@@ -53,9 +53,11 @@ class Session extends Component<SessionProps, SessionState> {
     this.endSession = this.endSession.bind(this);
     this.registerPullLayer = this.registerPullLayer.bind(this);
     this.updateBuffer = this.updateBuffer.bind(this);
+    this.tellPartnerToPull = this.tellPartnerToPull.bind(this);
   }
 
   setSession(session:SessionInterface|null) {
+    console.log('session', session);
     this.setState({
       session: session,
     });
@@ -77,7 +79,6 @@ class Session extends Component<SessionProps, SessionState> {
     syncGetSession(sessionId, this.setSession);
     
     if (this.props.socket === null || this.props.socket === undefined) return;
-    console.log('joining session');
     this.props.socket.emit('join_session', { sessionId: sessionId });
     this.props.socket.on(Session.socketPullLayerMsg, this.registerPullLayer);
   };
@@ -102,10 +103,15 @@ class Session extends Component<SessionProps, SessionState> {
     this.updateSession();
   }
 
+  tellPartnerToPull() {
+    if (this.state.session !== null)
+      this.props.socket.emit('pull_layer', { sessionId: this.state.session.sessionId });
+  }
+
   commitLayer(layerData:LayerInterface, layerBlob:Blob|null) {
     console.log('commit layer', layerData);
     if (this.state.session === null || this.state.session === undefined) return;
-    syncPostLayer(this.state.session.sessionId, layerData, layerBlob, this.updateSession);
+    syncPostLayer(this.state.session.sessionId, layerData, layerBlob, this.updateSession, this.tellPartnerToPull);
     if (layerData.layerId === null) { // its a never comitted layer
       console.log('comitting staged layer');
       const newNeverCommittedLayers: NeverCommittedLayer[] = [];
@@ -117,12 +123,11 @@ class Session extends Component<SessionProps, SessionState> {
       });
       console.log('never comitted layers', newNeverCommittedLayers.length);
     }
-    this.props.socket.emit('pull_layer', { sessionId: this.state.session.sessionId });
   };
 
   deleteLayer(layerData:LayerInterface) {
     if (layerData.layerId !== null && this.state.session !== null) { // comitted
-      syncDeleteLayer(this.state.session.sessionId, layerData.layerId, this.updateSession);
+      syncDeleteLayer(this.state.session.sessionId, layerData.layerId, this.updateSession, this.tellPartnerToPull);
     } else {
       const newNeverCommittedLayers: NeverCommittedLayer[] = [];
       this.state.neverCommittedLayers.forEach((layer:NeverCommittedLayer) => {
@@ -162,8 +167,6 @@ class Session extends Component<SessionProps, SessionState> {
     });
   };
 
-  // style={{overflowX: 'scroll', overflowY: 'hidden'}}
-
   render() {
     return (
       <>
@@ -187,7 +190,7 @@ class Session extends Component<SessionProps, SessionState> {
 
         <div style={{display: 'flex', justifyContent: 'center', borderRadius: '20px', paddingLeft: '5vw', paddingRight: '5vw'}}>
           <Timeline
-            key={this.state.session?.layers.length ?? 0} 
+            key={`${this.state.session?.layers.length ?? 0}`} 
             layers={this.state.session?.layers ?? []} neverCommittedLayers={this.state.neverCommittedLayers} 
             commitLayer={this.commitLayer} duplicateLayer={this.duplicateLayer}
             deleteLayer={this.deleteLayer}

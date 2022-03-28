@@ -109,7 +109,8 @@ export const postLayer = async (sessionId: string, layerData: LayerInterface) =>
   }
 };
 
-export const syncPostLayer = (sessionId: string, layerData: LayerInterface, layerBlob: Blob|null, updateSession:any) => {
+export const syncPostLayer = (sessionId: string, layerData: LayerInterface, layerBlob: Blob|null, 
+  updateSession:any, tellPartnerToPull: any) => {
 
   let url = config.server_url + "api/session/" + sessionId + "/layers";
   if (layerData.layerId !== null) url += "/" + layerData.layerId;
@@ -148,7 +149,7 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, laye
     } else {
       updateSession();
     }
-  });
+  }).then(() => tellPartnerToPull());
 };
 
 export const getLayerById = async (sessionId: string, layerId: string) => {
@@ -199,7 +200,7 @@ export const deleteLayer = async (sessionId:string, layerId:string) => {
   }
 }
 
-export const syncDeleteLayer = (sessionId:string, layerId:string, updateSession:any) => {
+export const syncDeleteLayer = (sessionId:string, layerId:string, updateSession:any, tellPartnerToPull:any) => {
   fetch(
     config.server_url + "api/session/" + sessionId + "/layers/" + layerId,
     {
@@ -210,6 +211,9 @@ export const syncDeleteLayer = (sessionId:string, layerId:string, updateSession:
       },
     }
   ).then((response:any) => {
-    if (response.ok) updateSession();
+    if (response.ok) {
+      updateSession();
+      tellPartnerToPull();
+    }
   });
 }

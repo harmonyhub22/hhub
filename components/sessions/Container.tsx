@@ -29,12 +29,12 @@ class Container extends React.Component<ContainerProps, ContainerState> {
 
   render() {
     return (
-      <div className="layer-container">
+      <div key={`${this.props.seconds}-${this.props.width}`} className="layer-container">
 
         {this.props.layers.map((layer:LayerInterface, i:number) => {      
           return (
           <TimelineLayer
-            key={`layer-${i}`}
+            key={`${JSON.stringify(layer)}`}
             layer={layer}
             soundBufferDate={null}
             soundBuffer={null}

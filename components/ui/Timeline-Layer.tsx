@@ -156,8 +156,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
   handlePlayer() {
     if (this.state.tonePlayer === null) return;
-    this.state.tonePlayer.start(0); /*, this.state.currentLayer.trimmedStartDuration, 
-      this.props.layer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration);*/
+    this.state.tonePlayer.start(0);
   };
 
   handleRename() {
@@ -188,8 +187,11 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     if (this.state.tonePlayer.state === "started") {
       this.state.tonePlayer.stop();
     }
+    const tonePlayer = this.state.tonePlayer;
+    tonePlayer.mute = !this.state.muted;
     this.setState({
       muted: !this.state.muted,
+      tonePlayer: tonePlayer,
     });
   };
 
@@ -204,7 +206,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
   handleFadeOut(val:number) {
     this.setState({
-      currentLayer:{
+      currentLayer: {
         ...this.state.currentLayer,
         fadeOutDuration: val,
       }
@@ -258,6 +260,10 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   updateTrimmedEnd(deltaX:number) {
+    console.log('previous offsets', {
+      'trimmedEndDuration': this.state.currentLayer.trimmedEndDuration,
+      'trimmedStartDuration': this.state.currentLayer.trimmedStartDuration,
+    });
     const deltaTime = deltaX * (this.props.layer.duration / this.state.layerMaxWidth);
     let trimmedEndDuration = this.state.currentLayer.trimmedEndDuration + deltaTime;
     let trimmedStartDuration = this.state.currentLayer.trimmedStartDuration;
@@ -272,8 +278,10 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     } else if (trimmedEndDuration > (this.props.layer.duration - this.state.currentLayer.trimmedStartDuration)) {
       trimmedEndDuration = this.props.layer.duration - this.state.currentLayer.trimmedStartDuration
     }
-    console.log('trimmedEndDuration', trimmedEndDuration);
-    console.log('trimmedStartDuration', trimmedStartDuration);
+    console.log('post offsets', {
+      'trimmedEndDuration': trimmedEndDuration,
+      'trimmedStartDuration': trimmedStartDuration,
+    });
     this.setState({
       currentLayer:{
         ...this.state.currentLayer,

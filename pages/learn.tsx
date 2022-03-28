@@ -5,8 +5,9 @@ import { Page, Text, Divider, Link, Grid, Card } from "@geist-ui/core";
 const Learn = () => {
   const Router = useRouter();
   return (
+    <>
+    <Navbar />
     <Page>
-      <Navbar />
       <Text h1>Learn Music Theory</Text>
       <Text h4>Looking to learn what things mean? We got your back!</Text>
 
@@ -207,6 +208,7 @@ const Learn = () => {
         </Grid>
       </Grid.Container>
     </Page>
+    </>
   );
 };
 
