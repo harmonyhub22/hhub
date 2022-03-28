@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { Button, Drawer, Modal, Text } from "@geist-ui/core";
 import SessionInterface from "../../interfaces/models/SessionInterface";
 import { config } from "../config";
-import Crunker from "crunker"
+import Crunker from "./Crunker";
 
 
 interface EndProps {
@@ -14,7 +14,7 @@ interface EndProps {
 interface EndState {
   savedToLibrary: boolean,
   downloadedSong: boolean,
-  congratsIndex: number
+  congratsIndex: number,
 } 
 class End extends Component<EndProps, EndState> {
   static congratulatory: string[] = config.congrats;
@@ -42,6 +42,7 @@ class End extends Component<EndProps, EndState> {
     this.setState({
       savedToLibrary: true,
     });
+
   }
   
   downloadSong(){
@@ -75,11 +76,12 @@ class End extends Component<EndProps, EndState> {
     }
   }
 
+
+
   render(){
     return(
       
     <div className="end-session">
-    
       <Text h1 style={{textAlign: 'center'}}>
         Congrats {this.props.member.firstname}. 
       </Text>
