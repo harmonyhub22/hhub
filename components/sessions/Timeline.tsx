@@ -2,12 +2,11 @@ import React from "react";
 import LayerInterface from "../../interfaces/models/LayerInterface";
 import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
 import Container from "./Container";
-import Crunker from "crunker"
+import Crunker from "./Crunker"
 import { Button, Tooltip, Badge, Spacer } from "@geist-ui/core";
 import { ChevronLeft, ChevronRight, PlayFill, PauseFill } from "@geist-ui/icons";
 import { initResizeTimeline } from "../ui/helpers/resize";
 import * as Tone from "tone";
-var util = require("audio-buffer-utils")
 
 interface TimelineProps {
   layers: LayerInterface[],
@@ -141,7 +140,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
       buffermap: bufferMap,
     });
     if (Object.keys(bufferMap).length === (this.props.layers.length + this.props.neverCommittedLayers.length)) {
-      const buffer = crunker.mergeAudio(Object.values(bufferMap));
+      const buffer =crunker.mergeAudio(Object.values(bufferMap));
       try {
         this.state.tonePlayer.dispose();
       } catch (e) { /* do nothing */ }
