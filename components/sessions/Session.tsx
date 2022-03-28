@@ -25,6 +25,7 @@ interface SessionState {
   neverCommittedLayers: NeverCommittedLayer[],
   showPalette: boolean,
   sessionEnded: boolean,
+  finalBuffer: any,
 }
 
 class Session extends Component<SessionProps, SessionState> {
@@ -40,6 +41,7 @@ class Session extends Component<SessionProps, SessionState> {
       neverCommittedLayers: [],
       showPalette: false,
       sessionEnded: false,
+      finalBuffer: null,
     };
     this.setSession = this.setSession.bind(this);
     this.updateSession = this.updateSession.bind(this);
@@ -50,6 +52,7 @@ class Session extends Component<SessionProps, SessionState> {
     this.showPalette = this.showPalette.bind(this);
     this.endSession = this.endSession.bind(this);
     this.registerPullLayer = this.registerPullLayer.bind(this);
+    this.updateBuffer = this.updateBuffer.bind(this);
   }
 
   setSession(session:SessionInterface|null) {
@@ -95,13 +98,14 @@ class Session extends Component<SessionProps, SessionState> {
   }
 
   registerPullLayer() {
+    console.log('heard partner upload layer');
     this.updateSession();
   }
 
-  commitLayer(layerData:LayerInterface) {
+  commitLayer(layerData:LayerInterface, layerBlob:Blob|null) {
     console.log('commit layer', layerData);
     if (this.state.session === null || this.state.session === undefined) return;
-    syncPostLayer(this.state.session.sessionId, layerData, this.updateSession);
+    syncPostLayer(this.state.session.sessionId, layerData, layerBlob, this.updateSession);
     if (layerData.layerId === null) { // its a never comitted layer
       console.log('comitting staged layer');
       const newNeverCommittedLayers: NeverCommittedLayer[] = [];
@@ -152,6 +156,12 @@ class Session extends Component<SessionProps, SessionState> {
     });
   }
 
+  updateBuffer(buffer:any) {
+    this.setState({
+      finalBuffer: buffer,
+    });
+  };
+
   // style={{overflowX: 'scroll', overflowY: 'hidden'}}
 
   render() {
@@ -166,9 +176,9 @@ class Session extends Component<SessionProps, SessionState> {
         </Modal>
 
         <Modal width="35rem" visible={this.state.sessionEnded} disableBackdropClick>
-          <Modal.Title>Return to Home Page</Modal.Title>
+          <Modal.Title>Session Complete</Modal.Title>
           <Modal.Content style={{textAlign: 'center'}}>
-            <End member = {this.props.member} session = {this.state.session}/>
+            <End member = {this.props.member} session={this.state.session} songBuffer={this.state.finalBuffer} />
           </Modal.Content>
         </Modal>
 
@@ -176,10 +186,14 @@ class Session extends Component<SessionProps, SessionState> {
           member1={this.state.session?.member1 ?? null} member2={this.state.session?.member2 ?? null} />
 
         <div style={{display: 'flex', justifyContent: 'center', borderRadius: '20px', paddingLeft: '5vw', paddingRight: '5vw'}}>
-          <Timeline layers={this.state.session?.layers ?? []} neverCommittedLayers={this.state.neverCommittedLayers} 
+          <Timeline
+            key={this.state.session?.layers.length ?? 0} 
+            layers={this.state.session?.layers ?? []} neverCommittedLayers={this.state.neverCommittedLayers} 
             commitLayer={this.commitLayer} duplicateLayer={this.duplicateLayer}
             deleteLayer={this.deleteLayer}
-            stageLayer={this.stageLayer} />
+            stageLayer={this.stageLayer}
+            sessionEnded={this.state.sessionEnded}
+            updateFinalBuffer={this.updateBuffer} />
         </div>
 
         <SessionOptions socket={this.props.socket} sessionId={this.state.session?.sessionId ?? null}

@@ -6,6 +6,7 @@ const Learn = () => {
   const Router = useRouter();
   return (
     <Page>
+      <Navbar />
       <Text h1>Learn Music Theory</Text>
       <Text h4>Looking to learn what things mean? We got your back!</Text>
 

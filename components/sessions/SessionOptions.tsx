@@ -166,7 +166,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
           <Modal.Title>Message</Modal.Title>
           <Modal.Content>
             <Input id={SessionOptions.sessionMsgInputId} clearable initialValue={this.state.currentMessage} 
-              placeholder="type message here" width="100%" onChange={(e) => this.setCurrentMessage(e.target.value)}
+              placeholder="type message here" width="100%" onChange={(e:any) => this.setCurrentMessage(e.target.value)}
               onKeyDown={this.onEnterSubmit} />
           </Modal.Content>
           <Modal.Action passive onClick={this.handleMessaging}>Cancel</Modal.Action>
@@ -174,10 +174,10 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
         </Modal>
   
         <Card className="session-options">
-          <Button auto onClick={this.voteToEndSession} type="error" style={{marginRight: '5px'}}>
+          <Button auto onClick={this.voteToEndSession} ghost shadow type={this.state.youVotedToEnd ? "error" : "secondary"} style={{marginRight: '5px'}}>
             End Session {this.state.endSessionVotes > 0 ? this.state.endSessionVotes : ""}
           </Button>
-          <Button auto onClick={this.handleMessaging} type="warning">
+          <Button auto onClick={this.handleMessaging} ghost shadow type="warning">
             Message {this.props.partnerFirstname}
           </Button>
         </Card>
