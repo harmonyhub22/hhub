@@ -102,36 +102,39 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
 
   render() {
     return (
-      <div key={`${this.props.layers.length}-${this.props.neverCommittedLayers.length}`} className="timeline-wrapper" id={Timeline.TimelineWrapperId} style={{width: `${this.state.seconds * 50}px`}}>
-        <div key={`${this.state.seconds}-${this.state.width}`}className="timeline-details">
-          {Array(this.state.seconds).fill(0).map((_, seconds:number) => {
-            return (
-              <div key={seconds} className="one-timeline-interval" style={{width: `${this.state.seconds / Timeline.MaxTimelinePoints * 100}%`}}>
-                <div className="timeline-interval-seconds">
-                  <span>{seconds !== 0 && seconds}</span>
+      <div style={{overflowX: 'scroll', overflowY: 'hidden'}}>
+        <div key={`${this.props.layers.length}-${this.props.neverCommittedLayers.length}`} 
+          className="timeline-wrapper" id={Timeline.TimelineWrapperId} style={{width: `${this.state.seconds * 50}px`}}>
+          <div key={`${this.state.seconds}-${this.state.width}`}className="timeline-details">
+            {Array(this.state.seconds).fill(0).map((_, seconds:number) => {
+              return (
+                <div key={seconds} className="one-timeline-interval" style={{width: `${this.state.seconds / Timeline.MaxTimelinePoints * 100}%`}}>
+                  <div className="timeline-interval-seconds">
+                    <span>{seconds !== 0 && seconds}</span>
+                  </div>
+                  <div className="half-timeline-interval"></div>
                 </div>
-                <div className="half-timeline-interval"></div>
-              </div>
-            )
-          })}
-          <div className="timeline-duration-modifier">
-            {/*<span>Adjust Timeline Duration</span>*/}
-            <Tooltip text={'Decrease Duration'} type="dark" placement="leftStart">
-              <Button iconRight={<ChevronLeft color="black" />} auto scale={2/3} 
-                className="toggle-timeline-duration-btn" onClick={this.decreaseTimeline} shadow type="secondary">
-              </Button>
-            </Tooltip>
-            <Tooltip text={'Increase Duration'} type="dark" placement="topEnd">
-              <Button iconRight={<ChevronRight color="black" />} auto scale={2/3} 
-                className="toggle-timeline-duration-btn" onClick={this.increaseTimeline} shadow type="secondary" />
-            </Tooltip>
+              )
+            })}
+            <div className="timeline-duration-modifier">
+              {/*<span>Adjust Timeline Duration</span>*/}
+              <Tooltip text={'Decrease Duration'} type="dark" placement="leftStart">
+                <Button iconRight={<ChevronLeft color="black" />} auto scale={2/3} 
+                  className="toggle-timeline-duration-btn" onClick={this.decreaseTimeline} shadow type="secondary">
+                </Button>
+              </Tooltip>
+              <Tooltip text={'Increase Duration'} type="dark" placement="topEnd">
+                <Button iconRight={<ChevronRight color="black" />} auto scale={2/3} 
+                  className="toggle-timeline-duration-btn" onClick={this.increaseTimeline} shadow type="secondary" />
+              </Tooltip>
+            </div>
           </div>
+          <Container layers={this.props.layers} neverCommittedLayers={this.props.neverCommittedLayers} 
+            commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds}
+            duplicateLayer={this.props.duplicateLayer}
+            deleteLayer={this.props.deleteLayer}
+            addBuffer={this.addBuffer} />
         </div>
-        <Container layers={this.props.layers} neverCommittedLayers={this.props.neverCommittedLayers} 
-          commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds}
-          duplicateLayer={this.props.duplicateLayer}
-          deleteLayer={this.props.deleteLayer}
-          addBuffer={this.addBuffer}/>
       </div>
     );
   }
