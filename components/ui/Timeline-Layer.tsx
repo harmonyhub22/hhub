@@ -90,7 +90,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       || prevState.currentLayer.fadeOutDuration!== this.state.currentLayer.fadeOutDuration 
       || prevState.currentLayer.fadeInDuration !== this.state.currentLayer.fadeInDuration
       || prevState.currentLayer.trimmedStartDuration !== this.state.currentLayer.trimmedStartDuration
-      || prevState.currentLayer.startTime!=this.state.currentLayer.startTime){
+      || prevState.currentLayer.startTime != this.state.currentLayer.startTime) {
       this.createTonePlayer(this.props.layer.fileName, this.props.soundBuffer, this.props.layer.bucketUrl);
     }
     if (prevProps.layer.duration !== this.props.layer.duration 
@@ -120,6 +120,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       tonePlayer.buffer.reverse = this.state.currentLayer.reversed;
       tonePlayer.fadeIn = this.state.currentLayer.fadeInDuration;
       tonePlayer.fadeOut = this.state.currentLayer.fadeOutDuration;
+      tonePlayer.mute = this.state.muted;
       tonePlayer.buffer = tonePlayer.buffer.slice(this.state.currentLayer.trimmedStartDuration,this.state.currentLayer.duration - this.state.currentLayer.trimmedEndDuration);
       this.props.addBuffer(this.state.currentLayer.startTime, tonePlayer.buffer, this.state.currentLayer.layerId,this.state.currentLayer.name);
     }
