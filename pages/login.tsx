@@ -42,14 +42,14 @@ const Login = (): React.ReactNode => {
           Harmony Hub
         </motion.h1>
 
-        <motion.div>
+        <motion.div className="intro-text">
           <Input
             clearable
             label="Email"
             placeholder="someone@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{backgroundColor: "white"}}
+            style={{ backgroundColor: "white" }}
           />
           <Spacer h={0.75} />
           <Input
@@ -58,7 +58,7 @@ const Login = (): React.ReactNode => {
             placeholder="Harmony"
             value={firstname}
             onChange={(e) => setFirstname(e.target.value)}
-            style={{backgroundColor: "white"}}
+            style={{ backgroundColor: "white" }}
           />
           <Spacer h={0.75} />
           <Input
@@ -67,7 +67,7 @@ const Login = (): React.ReactNode => {
             placeholder="Hub"
             value={lastname}
             onChange={(e) => setLastname(e.target.value)}
-            style={{backgroundColor: "white"}}
+            style={{ backgroundColor: "white" }}
           />
           <Spacer h={0.75} />
           <Button

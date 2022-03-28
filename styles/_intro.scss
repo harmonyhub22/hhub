@@ -12,13 +12,32 @@
     padding: 0rem 0rem;
     color: #21a0aa;
     display: inline-block;
+    font-family: "Lobster";
+  }
+
+  h2 {
+    color: #6da2ef;
+    font-size: 4rem;
+    padding: 0rem 0rem;
+    display: inline-block;
+    font-family: "Lobster";
   }
   @media (max-width: 800px) {
     .intro-images {
       display: none;
       padding: 2rem 2rem;
     }
+    #btn-new-session-logout {
+      margin-bottom: 5px;
+      margin-left: 1rem;
+      background-color: transparent;
+      color: black;
+    }
   }
+}
+
+.intro-text {
+  font-family: "Inter", sans-serif;
 }
 
 .intro-login,
@@ -83,6 +102,14 @@
 
 #btn-new-session {
   margin-bottom: 5px;
+  margin-left: 2rem;
+  background-color: transparent;
+  color: black;
+}
+
+#btn-new-session-logout {
+  margin-bottom: 5px;
+  margin-left: 5rem;
   background-color: transparent;
   color: black;
 }
