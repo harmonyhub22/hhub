@@ -9,8 +9,7 @@ import { createSocket } from "../api/InitSockets";
 import { MemberContext } from "../context/member";
 import { useRouter } from "next/router";
 import { AnimatePresence } from "framer-motion";
-import { Toaster } from 'react-hot-toast';
-import Navbar from "../components/Navbar";
+import { Toaster } from "react-hot-toast";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [member, setMember] = useState<Member>({} as Member);
@@ -44,18 +43,18 @@ function MyApp({ Component, pageProps }: AppProps) {
       <CssBaseline />
       <MemberContext.Provider value={member}>
         <SocketContext.Provider value={socket}>
-          <Navbar />
           <AnimatePresence exitBeforeEnter>
             <Component {...pageProps} key={router.pathname} />
           </AnimatePresence>
         </SocketContext.Provider>
       </MemberContext.Provider>
-      <Toaster 
+      <Toaster
         position="top-left"
         toastOptions={{
-          className: '.toast-messages',
+          className: ".toast-messages",
           duration: Infinity,
-        }}/>
+        }}
+      />
     </GeistProvider>
   );
 }
