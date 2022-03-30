@@ -62,13 +62,9 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
       deltaX = ele.getBoundingClientRect().width;
 
       // get y transform
-      console.log('transform', ele.style.transform);
       const transform = new WebKitCSSMatrix(ele.style.transform)
       initialX = transform.m41;
       y = transform.m42;
-      console.log('translate: ', initialX, y);
-
-      console.log('minWidth', minWidth);
 
       // Attach the listeners to `document`
       document.addEventListener('mousemove', leftMouseMoveHandler);
@@ -166,4 +162,18 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
 
 export const initResizeTimeline = (updateTimelineWidth:any) => {
   window.addEventListener('resize', updateTimelineWidth);
+};
+
+export const initTimelineClick = (timelineClassName:string, updateCurrentSeconds:any) => {
+  const timeline: Element|null = document.querySelector(`.${timelineClassName}`); // document.getElementById(timelineId);
+  if (timeline === null || timeline === undefined) {
+    console.log('timeline div not found');
+    return;
+  }
+
+  const clickListener = (e:any) => {
+    updateCurrentSeconds(e.offsetX);
+  };
+
+  timeline.addEventListener('mouseup', clickListener);
 };

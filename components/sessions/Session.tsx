@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { Button, Drawer, Modal, Text } from "@geist-ui/core";
 import Member from "../../interfaces/models/Member";
 import SessionInterface from "../../interfaces/models/SessionInterface";
-import { deleteLayer, getSession, postLayer, syncDeleteLayer, syncGetSession, syncPostLayer } from "../../api/Session";
+import { syncDeleteLayer, syncGetSession, syncPostLayer } from "../../api/Session";
 import LayerInterface from "../../interfaces/models/LayerInterface";
 import Timeline from "./Timeline";
-import SessionMembers from "./SessionMembers";
+import SessionInfo from "./SessionInfo";
 import SessionOptions from "./SessionOptions";
 import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
 import Palette from "../ui/Palette";
@@ -27,6 +27,7 @@ interface SessionState {
   showPalette: boolean,
   sessionEnded: boolean,
   finalBuffer: any,
+  bpm: number|null,
 }
 
 class Session extends Component<SessionProps, SessionState> {
@@ -43,6 +44,7 @@ class Session extends Component<SessionProps, SessionState> {
       showPalette: false,
       sessionEnded: false,
       finalBuffer: null,
+      bpm: null,
     };
     this.setSession = this.setSession.bind(this);
     this.updateSession = this.updateSession.bind(this);
@@ -55,12 +57,13 @@ class Session extends Component<SessionProps, SessionState> {
     this.registerPullLayer = this.registerPullLayer.bind(this);
     this.updateBuffer = this.updateBuffer.bind(this);
     this.tellPartnerToPull = this.tellPartnerToPull.bind(this);
+    this.updateBpm = this.updateBpm.bind(this);
   }
 
   setSession(session:SessionInterface|null) {
-    console.log('session', session);
     this.setState({
       session: session,
+      sessionEnded: (session?.endTime ?? null === null) ? false : true,
     });
   };
 
@@ -168,6 +171,12 @@ class Session extends Component<SessionProps, SessionState> {
     });
   };
 
+  updateBpm(bpm:number|null) {
+    this.setState({
+      bpm: bpm,
+    });
+  };
+
   render() {
     return (
       <>
@@ -199,18 +208,21 @@ class Session extends Component<SessionProps, SessionState> {
           </Modal.Content>
         </Modal>
 
-        <SessionMembers youMemberId={this.props.member.memberId}
-          member1={this.state.session?.member1 ?? null} member2={this.state.session?.member2 ?? null} />
+        <SessionInfo youMemberId={this.props.member.memberId}
+          member1={this.state.session?.member1 ?? null} member2={this.state.session?.member2 ?? null}
+          startTime={this.state.session?.startTime ?? null}
+          bpm={this.state.bpm}
+          updateBpm={this.updateBpm} />
 
-        <div style={{display: 'flex', justifyContent: 'center', borderRadius: '20px', paddingLeft: '5vw', paddingRight: '5vw'}}>
+        <div className="session-content">
           <Timeline
-            key={`${this.state.session?.layers.length ?? 0}`} 
             layers={this.state.session?.layers ?? []} neverCommittedLayers={this.state.neverCommittedLayers} 
             commitLayer={this.commitLayer} duplicateLayer={this.duplicateLayer}
             deleteLayer={this.deleteLayer}
             stageLayer={this.stageLayer}
             sessionEnded={this.state.sessionEnded}
-            updateFinalBuffer={this.updateBuffer} />
+            updateFinalBuffer={this.updateBuffer}
+            bpm={this.state.bpm} />
         </div>
 
         <SessionOptions socket={this.props.socket} sessionId={this.state.session?.sessionId ?? null}

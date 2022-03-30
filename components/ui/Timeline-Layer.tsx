@@ -16,7 +16,9 @@ interface TimelineLayerProps {
   deleteLayer: any,
   duplicateLayer: any,
   addBuffer: any,
-  deleteBuffer:  any,
+  deleteBuffer: any,
+  increaseTimeline: any,
+  bpm: number|null,
 };
 
 interface TimelineLayerState {
@@ -33,6 +35,7 @@ interface TimelineLayerState {
 class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerState> {
 
   static layerMinWidth: number = 120;
+  static DraggableZoneId: string = 'extend-timeline-zone';
 
   constructor(props:TimelineLayerProps) {
     super(props);
@@ -62,6 +65,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.updateTrimmedStart = this.updateTrimmedStart.bind(this);
     this.updateTrimmedEnd = this.updateTrimmedEnd.bind(this);
     this.handleDragStop = this.handleDragStop.bind(this);
+    this.handleDrag = this.handleDrag.bind(this);
   }
 
   componentDidMount() {
@@ -90,7 +94,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       || prevState.currentLayer.fadeOutDuration!== this.state.currentLayer.fadeOutDuration 
       || prevState.currentLayer.fadeInDuration !== this.state.currentLayer.fadeInDuration
       || prevState.currentLayer.trimmedStartDuration !== this.state.currentLayer.trimmedStartDuration
-      || prevState.currentLayer.startTime!=this.state.currentLayer.startTime){
+      || prevState.currentLayer.startTime != this.state.currentLayer.startTime) {
       this.createTonePlayer(this.props.layer.fileName, this.props.soundBuffer, this.props.layer.bucketUrl);
     }
     if (prevProps.layer.duration !== this.props.layer.duration 
@@ -120,13 +124,17 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       tonePlayer.buffer.reverse = this.state.currentLayer.reversed;
       tonePlayer.fadeIn = this.state.currentLayer.fadeInDuration;
       tonePlayer.fadeOut = this.state.currentLayer.fadeOutDuration;
+      tonePlayer.mute = this.state.muted;
       tonePlayer.buffer = tonePlayer.buffer.slice(this.state.currentLayer.trimmedStartDuration,this.state.currentLayer.duration - this.state.currentLayer.trimmedEndDuration);
-      this.props.addBuffer(this.state.currentLayer.startTime, tonePlayer.buffer, this.state.currentLayer.layerId,this.state.currentLayer.name);
+      this.props.addBuffer(this.state.currentLayer.startTime, tonePlayer.buffer, 
+        this.state.currentLayer.layerId, this.state.currentLayer.name, 
+        this.state.currentLayer.duration - this.state.currentLayer.trimmedStartDuration- this.state.currentLayer.trimmedEndDuration);
     }
     this.setState({
       tonePlayer: tonePlayer
     })
   }
+
   getInfo() {
     return (
       <Description title="Layer Info" style={{padding: '0px 10px 0px 10px'}} content={
@@ -235,18 +243,20 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   updateTrimmedStart(deltaX:number) {
     const deltaTime = deltaX * (this.props.layer.duration / this.state.layerMaxWidth);
     let trimmedStartDuration = this.state.currentLayer.trimmedStartDuration + deltaTime;
+    trimmedStartDuration = Math.round(trimmedStartDuration * 1000000 + Number.EPSILON ) / 1000000;
     let trimmedEndDuration = this.state.currentLayer.trimmedEndDuration;
     if (trimmedStartDuration < 0) {
-      const leftOverDuration = this.state.currentLayer.trimmedStartDuration + trimmedStartDuration;
-      trimmedStartDuration = 0;
-      console.log('leftover duration', leftOverDuration);
-      trimmedEndDuration += leftOverDuration;
-      if (trimmedEndDuration < 0) {
-        trimmedEndDuration = 0;
+      const leftOverDuration = this.state.currentLayer.trimmedStartDuration - trimmedStartDuration;
+      trimmedStartDuration = 0.0;
+      if (trimmedEndDuration > 0.0) {
+        trimmedEndDuration -= leftOverDuration;
+        if (trimmedEndDuration < 0) {
+          trimmedEndDuration = 0.0;
+        }
       }
     }
-    else if (trimmedStartDuration > (this.props.layer.duration - this.state.currentLayer.trimmedStartDuration)) {
-      trimmedStartDuration = this.props.layer.duration - this.state.currentLayer.trimmedStartDuration;
+    else if (trimmedStartDuration > (this.props.layer.duration - trimmedEndDuration)) {
+      trimmedStartDuration = this.props.layer.duration - trimmedEndDuration;
     }
     let startTime = this.state.currentLayer.startTime + deltaTime;
     this.setState({
@@ -260,28 +270,22 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   updateTrimmedEnd(deltaX:number) {
-    console.log('previous offsets', {
-      'trimmedEndDuration': this.state.currentLayer.trimmedEndDuration,
-      'trimmedStartDuration': this.state.currentLayer.trimmedStartDuration,
-    });
     const deltaTime = deltaX * (this.props.layer.duration / this.state.layerMaxWidth);
     let trimmedEndDuration = this.state.currentLayer.trimmedEndDuration + deltaTime;
+    trimmedEndDuration = Math.round(trimmedEndDuration * 1000000 + Number.EPSILON ) / 1000000;
     let trimmedStartDuration = this.state.currentLayer.trimmedStartDuration;
-    if (trimmedEndDuration < 0) {
+    if (trimmedEndDuration < 0.0) {
       const leftOverDuration = this.state.currentLayer.trimmedEndDuration + trimmedEndDuration;
-      trimmedEndDuration = 0;
-      console.log('leftover duration', leftOverDuration);
-      trimmedStartDuration += leftOverDuration;
-      if (trimmedStartDuration < 0) {
-        trimmedStartDuration = 0;
+      trimmedEndDuration = 0.0;
+      if (trimmedStartDuration > 0.0) {
+        trimmedStartDuration -= leftOverDuration;
+        if (trimmedStartDuration < 0.0) {
+          trimmedStartDuration = 0.0;
+        }
       }
-    } else if (trimmedEndDuration > (this.props.layer.duration - this.state.currentLayer.trimmedStartDuration)) {
-      trimmedEndDuration = this.props.layer.duration - this.state.currentLayer.trimmedStartDuration
+    } else if (trimmedEndDuration > (this.props.layer.duration - trimmedStartDuration)) {
+      trimmedEndDuration = this.props.layer.duration - trimmedStartDuration
     }
-    console.log('post offsets', {
-      'trimmedEndDuration': trimmedEndDuration,
-      'trimmedStartDuration': trimmedStartDuration,
-    });
     this.setState({
       currentLayer:{
         ...this.state.currentLayer,
@@ -292,8 +296,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   handleDragStop = (event:any, info:any) => {
-    // console.log('Event name: ', event.type);
-    // console.log(event, info);
     console.log('got drag stop');
     this.setState({
       currentLayer:{
@@ -304,13 +306,23 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     });
   }
 
+  handleDrag = (event:any, info:any) => {
+    // console.log(event.target);
+    if (event.target.id === TimelineLayer.DraggableZoneId) {
+      // const layerWidth = event.target.getBoundingClientRect().width;
+      // console.log('class', event.target.id);
+      this.props.increaseTimeline();
+    }
+  };
+
   render() {
     return (
       <Draggable
         bounds=".layer-container" // "parent"
         handle=".draggable-wav"
-
+        grid={[this.props.bpm === null ? 1 : 50 / (this.props.bpm / 60), 1]}
         onStop={this.handleDragStop}
+        onDrag={this.handleDrag}
         defaultPosition={{x: this.state.currentLayer.startTime * (this.props.timelineWidth / this.props.timelineDuration), y: this.state.currentLayer.y}}
       >
         <div
