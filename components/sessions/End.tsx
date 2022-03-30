@@ -5,6 +5,7 @@ import { config } from "../config";
 import Crunker from "./Crunker";
 
 
+
 interface EndProps {
   member: any,
   session: SessionInterface|null
@@ -80,7 +81,7 @@ class End extends Component<EndProps, EndState> {
 
   render(){
     return(
-      
+    
     <div className="end-session">
       <Text h1 style={{textAlign: 'center'}}>
         Congrats {this.props.member.firstname}. 
