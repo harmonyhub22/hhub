@@ -1,5 +1,6 @@
 import Member from "../interfaces/models/Member";
 import { config } from "../components/config";
+import { CgPassword } from "react-icons/cg";
 
 export const getCurrentMember = async () => {
   try {
@@ -24,7 +25,38 @@ export const getCurrentMember = async () => {
 export const login = async (
   email: string,
   firstname: string,
-  lastname: string
+  lastname: string,
+  password: string,
+) => {
+  try {
+    const response = await fetch(config.server_url + "api/login", {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        firstname: firstname,
+        lastname: lastname,
+        password: password,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(await response.json());
+    }
+    return response.json();
+  } catch (e) {
+    console.log("login failed");
+    return null;
+  }
+};
+
+export const signUp = async (
+  email: string,
+  firstname: string,
+  lastname: string,
+  password: string,
 ) => {
   try {
     const response = await fetch(config.server_url + "api/login", {
@@ -37,6 +69,7 @@ export const login = async (
         email: email,
         firstname: firstname,
         lastname: lastname,
+        password: password,
       }),
     });
     if (!response.ok) {
@@ -44,10 +77,10 @@ export const login = async (
     }
     return response.json();
   } catch (e) {
-    console.log("login failed");
+    console.log("sign up failed");
     return null;
   }
-};
+}
 
 export const logout = async () => {
   try {
