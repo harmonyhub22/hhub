@@ -163,3 +163,17 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
 export const initResizeTimeline = (updateTimelineWidth:any) => {
   window.addEventListener('resize', updateTimelineWidth);
 };
+
+export const initTimelineClick = (timelineClassName:string, updateCurrentSeconds:any) => {
+  const timeline: Element|null = document.querySelector(`.${timelineClassName}`); // document.getElementById(timelineId);
+  if (timeline === null || timeline === undefined) {
+    console.log('timeline div not found');
+    return;
+  }
+
+  const clickListener = (e:any) => {
+    updateCurrentSeconds(e.offsetX);
+  };
+
+  timeline.addEventListener('mouseup', clickListener);
+};

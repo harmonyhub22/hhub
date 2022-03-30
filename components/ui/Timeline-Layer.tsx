@@ -18,6 +18,7 @@ interface TimelineLayerProps {
   addBuffer: any,
   deleteBuffer: any,
   increaseTimeline: any,
+  bpm: number|null,
 };
 
 interface TimelineLayerState {
@@ -133,6 +134,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       tonePlayer: tonePlayer
     })
   }
+
   getInfo() {
     return (
       <Description title="Layer Info" style={{padding: '0px 10px 0px 10px'}} content={
@@ -318,6 +320,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       <Draggable
         bounds=".layer-container" // "parent"
         handle=".draggable-wav"
+        grid={[this.props.bpm === null ? 1 : 50 / (this.props.bpm / 60), 1]}
         onStop={this.handleDragStop}
         onDrag={this.handleDrag}
         defaultPosition={{x: this.state.currentLayer.startTime * (this.props.timelineWidth / this.props.timelineDuration), y: this.state.currentLayer.y}}

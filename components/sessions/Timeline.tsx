@@ -5,7 +5,7 @@ import Container from "./Container";
 import Crunker from "./Crunker"
 import { Button, Tooltip, Badge, Spacer } from "@geist-ui/core";
 import { ChevronLeft, ChevronRight, PlayFill, PauseFill } from "@geist-ui/icons";
-import { initResizeTimeline } from "../ui/helpers/resize";
+import { initResizeTimeline, initTimelineClick } from "../ui/helpers/resize";
 import * as Tone from "tone";
 
 interface TimelineProps {
@@ -17,6 +17,7 @@ interface TimelineProps {
   stageLayer: any,
   sessionEnded: boolean,
   updateFinalBuffer: any,
+  bpm: number|null,
 };
 
 interface TimelineState {
@@ -54,16 +55,14 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     this.deleteBuffer = this.deleteBuffer.bind(this);
     this.playSongsoFar = this.playSongsoFar.bind(this);
     this.increaseTimeline = this.increaseTimeline.bind(this);
-    this.decreaseTimeline = this.decreaseTimeline.bind(this);
     this.updateTimelineWidth = this.updateTimelineWidth.bind(this);
+    this.updateCurrentSeconds = this.updateCurrentSeconds.bind(this);
   };
 
   componentDidMount() {
-    // console.log("util",util);
-    // const buf = util.create();
-    // console.log("buf", buf);
     this.updateTimelineWidth();
     initResizeTimeline(this.updateTimelineWidth);
+    initTimelineClick("timeline-click-listener", this.updateCurrentSeconds);
   };
 
   componentDidUpdate(prevProps:TimelineProps, prevState:TimelineState) {
@@ -95,26 +94,25 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     try {
       ele = document.getElementById(Timeline.TimelineWrapperId);
       timelineWidth = ele?.getBoundingClientRect()?.width || 400;
-      console.log(timelineWidth);
     } catch (e) {
       console.log(e);
     }
     this.setState({
       width: timelineWidth,
     });
-  }
+  };
 
   increaseTimeline() {
     this.setState({
       seconds: this.state.seconds + 1,
     });
-  }
+  };
 
-  decreaseTimeline() {
+  updateCurrentSeconds(offset:number) {
     this.setState({
-      seconds: this.state.seconds - 1,
+      currentSeconds: offset * (this.state.seconds / this.state.width),
     });
-  }
+  };
 
   addBuffer(startTime:number, buffer:AudioBuffer, layerId:number | null , layerName:string | null, duration: number) {
     const crunker = new Crunker();
@@ -239,10 +237,11 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
       <div style={{overflowX: 'scroll', overflowY: 'hidden'}}>
         <div key={`${this.props.layers.length}-${this.props.neverCommittedLayers.length}`} 
           className="timeline-wrapper" id={Timeline.TimelineWrapperId} style={{width: `${this.state.seconds * 50}px`}}>
-          <div key={`${this.state.seconds}-${this.state.width}`}className="timeline-details">
+          <div id="timeline-details" className="timeline-details">
             {Array(this.state.seconds).fill(0).map((_, seconds:number) => {
               return (
-                <div key={seconds} className="one-timeline-interval" style={{width: `${this.state.seconds / Timeline.MaxTimelinePoints * 100}%`}}>
+                <div key={seconds} className="one-timeline-interval" 
+                  style={{width: '50px', borderLeft: seconds !== 0 ? '1px solid whitesmoke' : 'none'}}>
                   <div className="timeline-interval-seconds">
                     <span>{seconds !== 0 && seconds}</span>
                   </div>
@@ -250,26 +249,21 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
                 </div>
               )
             })}
-            {/*<div className="timeline-duration-modifier">
-
-              <Tooltip text={'Decrease Duration'} type="dark" placement="leftStart">
-                <Button iconRight={<ChevronLeft color="black" />} auto scale={2/3} 
-                  className="toggle-timeline-duration-btn" onClick={this.decreaseTimeline} shadow type="secondary">
-                </Button>
-              </Tooltip>
-              <Tooltip text={'Increase Duration'} type="dark" placement="topEnd">
-                <Button iconRight={<ChevronRight color="black" />} auto scale={2/3} 
-                  className="toggle-timeline-duration-btn" onClick={this.increaseTimeline} shadow type="secondary" />
-              </Tooltip>
-          </div>*/}
+            <div className="timeline-click-listener"></div>
           </div>
-          <Container layers={this.props.layers} neverCommittedLayers={this.props.neverCommittedLayers} 
-            commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds}
-            duplicateLayer={this.props.duplicateLayer}
-            deleteLayer={this.props.deleteLayer}
-            addBuffer={this.addBuffer}
-            deleteBuffer={this.deleteBuffer}
-            increaseTimeline={this.increaseTimeline} />
+          <div className="layer-outer-container">
+            <Container layers={this.props.layers} neverCommittedLayers={this.props.neverCommittedLayers} 
+              commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds}
+              duplicateLayer={this.props.duplicateLayer}
+              deleteLayer={this.props.deleteLayer}
+              addBuffer={this.addBuffer}
+              deleteBuffer={this.deleteBuffer}
+              increaseTimeline={this.increaseTimeline}
+              bpm={this.props.bpm} />
+            <div className="timeline-player-bar"
+              style={{transform: `translate(${this.state.currentSeconds * (this.state.width / this.state.seconds)}px, 0px)`}}>
+            </div>
+          </div>
         </div>
         <div style={{position: 'absolute', bottom: '5vh'}}>
           <Button
@@ -288,9 +282,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
           />
           <Spacer inline w={0.5} />
           <Badge>{Math.round(this.state.currentSeconds * 100) / 100}</Badge>
-        </div>
-        <div className="timeline-player-bar"
-          style={{transform: `translate(${this.state.currentSeconds * (this.state.width / this.state.seconds)}px, 0px)`}}>
         </div>
       </div>
     );

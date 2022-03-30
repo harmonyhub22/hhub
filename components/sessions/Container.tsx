@@ -14,6 +14,7 @@ interface ContainerProps {
   addBuffer: any,
   deleteBuffer: any,
   increaseTimeline: any,
+  bpm: number|null,
 }
 
 interface ContainerState {
@@ -30,7 +31,7 @@ class Container extends React.Component<ContainerProps, ContainerState> {
 
   render() {
     return (
-      <div className="layer-container">
+      <div className="layer-container" style={{backgroundSize: `${this.props.bpm === null ? 50 : 50 / (this.props.bpm / 60)}px`}}>
 
         {this.props.layers.map((layer:LayerInterface, i:number) => {      
           return (
@@ -47,6 +48,7 @@ class Container extends React.Component<ContainerProps, ContainerState> {
             addBuffer={this.props.addBuffer}
             deleteBuffer={this.props.deleteBuffer}
             increaseTimeline={this.props.increaseTimeline}
+            bpm={this.props.bpm}
           />
           )
         })}
@@ -66,6 +68,7 @@ class Container extends React.Component<ContainerProps, ContainerState> {
               addBuffer={this.props.addBuffer}
               deleteBuffer={this.props.deleteBuffer}
               increaseTimeline={this.props.increaseTimeline}
+              bpm={this.props.bpm}
             />
           )
         })}
