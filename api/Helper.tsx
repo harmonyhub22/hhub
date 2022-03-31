@@ -22,12 +22,7 @@ export const getCurrentMember = async () => {
   }
 };
 
-export const login = async (
-  email: string,
-  firstname: string,
-  lastname: string,
-  password: string,
-) => {
+export const login = async (email: string, password: string) => {
   try {
     const response = await fetch(config.server_url + "api/login", {
       method: "PUT",
@@ -37,8 +32,6 @@ export const login = async (
       },
       body: JSON.stringify({
         email: email,
-        firstname: firstname,
-        lastname: lastname,
         password: password,
       }),
     });
@@ -52,14 +45,14 @@ export const login = async (
   }
 };
 
-export const signUp = async (
+export const signup = async (
   email: string,
   firstname: string,
   lastname: string,
-  password: string,
+  password: string
 ) => {
   try {
-    const response = await fetch(config.server_url + "api/login", {
+    const response = await fetch(config.server_url + "api/signup", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -80,7 +73,7 @@ export const signUp = async (
     console.log("sign up failed");
     return null;
   }
-}
+};
 
 export const logout = async () => {
   try {
