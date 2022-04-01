@@ -1,48 +1,43 @@
 import { Button, Input, Spacer } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { login } from "../api/Helper";
+import { login, signup } from "../api/Helper";
 import Wave from "../components/animations/Wave";
 import { Galaxy, LoginAnimation } from "../components/animations/AnimationPic";
 import { imgVariant, titleSlider } from "../components/animations/Animation";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 
-const Login = (): React.ReactNode => {
-  const router = useRouter();
-
+const Signup = (): React.ReactNode => {
   const [email, setEmail] = useState<string>("");
+  const [firstname, setFirstname] = useState<string>("");
+  const [lastname, setLastname] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const getLogin = async () => {
-    if (email.length === 0 || password.length === 0) {
+  const getSignedUp = async () => {
+    if (
+      email.length === 0 ||
+      firstname.length === 0 ||
+      lastname.length === 0 ||
+      password.length === 0
+    ) {
       console.log("email, firstname, lastname, and password required");
       return;
     }
-    const existingMember = await login(email, password);
-    console.log(existingMember);
-
-    if (existingMember != null) {
+    const newMember = await signup(email, firstname, lastname, password);
+    console.log("New member is", newMember);
+    if (newMember != null) {
       window.location.href = window.location.origin;
-      return;
     }
-    window.alert("Please enter a correct information");
-  };
-
-  const goToSignup = () => {
-    router.push({
-      pathname: "/signup",
-    });
   };
 
   return (
     <>
-      <Navbar />
       <motion.div className="intro">
         <motion.div className="intro-login">
-          <motion.h1 variants={titleSlider} initial="hidden" animate="show">
-            Harmony Hub
-          </motion.h1>
+          <motion.h2 variants={titleSlider} initial="hidden" animate="show">
+            Please Sign-Up
+          </motion.h2>
 
           <motion.div className="intro-text">
             <Input
@@ -51,6 +46,24 @@ const Login = (): React.ReactNode => {
               placeholder="someone@example.com"
               value={email}
               onChange={(e: any) => setEmail(e.target.value)}
+              style={{ backgroundColor: "white" }}
+            />
+            <Spacer h={0.75} />
+            <Input
+              clearable
+              label="First Name"
+              placeholder="Harmony"
+              value={firstname}
+              onChange={(e: any) => setFirstname(e.target.value)}
+              style={{ backgroundColor: "white" }}
+            />
+            <Spacer h={0.75} />
+            <Input
+              clearable
+              label="Last Name"
+              placeholder="Hub"
+              value={lastname}
+              onChange={(e: any) => setLastname(e.target.value)}
               style={{ backgroundColor: "white" }}
             />
             <Spacer h={0.75} />
@@ -67,15 +80,7 @@ const Login = (): React.ReactNode => {
               shadow
               type="secondary"
               id="btn-new-session"
-              onClick={getLogin}
-            >
-              Login
-            </Button>
-            <Button
-              shadow
-              type="secondary"
-              id="btn-new-session-signup"
-              onClick={goToSignup}
+              onClick={getSignedUp}
             >
               Sign-Up
             </Button>
@@ -88,11 +93,11 @@ const Login = (): React.ReactNode => {
           initial="initial"
           animate="animate"
         >
-          <LoginAnimation />
+          <Galaxy />
         </motion.div>
       </motion.div>
     </>
   );
 };
 
-export default Login;
+export default Signup;
