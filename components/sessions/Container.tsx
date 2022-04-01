@@ -15,6 +15,7 @@ interface ContainerProps {
   deleteBuffer: any,
   increaseTimeline: any,
   bpm: number|null,
+  updateStagedLayer: any,
 }
 
 interface ContainerState {
@@ -26,7 +27,7 @@ class Container extends React.Component<ContainerProps, ContainerState> {
   };
 
   componentDidMount() {
-    console.log(this.props);
+    // console.log(this.props);
   }
 
   render() {
@@ -35,31 +36,10 @@ class Container extends React.Component<ContainerProps, ContainerState> {
 
         {this.props.layers.map((layer:LayerInterface, i:number) => {      
           return (
-          <TimelineLayer
-            key={`${JSON.stringify(layer)}`}
-            layer={layer}
-            soundBufferDate={null}
-            soundBuffer={null}
-            timelineDuration={this.props.seconds}
-            timelineWidth={this.props.width}
-            commitLayer={this.props.commitLayer}
-            duplicateLayer={this.props.duplicateLayer}
-            deleteLayer={this.props.deleteLayer}
-            addBuffer={this.props.addBuffer}
-            deleteBuffer={this.props.deleteBuffer}
-            increaseTimeline={this.props.increaseTimeline}
-            bpm={this.props.bpm}
-          />
-          )
-        })}
-
-        {this.props.neverCommittedLayers.map((neverCommittedLayer:NeverCommittedLayer, i:number) => {
-          return (
-            <TimelineLayer 
-              key={`never-comitted-layer-${i}`}
-              layer={neverCommittedLayer.layer}
-              soundBufferDate={neverCommittedLayer.stagingSoundBufferDate}
-              soundBuffer={neverCommittedLayer.stagingSoundBuffer}
+            <TimelineLayer
+              key={`${JSON.stringify(layer)}`}
+              layer={layer}
+              soundBufferId={null}
               timelineDuration={this.props.seconds}
               timelineWidth={this.props.width}
               commitLayer={this.props.commitLayer}
@@ -69,6 +49,27 @@ class Container extends React.Component<ContainerProps, ContainerState> {
               deleteBuffer={this.props.deleteBuffer}
               increaseTimeline={this.props.increaseTimeline}
               bpm={this.props.bpm}
+              updateStagedLayer={this.props.updateStagedLayer}
+            />
+          )
+        })}
+
+        {this.props.neverCommittedLayers.map((neverCommittedLayer:NeverCommittedLayer, i:number) => {
+          return (
+            <TimelineLayer 
+              key={`never-comitted-layer-${i}`}
+              layer={neverCommittedLayer.layer}
+              soundBufferId={neverCommittedLayer.stagingSoundBufferId}
+              timelineDuration={this.props.seconds}
+              timelineWidth={this.props.width}
+              commitLayer={this.props.commitLayer}
+              duplicateLayer={this.props.duplicateLayer}
+              deleteLayer={this.props.deleteLayer}
+              addBuffer={this.props.addBuffer}
+              deleteBuffer={this.props.deleteBuffer}
+              increaseTimeline={this.props.increaseTimeline}
+              bpm={this.props.bpm}
+              updateStagedLayer={this.props.updateStagedLayer}
             />
           )
         })}

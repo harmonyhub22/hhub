@@ -62,7 +62,7 @@ const Navbar = () => {
 
   return (
     <>
-      <Button auto onClick={() => setSidebar(true)} scale={1} style={{borderRadius: '0px 0px 6px 0px', position: 'absolute'}}>
+      <Button auto onClick={() => setSidebar(true)} scale={1} style={{borderRadius: '0px 0px 6px 0px', position: 'absolute', zIndex: 500}}>
         <FaIcons.FaBars/>
       </Button>
       <Drawer

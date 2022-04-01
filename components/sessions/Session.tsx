@@ -11,6 +11,7 @@ import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
 import Palette from "../ui/Palette";
 import { IoIosColorPalette } from "react-icons/io";
 import End from "./End";
+import { get, getAllKeys } from "../ui/helpers/indexedDb";
 
 
 interface SessionProps {
@@ -57,6 +58,7 @@ class Session extends Component<SessionProps, SessionState> {
     this.updateBuffer = this.updateBuffer.bind(this);
     this.tellPartnerToPull = this.tellPartnerToPull.bind(this);
     this.updateBpm = this.updateBpm.bind(this);
+    this.updateStagedLayer = this.updateStagedLayer.bind(this);
   }
 
   setSession(session:SessionInterface|null) {
@@ -77,7 +79,7 @@ class Session extends Component<SessionProps, SessionState> {
         mustReturnHome: true,
       });
     }
-    const sessionId = window.localStorage.getItem('sid');
+    const sessionId = window.localStorage.getItem('sessionId');
     if (sessionId === null) return;
     syncGetSession(sessionId, this.setSession);
     
@@ -104,19 +106,19 @@ class Session extends Component<SessionProps, SessionState> {
   registerPullLayer() {
     console.log('heard partner upload layer');
     this.updateSession();
-  }
+  };
 
   tellPartnerToPull() {
-    if (this.state.session !== null)
+    if (this.state.session !== null) {
       this.props.socket.emit('pull_layer', { sessionId: this.state.session.sessionId });
-  }
+    }
+  };
 
   commitLayer(layerData:LayerInterface, layerBlob:Blob|null) {
     console.log('commit layer', layerData);
     if (this.state.session === null || this.state.session === undefined) return;
     syncPostLayer(this.state.session.sessionId, layerData, layerBlob, this.updateSession, this.tellPartnerToPull);
     if (layerData.layerId === null) { // its a never comitted layer
-      console.log('comitting staged layer');
       const newNeverCommittedLayers: NeverCommittedLayer[] = [];
       this.state.neverCommittedLayers.forEach((layer:NeverCommittedLayer) => {
         if (layer.layer.name !== layerData.name) newNeverCommittedLayers.push(layer);
@@ -124,7 +126,6 @@ class Session extends Component<SessionProps, SessionState> {
       this.setState({
         neverCommittedLayers: newNeverCommittedLayers,
       });
-      console.log('never comitted layers', newNeverCommittedLayers.length);
     }
   };
 
@@ -142,15 +143,48 @@ class Session extends Component<SessionProps, SessionState> {
     }
   }
 
-  duplicateLayer(layerData:LayerInterface) {
-
+  duplicateLayer(layerData:NeverCommittedLayer) {
+    const newLayerData: NeverCommittedLayer = layerData;
+    newLayerData.layer.name = `layer-${Date.now()}`;
+    newLayerData.layer.startTime = layerData.layer.startTime + layerData.layer.duration - layerData.layer.trimmedEndDuration - layerData.layer.trimmedStartDuration;
+    this.stageLayer(newLayerData);
   }
 
   stageLayer(newLayer:NeverCommittedLayer) {
     this.setState({
       neverCommittedLayers: [...this.state.neverCommittedLayers, newLayer],
     });
+    console.log([...this.state.neverCommittedLayers, newLayer]);
   }
+
+  updateStagedLayer(updatedLayer:LayerInterface) {
+    if (updatedLayer.layerId === null) { // never committed
+      const neverCommittedLayers = this.state.neverCommittedLayers;
+      this.state.neverCommittedLayers.forEach((l:NeverCommittedLayer, i:number) => {
+        if (l.layer.name === updatedLayer.name) {
+          neverCommittedLayers[i].layer = updatedLayer;
+          return;
+        }
+      });
+      this.setState({
+        neverCommittedLayers: neverCommittedLayers,
+      });
+    } else if (this.state.session !== null) {
+      const layers = this.state.session.layers;
+      this.state.session.layers.forEach((l:LayerInterface, i:number) => {
+        if (l.layerId === updatedLayer.layerId) {
+          layers[i] = updatedLayer;
+          return;
+        }
+      });
+      this.setState({
+        session: {
+          ...this.state.session,
+          layers: layers,
+        },
+      });
+    }
+  };
 
   showPalette(show:boolean) {
     this.setState({
@@ -208,7 +242,9 @@ class Session extends Component<SessionProps, SessionState> {
             stageLayer={this.stageLayer}
             sessionEnded={this.state.sessionEnded}
             updateFinalBuffer={this.updateBuffer}
-            bpm={this.state.bpm} />
+            bpm={this.state.bpm} 
+            updateStagedLayer={this.updateStagedLayer}
+          />
         </div>
 
         <SessionOptions socket={this.props.socket} sessionId={this.state.session?.sessionId ?? null}

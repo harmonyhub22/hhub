@@ -403,6 +403,7 @@ table.table-palette tfoot {
       display: none !important;
     }
   }
+  pointer-events: all;
 }
 
 .session-info-container {
@@ -411,6 +412,7 @@ table.table-palette tfoot {
   justify-content: center;
   width: 100%;
   z-index: 1000;
+  pointer-events: none;
 }
 
 .session-options {
@@ -549,6 +551,7 @@ table.table-palette tfoot {
 
 .draggable-wav {
   cursor: move;
+  min-width: 5px;
 }
 
 .timeline-player-bar {

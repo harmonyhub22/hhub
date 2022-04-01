@@ -52,6 +52,7 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   const leftMouseDownHandler = function (e:any) {
 
     if (!mouseDown) {
+      mouseDown = true;
       // Get the current mouse position
       x = e.clientX;
 
@@ -164,8 +165,8 @@ export const initResizeTimeline = (updateTimelineWidth:any) => {
   window.addEventListener('resize', updateTimelineWidth);
 };
 
-export const initTimelineClick = (timelineClassName:string, updateCurrentSeconds:any) => {
-  const timeline: Element|null = document.querySelector(`.${timelineClassName}`); // document.getElementById(timelineId);
+export const initTimelineClick = (updateCurrentSeconds:any) => {
+  const timeline: Element|null = document.querySelector(`.timeline-click-listener`);
   if (timeline === null || timeline === undefined) {
     console.log('timeline div not found');
     return;

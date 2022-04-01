@@ -20,7 +20,6 @@ class SessionInfo extends React.Component<SessionInfoProps> {
   }
 
   setBpm(val: any) {
-    console.log(val);
     this.props.updateBpm(val === null ? null : parseInt(val));
   }
 
@@ -60,7 +59,6 @@ class SessionInfo extends React.Component<SessionInfoProps> {
                 <Toggle type="secondary" initialChecked={this.props.bpm !== null}
                   onChange={(e:ToggleEvent) => this.setBpm(e.target.checked ? 120 : null)} />
               </div>
-              bpm<br></br>
               <Select placeholder="Choose bpm..." 
                 initialValue="120" style={{height: '30px', marginTop: '5px'}}
                 disabled={this.props.bpm === null ? true : false}

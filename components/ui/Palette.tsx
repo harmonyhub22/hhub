@@ -8,6 +8,8 @@ import { Mic, Music } from '@geist-ui/icons';
 import PaletteLayer from "./Palette-Layer";
 import PaletteRecorder from "./Palette-Recorder";
 import Member from "../../interfaces/models/Member";
+import { get, put } from "./helpers/indexedDb";
+import { v4 as uuidv4 } from 'uuid'
 
 interface PaletteProps {
   stageLayer: any,
@@ -18,7 +20,7 @@ interface PaletteProps {
 interface PaletteState {
   stagingLayerSoundName: string|null,
   stagingLayerSoundBuffer: Blob|null,
-  stagingLayerSoundBufferDate: string|null,
+  stagingLayerSoundBufferId: string|null,
   stagingLayerSoundBufferDuration: any,
   genre: string,
 };
@@ -35,7 +37,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
     this.state = {
       stagingLayerSoundName: null,
       stagingLayerSoundBuffer: null,
-      stagingLayerSoundBufferDate: null,
+      stagingLayerSoundBufferId: null,
       stagingLayerSoundBufferDuration: null,
       genre: '',
     };
@@ -61,53 +63,34 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
     // set the state
     this.setState({
       stagingLayerSoundName: jsonData.name || null,
-      stagingLayerSoundBufferDate: jsonData.date || null,
+      stagingLayerSoundBufferId: jsonData.id || null,
       stagingLayerSoundBufferDuration: jsonData.duration || null,
       genre: jsonData.genre || Object.keys(config.sounds)[0],
     });
   }
 
   componentDidUpdate(prevProps:PaletteProps, prevState:PaletteState) {
-    if (prevState.stagingLayerSoundName !== this.state.stagingLayerSoundName || 
-      prevState.stagingLayerSoundBufferDate !== this.state.stagingLayerSoundBufferDate) {
+    if (prevState.stagingLayerSoundName !== this.state.stagingLayerSoundName 
+      || prevState.stagingLayerSoundBufferId !== this.state.stagingLayerSoundBufferId
+      || prevState.genre !== this.state.genre) {
       const data = {
         'name': this.state.stagingLayerSoundName,
-        'date': this.state.stagingLayerSoundBufferDate,
+        'id': this.state.stagingLayerSoundBufferId,
         'duration': this.state.stagingLayerSoundBufferDuration,
         'genre': this.state.genre,
       };
       window.localStorage.setItem('palette-staging-layer', JSON.stringify(data));
 
       // get the sound buffer if its there
-      if (this.state.stagingLayerSoundBufferDate !== null && this.state.stagingLayerSoundBufferDate !== undefined 
-        && prevState.stagingLayerSoundBufferDate !== this.state.stagingLayerSoundBufferDate) {
-        const request = indexedDB.open(Palette.db_name, 1);
-        request.onsuccess = (event) => {
-          const db = request.result;
-          const transaction = db.transaction([Palette.db_obj_store_name], 'readwrite');
-          if (this.state.stagingLayerSoundBufferDate !== null) {
-            const getRequest = transaction.objectStore(Palette.db_obj_store_name)
-              .get(this.state.stagingLayerSoundBufferDate);
-            getRequest.onsuccess = (event) => {
-              const buffer = getRequest.result;
-              this.setState({
-                stagingLayerSoundBuffer: buffer,
-              });
-            };
-            const getAllRequest = transaction.objectStore(Palette.db_obj_store_name).getAllKeys();
-            getAllRequest.onsuccess = () => {
-              const allRecords = getAllRequest.result;
-              allRecords.forEach((key:any) => {
-                if (key !== this.state.stagingLayerSoundBufferDate) {
-                  const deleteRequest = transaction.objectStore(Palette.db_obj_store_name).delete(key);
-                  deleteRequest.onsuccess = () => {
-                    console.log('deleted');
-                  };
-                }
-              });
-            };
-          }
-        };
+      if (this.state.stagingLayerSoundBufferId !== null && this.state.stagingLayerSoundBufferId !== undefined 
+        && prevState.stagingLayerSoundBufferId !== this.state.stagingLayerSoundBufferId) {
+        if (this.state.stagingLayerSoundBufferId !== null) {
+          get(Palette.db_name, Palette.db_obj_store_name, this.state.stagingLayerSoundBufferId, (buffer:any) => {
+            this.setState({
+              stagingLayerSoundBuffer: buffer,
+            });
+          });
+        }
       }
     }
   }
@@ -122,28 +105,20 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
   updateLayerSoundName (stagingLayerSoundName:string|null) {
     this.setState({
       stagingLayerSoundName: this.state.stagingLayerSoundName === stagingLayerSoundName ? null : stagingLayerSoundName,
-      stagingLayerSoundBufferDate: null,
+      stagingLayerSoundBufferId: null,
       stagingLayerSoundBuffer: null,
       stagingLayerSoundBufferDuration: null,
     });
   }
 
   updateLayerSoundBuffer (stagingLayerSoundBuffer:Blob|null, duration:number|null) {
-    const request = indexedDB.open(Palette.db_name, 1);
-    const newDate = Date.now().toString();
-    request.onsuccess = (event) => {
-      const db = request.result;
-      const transaction = db.transaction([Palette.db_obj_store_name], 'readwrite');
-      // add the recording to indexed db
-      const putRequest = transaction.objectStore(Palette.db_obj_store_name)
-        .put(this.state.stagingLayerSoundBuffer, newDate);
-      putRequest.onsuccess = (event) => {
-        console.log('putted');
-      };
+    const newId: string = uuidv4();
+    if (stagingLayerSoundBuffer !== null && stagingLayerSoundBuffer !== undefined) {
+      put(Palette.db_name, Palette.db_obj_store_name, newId, stagingLayerSoundBuffer, () => {});
     }
 
     this.setState({
-      stagingLayerSoundBufferDate: stagingLayerSoundBuffer === null ? null : newDate,
+      stagingLayerSoundBufferId: stagingLayerSoundBuffer === null ? null : newId,
       stagingLayerSoundBuffer: stagingLayerSoundBuffer,
       stagingLayerSoundBufferDuration: stagingLayerSoundBuffer === null ? null : duration,
       stagingLayerSoundName: stagingLayerSoundBuffer === null ? this.state.stagingLayerSoundName : null,
@@ -190,12 +165,12 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
 
       <div style={{textAlign: "center"}}>
         <Drawer.Title>New Layer</Drawer.Title>
-        {(this.state.stagingLayerSoundBufferDate === null && this.state.stagingLayerSoundName === null) ? 
+        {(this.state.stagingLayerSoundBufferId === null && this.state.stagingLayerSoundName === null) ? 
           <p>Choose a sound or make a recording</p>
           : <p>Click the arrow below to stage the layer on the timeline</p>}
         <PaletteLayer
           stagingSoundBuffer={this.state.stagingLayerSoundBuffer}
-          stagingSoundBufferDate={this.state.stagingLayerSoundBufferDate}
+          stagingSoundBufferId={this.state.stagingLayerSoundBufferId}
           stagingSoundBufferDuration={this.state.stagingLayerSoundBufferDuration}
           stagingSoundName={this.state.stagingLayerSoundName}
           member={this.props.member}

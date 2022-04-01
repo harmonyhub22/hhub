@@ -5,27 +5,30 @@ import Draggable from "react-draggable";
 import * as Tone from "tone";
 import LayerInterface from "../../interfaces/models/LayerInterface";
 import { initResize } from "./helpers/resize";
+import { get } from "./helpers/indexedDb";
+import Palette from "../ui/Palette";
+import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
 
 interface TimelineLayerProps {
   layer: LayerInterface,
   timelineDuration: number,
   timelineWidth: number,
-  soundBufferDate: string|null,
-  soundBuffer: Blob|null,
+  bpm: number|null,
+  soundBufferId: string|null,
   commitLayer: any,
   deleteLayer: any,
   duplicateLayer: any,
   addBuffer: any,
   deleteBuffer: any,
   increaseTimeline: any,
-  bpm: number|null,
+  updateStagedLayer: any,
 };
 
 interface TimelineLayerState {
+  soundBuffer: Blob|null,
   currentLayer: LayerInterface,
   tonePlayer: any|null,
-  committed: boolean|null, // if true, there partner should see it
-  muted: boolean,
+  committed: boolean, // if true, there partner should see it
   flaggedForDelete: boolean,
   renaming: boolean,
   newName: string,
@@ -36,14 +39,15 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
   static layerMinWidth: number = 120;
   static DraggableZoneId: string = 'extend-timeline-zone';
+  static SecondWidth: number = 50;
 
   constructor(props:TimelineLayerProps) {
     super(props);
     this.state = {
+      soundBuffer: null,
       committed: (props.layer?.layerId ?? null) !== null,
       currentLayer: props.layer,
       tonePlayer: null,
-      muted: false,
       flaggedForDelete: false,
       renaming: false,
       newName: '',
@@ -66,12 +70,36 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.updateTrimmedEnd = this.updateTrimmedEnd.bind(this);
     this.handleDragStop = this.handleDragStop.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
+    this.getFromLocalStorage = this.getFromLocalStorage.bind(this);
+    this.setToLocalStorage = this.setToLocalStorage.bind(this);
+    this.removeFromLocalStorage = this.removeFromLocalStorage.bind(this);
   }
 
   componentDidMount() {
-    if (this.state.tonePlayer === null) {
-      this.createTonePlayer(this.props.layer.fileName, this.props.soundBuffer, this.props.layer.bucketUrl);
-    }
+    /*
+    const layerData = this.getFromLocalStorage();
+    if (layerData === null) {
+      this.setToLocalStorage();
+    } else {
+      const jsonLayerData = JSON.parse(layerData);
+      if (jsonLayerData.soundBufferId !== null) {
+        get(Palette.db_name, Palette.db_obj_store_name, jsonLayerData.soundBufferId, (buffer:Blob|null) => {
+          if (buffer !== null) {
+            this.setState({
+              soundBuffer: buffer,
+            });
+          }
+        });
+      }
+      this.setState({
+        currentLayer: jsonLayerData.layer,
+        committed: JSON.stringify(this.props.layer) === JSON.stringify(jsonLayerData.layer),
+      });
+    } */
+    console.log('mounted');
+    if (this.state.tonePlayer === null)
+      this.createTonePlayer(this.props.layer.fileName, this.state.soundBuffer, this.props.layer.bucketUrl);
+
     initResize(`timeline-layer-${this.props.layer.layerId === null ? this.state.currentLayer.name : this.props.layer.layerId}`, 
       TimelineLayer.layerMinWidth, this.state.layerMaxWidth,
       'timeline-layer-resizer-l', 'timeline-layer-resizer-r',
@@ -83,24 +111,28 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   }
 
   componentDidUpdate(prevProps:TimelineLayerProps, prevState:TimelineLayerState) {
-    if (JSON.stringify(prevState.currentLayer) !== JSON.stringify(this.state.currentLayer) 
-      || (prevState.flaggedForDelete !== this.state.flaggedForDelete && this.state.flaggedForDelete === true)) {
-      console.log('updated layer', this.state.currentLayer);
+    if (JSON.stringify(prevState.currentLayer) !== JSON.stringify(this.state.currentLayer)) {
+      console.log(this.state);
       this.setState({
         committed: false,
       });
+      // this.setToLocalStorage();
+      // this.props.updateStagedLayer(this.state.currentLayer);
     }
+
     if (prevState.currentLayer.reversed !== this.state.currentLayer.reversed 
       || prevState.currentLayer.fadeOutDuration!== this.state.currentLayer.fadeOutDuration 
       || prevState.currentLayer.fadeInDuration !== this.state.currentLayer.fadeInDuration
       || prevState.currentLayer.trimmedStartDuration !== this.state.currentLayer.trimmedStartDuration
-      || prevState.currentLayer.startTime != this.state.currentLayer.startTime) {
-      this.createTonePlayer(this.props.layer.fileName, this.props.soundBuffer, this.props.layer.bucketUrl);
+      || prevState.currentLayer.startTime !== this.state.currentLayer.startTime
+      || prevState.currentLayer.muted !== this.state.currentLayer.muted
+      || prevState.soundBuffer !== this.state.soundBuffer) {
+      this.createTonePlayer(this.props.layer.fileName, this.state.soundBuffer, this.props.layer.bucketUrl);
     }
+  
     if (prevProps.layer.duration !== this.props.layer.duration 
       || prevProps.timelineDuration !== this.props.timelineDuration
       || prevProps.timelineWidth !== this.props.timelineWidth) {
-      
       this.setState({
         layerMaxWidth: (this.props.layer.duration / this.props.timelineDuration) * this.props.timelineWidth,
       });
@@ -112,7 +144,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     let tonePlayer: Tone.Player | null = null;
     if (fileName !== null) {
       tonePlayer = new Tone.Player('../../' + fileName + '.mp3').toDestination();
-    } else if (buffer !== null) {
+    } else if (buffer !== null && buffer !== undefined) {
       tonePlayer = new Tone.Player(URL.createObjectURL(buffer)).toDestination();
     } else if (bucketUrl !== null) {
       tonePlayer = new Tone.Player(bucketUrl).toDestination();
@@ -124,15 +156,26 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       tonePlayer.buffer.reverse = this.state.currentLayer.reversed;
       tonePlayer.fadeIn = this.state.currentLayer.fadeInDuration;
       tonePlayer.fadeOut = this.state.currentLayer.fadeOutDuration;
-      tonePlayer.mute = this.state.muted;
+      tonePlayer.mute = this.state.currentLayer.muted;
       tonePlayer.buffer = tonePlayer.buffer.slice(this.state.currentLayer.trimmedStartDuration,this.state.currentLayer.duration - this.state.currentLayer.trimmedEndDuration);
-      this.props.addBuffer(this.state.currentLayer.startTime, tonePlayer.buffer, 
-        this.state.currentLayer.layerId, this.state.currentLayer.name, 
-        this.state.currentLayer.duration - this.state.currentLayer.trimmedStartDuration- this.state.currentLayer.trimmedEndDuration);
+      this.props.addBuffer(this.state.currentLayer, tonePlayer.buffer);
     }
     this.setState({
-      tonePlayer: tonePlayer
+      tonePlayer: tonePlayer,
     })
+  }
+
+  getFromLocalStorage() {
+    return window.localStorage.getItem(`layer-${this.state.currentLayer.layerId !== null ? this.state.currentLayer.layerId : this.state.currentLayer.name}`);
+  }
+
+  setToLocalStorage() {
+    window.localStorage.setItem(`layer-${this.state.currentLayer.layerId !== null ? this.state.currentLayer.layerId : this.state.currentLayer.name}`, 
+    JSON.stringify({ layer: this.state.currentLayer, soundBufferId: this.props.soundBufferId }));
+  }
+
+  removeFromLocalStorage() {
+    window.localStorage.removeItem(`layer-${this.state.currentLayer.layerId !== null ? this.state.currentLayer.layerId : this.state.currentLayer.name}`);
   }
 
   getInfo() {
@@ -155,8 +198,9 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       this.props.deleteLayer(this.state.currentLayer);
     } else {
       console.log('comitting', this.state.currentLayer);
-      this.props.commitLayer(this.state.currentLayer, this.props.soundBuffer);
+      this.props.commitLayer(this.state.currentLayer, this.state.soundBuffer);
     }
+    this.removeFromLocalStorage();
     this.setState({
       committed: true,
     });
@@ -195,11 +239,10 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     if (this.state.tonePlayer.state === "started") {
       this.state.tonePlayer.stop();
     }
-    const tonePlayer = this.state.tonePlayer;
-    tonePlayer.mute = !this.state.muted;
+    const currentLayer = this.state.currentLayer;
+    currentLayer.muted = !this.state.currentLayer.muted;
     this.setState({
-      muted: !this.state.muted,
-      tonePlayer: tonePlayer,
+      currentLayer: currentLayer,
     });
   };
 
@@ -231,12 +274,18 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   handleDuplicate() {
-    this.props.duplicateLayer(this.state.currentLayer);
-  }
+    const neverCommittedLayer: NeverCommittedLayer = {
+      layer: this.state.currentLayer,
+      stagingSoundBufferId: this.props.soundBufferId,
+    }
+    this.props.duplicateLayer(neverCommittedLayer);
+  };
 
   handleDelete() {
+
     this.setState({
       flaggedForDelete: !this.state.flaggedForDelete,
+      committed: this.state.committed ? this.state.flaggedForDelete : false,
     });
   };
 
@@ -278,7 +327,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       const leftOverDuration = this.state.currentLayer.trimmedEndDuration + trimmedEndDuration;
       trimmedEndDuration = 0.0;
       if (trimmedStartDuration > 0.0) {
-        trimmedStartDuration -= leftOverDuration;
+        trimmedStartDuration += leftOverDuration;
         if (trimmedStartDuration < 0.0) {
           trimmedStartDuration = 0.0;
         }
@@ -296,21 +345,17 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
   };
 
   handleDragStop = (event:any, info:any) => {
-    console.log('got drag stop');
     this.setState({
       currentLayer:{
         ...this.state.currentLayer,
         y: info.y,
         startTime: info.x * (this.props.timelineDuration / this.props.timelineWidth),
-      }
+      },
     });
   }
 
   handleDrag = (event:any, info:any) => {
-    // console.log(event.target);
     if (event.target.id === TimelineLayer.DraggableZoneId) {
-      // const layerWidth = event.target.getBoundingClientRect().width;
-      // console.log('class', event.target.id);
       this.props.increaseTimeline();
     }
   };
@@ -320,7 +365,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       <Draggable
         bounds=".layer-container" // "parent"
         handle=".draggable-wav"
-        grid={[this.props.bpm === null ? 1 : 50 / (this.props.bpm / 60), 1]}
+        grid={[this.props.bpm === null ? 1 : TimelineLayer.SecondWidth / (this.props.bpm / 60), 1]}
         onStop={this.handleDragStop}
         onDrag={this.handleDrag}
         defaultPosition={{x: this.state.currentLayer.startTime * (this.props.timelineWidth / this.props.timelineDuration), y: this.state.currentLayer.y}}
@@ -328,7 +373,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
         <div
           className="timeline-layer" id={`timeline-layer-${this.props.layer.layerId === null ? this.state.currentLayer.name : this.props.layer.layerId}`} 
           style={{minWidth: `${TimelineLayer.layerMinWidth}px`, maxWidth: `${this.state.layerMaxWidth}px`, 
-          width: (this.props.layer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration) * (this.state.layerMaxWidth / this.props.layer.duration),
+          width: `${(this.props.layer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration) * (this.state.layerMaxWidth / this.props.layer.duration)}px`,
         }}
         >
           
@@ -354,7 +399,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
               </Tooltip>
             </div>}
 
-            {this.state.muted ? <div className="draggable-wav timeline-muted-layer-wav"></div>
+            {this.state.currentLayer.muted ? <div className="draggable-wav timeline-muted-layer-wav"></div>
               : <div className="draggable-wav timeline-layer-wav"></div>}
             
             <div>
@@ -382,7 +427,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
                   </Popover.Item>}
                   <Popover.Item style={{justifyContent: 'center'}}>
                     <Button auto icon={<VolumeX />} type="warning" ghost onClick={this.handleMute} style={{width: '100%', height: '100%'}}>
-                      {this.state.muted ?
+                      {this.state.currentLayer.muted ?
                       "Unmute" : "Mute"}
                     </Button>
                   </Popover.Item>

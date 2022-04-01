@@ -13,15 +13,14 @@ const SessionPage = () => {
   const socket = useContext(SocketContext);
 
   useEffect(() => {
-    if (typeof router.query?.sid === "string") {
-      window.localStorage.setItem('sid', router.query.sid);
+    if (typeof router.query?.sessionId === "string") {
+      window.localStorage.setItem('sessionId', router.query.sessionId);
     }
-  }, [router.query.sid]);
+  }, [router.query.sessionId]);
 
   return (
     <>
       <Navbar />
-      {/*<Text h4 style={{textAlign: 'center', marginBottom: '0px', marginTop: '10px', minHeight: '40px'}}>Your Collaborative Session</Text>*/}
       <Session member={member} socket={socket}  />
     </>
   );

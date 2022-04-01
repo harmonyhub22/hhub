@@ -13,5 +13,6 @@ export default interface LayerInterface {
     reversed: boolean,
     trimmedStartDuration: number,
     trimmedEndDuration: number,
-    y: number
+    y: number,
+    muted: boolean,
 }
