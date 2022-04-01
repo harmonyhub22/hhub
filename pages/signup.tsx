@@ -26,14 +26,8 @@ const Signup = (): React.ReactNode => {
     }
     const newMember = await signup(email, firstname, lastname, password);
     console.log("New member is", newMember);
-    if (
-      newMember === null ||
-      newMember === undefined ||
-      newMember?.memberId === null ||
-      newMember?.memberId === undefined
-    ) {
-      console.log("login failed");
-      return;
+    if (newMember != null) {
+      window.location.href = window.location.origin;
     }
   };
 

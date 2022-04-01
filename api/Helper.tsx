@@ -38,6 +38,7 @@ export const login = async (email: string, password: string) => {
     if (!response.ok) {
       throw new Error(await response.json());
     }
+    console.log("Hello I am here at the helper");
     return response.json();
   } catch (e) {
     console.log("login failed");

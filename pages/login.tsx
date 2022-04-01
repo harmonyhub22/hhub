@@ -20,18 +20,13 @@ const Login = (): React.ReactNode => {
       return;
     }
     const existingMember = await login(email, password);
-    console.log("Existing member is", existingMember);
-    if (
-      existingMember === null ||
-      existingMember === undefined ||
-      existingMember?.memberId === null ||
-      existingMember?.memberId === undefined
-    ) {
-      console.log("login failed");
+    console.log(existingMember);
+
+    if (existingMember != null) {
+      window.location.href = window.location.origin;
       return;
     }
-
-    //window.location.href = window.location.origin;
+    window.alert("Please enter a correct information");
   };
 
   const goToSignup = () => {
