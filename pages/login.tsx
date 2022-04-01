@@ -96,7 +96,7 @@ const Login = (): React.ReactNode => {
             label="Password"
             placeholder="Use a strong password"
             value={password}
-            onChange={(e:any) => setLastname(e.target.value)}
+            onChange={(e:any) => setPassword(e.target.value)}
             style={{ backgroundColor: "white" }}
           />
           <Spacer h={0.75} />
