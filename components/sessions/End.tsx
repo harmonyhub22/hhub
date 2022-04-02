@@ -3,8 +3,7 @@ import { Button, Drawer, Modal, Text } from "@geist-ui/core";
 import SessionInterface from "../../interfaces/models/SessionInterface";
 import { config } from "../config";
 import Crunker from "./Crunker";
-
-
+import { syncSaveSong } from "../../api/Session";
 
 interface EndProps {
   member: any,
@@ -39,11 +38,12 @@ class End extends Component<EndProps, EndState> {
   };
   
   saveSong() {
-    // todo
     this.setState({
       savedToLibrary: true,
     });
-
+    if (this.props.session) {
+      syncSaveSong(this.props.session.sessionId, this.props.songBuffer);
+    }
   }
   
   downloadSong(){
@@ -77,30 +77,26 @@ class End extends Component<EndProps, EndState> {
     }
   }
 
-
-
-  render(){
+  render() {
     return(
-    
-    <div className="end-session">
-      <Text h1 style={{textAlign: 'center'}}>
-        Congrats {this.props.member.firstname}. 
-      </Text>
-      <Text>{End.congratulatory[this.state.congratsIndex]}</Text>
-      {this.state.downloadedSong ? 
-        <Button disabled>Download Song</Button>
-        :
-        <Button onClick={this.downloadSong}>Download Song</Button>
-      }
-      {this.state.savedToLibrary ?
-        <Button disabled>Save Song to Library</Button>
-        :
-        <Button onClick={this.saveSong}>Save Song to Library</Button>
-      }
-      <Button onClick={this.goHome}>Go Home</Button>
-    </div>
+      <div className="end-session">
+        <Text h1 style={{textAlign: 'center'}}>
+          Congrats {this.props.member.firstname}!
+        </Text>
+        <Text>{End.congratulatory[this.state.congratsIndex]}</Text>
+        {this.state.downloadedSong ? 
+          <Button disabled>Download Song</Button>
+          :
+          <Button onClick={this.downloadSong}>Download Song</Button>
+        }
+        {this.state.savedToLibrary ?
+          <Button disabled>Save Song to Library</Button>
+          :
+          <Button onClick={this.saveSong}>Save Song to Library</Button>
+        }
+        <Button onClick={this.goHome}>Go Home</Button>
+      </div>
     )
   }
-  
 }
 export default End;

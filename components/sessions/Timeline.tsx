@@ -2,7 +2,7 @@ import React from "react";
 import LayerInterface from "../../interfaces/models/LayerInterface";
 import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
 import Container from "./Container";
-import Crunker from "./Crunker"
+import Crunker from "./Crunker";
 import { Button, Badge, Spacer } from "@geist-ui/core";
 import { PlayFill, PauseFill } from "@geist-ui/icons";
 import { initResizeTimeline, initTimelineClick } from "../ui/helpers/resize";
@@ -78,7 +78,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     }
   }
   
-
   updateTimelineWidth() {
     let ele = null;
     let timelineWidth = 400;
@@ -220,7 +219,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
       isPlaying: !this.state.isPlaying,
     });
   }
-
 
   render() {
     return (

@@ -3,6 +3,7 @@ import Queue from "../interfaces/models/Queue";
 import SessionInterface from "../interfaces/models/SessionInterface";
 import { config } from "../components/config";
 import LayerInterface from "../interfaces/models/LayerInterface";
+import Crunker from "../components/sessions/Crunker";
 
 export const joinWaitQueue = async () => {
   try {
@@ -151,6 +152,31 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, laye
     }
   }).then(() => tellPartnerToPull());
 };
+
+export const syncSaveSong = (sessionId: string, songBuffer: AudioBuffer | null) => {
+  if (sessionId != null && songBuffer != null) {
+    const crunker = new Crunker();
+    const blob = crunker.export(songBuffer, 'audio/mpeg').blob;
+    const songUploadUrl = config.server_url + "api/session/" + sessionId + "/upload";
+    const formData = new FormData();
+    formData.append('file', blob, 'file');
+    fetch(songUploadUrl, {
+      method: "PUT", 
+      credentials: "include",
+      body: formData,
+    })
+    .then(response => {
+      if (response.ok) alert("Successfully saved the song to your library!")
+      else alert("An error occurred saving your song!")
+    })
+    .catch(err => {
+      alert('Could not upload recording :(');
+    });
+  }
+  else {
+    alert('Session ID aad/or song buffer is null');
+  }
+}
 
 export const getLayerById = async (sessionId: string, layerId: string) => {
   try {
