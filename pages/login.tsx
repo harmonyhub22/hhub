@@ -42,7 +42,6 @@ const Login = (): React.ReactNode => {
           <motion.h1 variants={titleSlider} initial="hidden" animate="show">
             Harmony Hub
           </motion.h1>
-
           <motion.div className="intro-text">
             <Input
               clearable
