@@ -37,7 +37,6 @@ const Login = (): React.ReactNode => {
 
   return (
     <>
-      <Navbar />
       <motion.div className="intro">
         <motion.div className="intro-login">
           <motion.h1 variants={titleSlider} initial="hidden" animate="show">
