@@ -70,32 +70,9 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.updateTrimmedEnd = this.updateTrimmedEnd.bind(this);
     this.handleDragStop = this.handleDragStop.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
-    this.getFromLocalStorage = this.getFromLocalStorage.bind(this);
-    this.setToLocalStorage = this.setToLocalStorage.bind(this);
-    this.removeFromLocalStorage = this.removeFromLocalStorage.bind(this);
   }
 
   componentDidMount() {
-    /*
-    const layerData = this.getFromLocalStorage();
-    if (layerData === null) {
-      this.setToLocalStorage();
-    } else {
-      const jsonLayerData = JSON.parse(layerData);
-      if (jsonLayerData.soundBufferId !== null) {
-        get(Palette.db_name, Palette.db_obj_store_name, jsonLayerData.soundBufferId, (buffer:Blob|null) => {
-          if (buffer !== null) {
-            this.setState({
-              soundBuffer: buffer,
-            });
-          }
-        });
-      }
-      this.setState({
-        currentLayer: jsonLayerData.layer,
-        committed: JSON.stringify(this.props.layer) === JSON.stringify(jsonLayerData.layer),
-      });
-    } */
     console.log('mounted');
     if (this.state.tonePlayer === null)
       this.createTonePlayer(this.props.layer.fileName, this.state.soundBuffer, this.props.layer.bucketUrl);
@@ -112,12 +89,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
 
   componentDidUpdate(prevProps:TimelineLayerProps, prevState:TimelineLayerState) {
     if (JSON.stringify(prevState.currentLayer) !== JSON.stringify(this.state.currentLayer)) {
-      console.log(this.state);
-      this.setState({
-        committed: false,
-      });
-      // this.setToLocalStorage();
-      // this.props.updateStagedLayer(this.state.currentLayer);
+      this.props.updateStagedLayer(this.state.currentLayer);
     }
 
     if (prevState.currentLayer.reversed !== this.state.currentLayer.reversed 
@@ -165,19 +137,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     })
   }
 
-  getFromLocalStorage() {
-    return window.localStorage.getItem(`layer-${this.state.currentLayer.layerId !== null ? this.state.currentLayer.layerId : this.state.currentLayer.name}`);
-  }
-
-  setToLocalStorage() {
-    window.localStorage.setItem(`layer-${this.state.currentLayer.layerId !== null ? this.state.currentLayer.layerId : this.state.currentLayer.name}`, 
-    JSON.stringify({ layer: this.state.currentLayer, soundBufferId: this.props.soundBufferId }));
-  }
-
-  removeFromLocalStorage() {
-    window.localStorage.removeItem(`layer-${this.state.currentLayer.layerId !== null ? this.state.currentLayer.layerId : this.state.currentLayer.name}`);
-  }
-
   getInfo() {
     return (
       <Description title="Layer Info" style={{padding: '0px 10px 0px 10px'}} content={
@@ -200,7 +159,6 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       console.log('comitting', this.state.currentLayer);
       this.props.commitLayer(this.state.currentLayer, this.state.soundBuffer);
     }
-    this.removeFromLocalStorage();
     this.setState({
       committed: true,
     });

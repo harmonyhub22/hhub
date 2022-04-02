@@ -227,6 +227,7 @@ class Session extends Component<SessionProps, SessionState> {
             ctx.closePath()
           }} >
         </Confetti>}
+
         <Modal width="35rem" visible={this.state.mustReturnHome} disableBackdropClick>
           <Modal.Title>Return to Home Page</Modal.Title>
           <Modal.Content style={{textAlign: 'center'}}>
