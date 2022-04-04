@@ -70,6 +70,7 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     this.updateTrimmedEnd = this.updateTrimmedEnd.bind(this);
     this.handleDragStop = this.handleDragStop.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
+    this.setSoundBuffer = this.setSoundBuffer.bind(this);
   }
 
   componentDidMount() {
@@ -81,6 +82,10 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
       TimelineLayer.layerMinWidth, this.state.layerMaxWidth,
       'timeline-layer-resizer-l', 'timeline-layer-resizer-r',
       this.updateTrimmedStart, this.updateTrimmedEnd);
+    
+    if (this.props.soundBufferId) {
+      get(Palette.db_name, Palette.db_obj_store_name, this.props.soundBufferId, this.setSoundBuffer);
+    }
   }
 
   componentWillUnmount() {
@@ -316,6 +321,12 @@ class TimelineLayer extends React.Component<TimelineLayerProps, TimelineLayerSta
     if (event.target.id === TimelineLayer.DraggableZoneId) {
       this.props.increaseTimeline();
     }
+  };
+
+  setSoundBuffer(soundBuffer:Blob|null) {
+    this.setState({
+      soundBuffer: soundBuffer,
+    });
   };
 
   render() {

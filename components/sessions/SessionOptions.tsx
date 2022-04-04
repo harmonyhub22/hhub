@@ -69,6 +69,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
     if (this.props.socket !== undefined && this.props.socket !== null) {
       this.props.socket.off(SessionOptions.socketEndpointEndSession, this.registerVoteEnd);
       this.props.socket.off(SessionOptions.socketEndpointUndoEndSession, this.registerUnVoteEnd);
+      this.props.socket.off(SessionOptions.socketEndpointSendRoomMsg, this.registerNewMsg);
     }
   }
 
@@ -105,7 +106,9 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
         </div>
       </>
     ), 
-    { icon: '💬',
+    {
+      id: data.message,
+      icon: '💬',
       style: {
         borderRadius: '10px',
         background: '#333',

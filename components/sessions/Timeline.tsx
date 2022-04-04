@@ -125,6 +125,9 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     bufferMap[keyValue] = temp;
     this.setState({
       buffermap: bufferMap,
+      currentSeconds: 0,
+      paused: false,
+      isPlaying: false,
     });
     if (Object.keys(bufferMap).length === (this.props.layers.length + this.props.neverCommittedLayers.length)) {
       const buffer = crunker.mergeAudio(Object.values(bufferMap));

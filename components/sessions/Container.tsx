@@ -57,7 +57,7 @@ class Container extends React.Component<ContainerProps, ContainerState> {
         {this.props.neverCommittedLayers.map((neverCommittedLayer:NeverCommittedLayer, i:number) => {
           return (
             <TimelineLayer 
-              key={`never-comitted-layer-${i}`}
+              key={`never-comitted-layer-${neverCommittedLayer.layer.name}`}
               layer={neverCommittedLayer.layer}
               soundBufferId={neverCommittedLayer.stagingSoundBufferId}
               timelineDuration={this.props.seconds}

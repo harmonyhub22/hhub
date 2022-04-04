@@ -145,13 +145,16 @@ class Session extends Component<SessionProps, SessionState> {
   }
 
   duplicateLayer(layerData:NeverCommittedLayer) {
+    console.log('old Layer', layerData);
     const newLayerData: NeverCommittedLayer = layerData;
     newLayerData.layer.name = `layer-${Date.now()}`;
     newLayerData.layer.startTime = layerData.layer.startTime + layerData.layer.duration - layerData.layer.trimmedEndDuration - layerData.layer.trimmedStartDuration;
+    console.log('new layer', newLayerData);
     this.stageLayer(newLayerData);
   }
 
   stageLayer(newLayer:NeverCommittedLayer) {
+    console.log('new layer', newLayer);
     this.setState({
       neverCommittedLayers: [...this.state.neverCommittedLayers, newLayer],
     });
@@ -170,7 +173,7 @@ class Session extends Component<SessionProps, SessionState> {
       this.setState({
         neverCommittedLayers: neverCommittedLayers,
       });
-    } else if (this.state.session !== null) {
+    } else if (this.state.session !== null && updatedLayer.layerId !== null) {
       const layers = this.state.session.layers;
       this.state.session.layers.forEach((l:LayerInterface, i:number) => {
         if (l.layerId === updatedLayer.layerId) {

@@ -3,10 +3,9 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { login } from "../api/Helper";
 import Wave from "../components/animations/Wave";
-import { Galaxy, LoginAnimation } from "../components/animations/AnimationPic";
+import { LoginAnimation } from "../components/animations/AnimationPic";
 import { imgVariant, titleSlider } from "../components/animations/Animation";
 import { motion } from "framer-motion";
-import Navbar from "../components/Navbar";
 
 const Login = (): React.ReactNode => {
   const router = useRouter();
@@ -16,7 +15,7 @@ const Login = (): React.ReactNode => {
 
   const getLogin = async () => {
     if (email.length === 0 || password.length === 0) {
-      console.log("email, firstname, lastname, and password required");
+      console.log("email and password required");
       return;
     }
     const existingMember = await login(email, password);
