@@ -1156,9 +1156,9 @@ export const LoginAnimation = () => {
 export const SingleHomeAnimation = () => {
   return (
     <svg
-      width="618"
-      height="595"
-      viewBox="0 0 618 595"
+      width="697"
+      height="670"
+      viewBox="0 0 740 670"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
