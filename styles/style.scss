@@ -345,7 +345,7 @@ table.table-palette tfoot {
 .timeline-layer-initials {
   padding: 0px 8px 8px 2px;
   pointer-events: none;
-  -webkit-user-select: none; /* Safari */        
+  -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE10+/Edge */
   user-select: none; /* Standard */
@@ -381,8 +381,8 @@ table.table-palette tfoot {
   display: block;
   position: absolute;
   // background-image:
-    // linear-gradient(to right, grey 1px, transparent 1px),
-    // linear-gradient(to bottom, grey 1px, transparent 1px);
+  // linear-gradient(to right, grey 1px, transparent 1px),
+  // linear-gradient(to bottom, grey 1px, transparent 1px);
 }
 
 .session-members {
@@ -561,4 +561,6 @@ table.table-palette tfoot {
 
 @import "./intro";
 @import "./home";
+@import "./queue";
+@import "./learn";
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300&family=Lobster&display=swap");

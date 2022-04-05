@@ -35,8 +35,11 @@ const Queue = (): React.ReactNode => {
   return (
     <>
       <Navbar />
-      <h1>Queue Loading Page</h1>
-      <p>Join at time: {joinedTime}</p>
+      <div className="queue-page">
+        <h1>Queue loading...</h1>
+        <h1>Please wait!</h1>
+        <p>Join at time: {joinedTime}</p>
+      </div>
     </>
   );
 };

@@ -3,7 +3,10 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { login } from "../api/Helper";
 import Wave from "../components/animations/Wave";
-import { Galaxy, LoginAnimation } from "../components/animations/AnimationPic";
+import {
+  LoginAnimation,
+  DancingMan,
+} from "../components/animations/AnimationPic";
 import { imgVariant, titleSlider } from "../components/animations/Animation";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
@@ -79,14 +82,13 @@ const Login = (): React.ReactNode => {
             </Button>
           </motion.div>
         </motion.div>
-        <Wave />
         <motion.div
           className="intro-images"
           variants={imgVariant}
           initial="initial"
           animate="animate"
         >
-          <LoginAnimation />
+          <DancingMan />
         </motion.div>
       </motion.div>
     </>
