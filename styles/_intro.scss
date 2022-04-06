@@ -24,8 +24,7 @@
   }
   @media (max-width: 800px) {
     .intro-images {
-      display: none;
-      padding: 2rem 2rem;
+      margin-left: -2rem;
     }
     #btn-new-session-logout {
       margin-bottom: 5px;
@@ -97,6 +96,32 @@
   }
   to {
     transform: translateY(-10%);
+  }
+}
+
+#man-dancing {
+  animation: man-dancing 2s ease infinite alternate;
+}
+
+@keyframes man-dancing {
+  from {
+    transform: rotateY(30deg);
+  }
+  to {
+    transform: rotateY(40deg);
+  }
+}
+
+#woman-dancing {
+  animation: woman-dancing 2s ease infinite alternate;
+}
+
+@keyframes woman-dancing {
+  from {
+    transform: rotateY(40deg);
+  }
+  to {
+    transform: rotateY(30deg);
   }
 }
 

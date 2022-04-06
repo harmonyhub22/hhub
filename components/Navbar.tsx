@@ -62,28 +62,49 @@ const Navbar = () => {
 
   return (
     <>
-      <Button auto onClick={() => setSidebar(true)} scale={1} style={{borderRadius: '0px 0px 6px 0px', position: 'absolute'}}>
-        <FaIcons.FaBars/>
+      <Button
+        auto
+        onClick={() => setSidebar(true)}
+        scale={1}
+        style={{ borderRadius: "0px 0px 6px 0px", position: "absolute" }}
+        className="navbar"
+      >
+        <FaIcons.FaBars />
       </Button>
       <Drawer
         visible={sidebar}
         onClose={() => setSidebar(false)}
         placement="left"
-        style={{background: 'linear-gradient(#733d97, #512957, #831b77)'}}
+        style={{ background: "linear-gradient(#733d97, #512957, #831b77)" }}
       >
-        <Drawer.Title style={{color: "white"}}>Harmony Hub</Drawer.Title>
-        <Drawer.Subtitle style={{color: "#f0f0f0"}}>Navigation</Drawer.Subtitle>
-        <Drawer.Content style={{height: '100%'}}>
-          <ul style={{margin: 'none'}}>
+        <Drawer.Title style={{ color: "white" }}>Harmony Hub</Drawer.Title>
+        <Drawer.Subtitle style={{ color: "#f0f0f0" }}>
+          Navigation
+        </Drawer.Subtitle>
+        <Drawer.Content style={{ height: "100%" }}>
+          <ul style={{ margin: "none" }}>
             {SidebarData.map((item, index) => {
               return (
                 <li key={index} className={item.cName}>
                   <Link href={item.path} passHref>
-                    <GeistLink block style={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center', width: '100%', height: '100%'}}>
-                      <div>
-                        {item.icon}
-                      </div>
-                      <div style={{width: '100%', textAlign: 'center', color: "white"}}>
+                    <GeistLink
+                      block
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        width: "100%",
+                        height: "100%",
+                      }}
+                    >
+                      <div>{item.icon}</div>
+                      <div
+                        style={{
+                          width: "100%",
+                          textAlign: "center",
+                          color: "white",
+                        }}
+                      >
                         <span>{item.title}</span>
                       </div>
                     </GeistLink>
@@ -94,11 +115,26 @@ const Navbar = () => {
             {(member?.memberId ?? undefined) === undefined ? (
               <li key={SidebarData.length} className={SidebarData[0].cName}>
                 <Link href={"/login"} passHref>
-                  <GeistLink block style={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center', width: '100%', height: '100%'}}>
+                  <GeistLink
+                    block
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
                     <div>
                       <CgIcons.CgLogIn color="white" />
                     </div>
-                    <div style={{width: '100%', textAlign: 'center', color: 'white'}}>
+                    <div
+                      style={{
+                        width: "100%",
+                        textAlign: "center",
+                        color: "white",
+                      }}
+                    >
                       <span>Login</span>
                     </div>
                   </GeistLink>
@@ -107,11 +143,26 @@ const Navbar = () => {
             ) : (
               <li key={SidebarData.length} className={SidebarData[0].cName}>
                 <Link href={"/logout"} passHref>
-                  <GeistLink block style={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center', width: '100%', height: '100%'}}>
+                  <GeistLink
+                    block
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
                     <div>
                       <CgIcons.CgLogOut color="white" />
                     </div>
-                    <div style={{width: '100%', textAlign: 'center', color: 'white'}}>
+                    <div
+                      style={{
+                        width: "100%",
+                        textAlign: "center",
+                        color: "white",
+                      }}
+                    >
                       <span>Logout</span>
                     </div>
                   </GeistLink>
