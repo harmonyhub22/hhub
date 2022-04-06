@@ -16,10 +16,11 @@
 }
 .home-button {
   display: flex;
+  top: 3vh;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  z-index: 100;
+  z-index: 3;
   position: relative;
   .home-live-button {
     margin-top: 1rem;

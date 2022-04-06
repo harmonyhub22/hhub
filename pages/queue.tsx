@@ -4,6 +4,7 @@ import { joinWaitQueue } from "../api/Session";
 import { SocketContext } from "../context/socket";
 import SessionMade from "../interfaces/socket-data/session_made";
 import Navbar from "../components/Navbar";
+import { Loading } from "@geist-ui/core";
 
 const Queue = (): React.ReactNode => {
   const [joinedTime, setJoinedTime] = useState<Date>();
@@ -36,9 +37,9 @@ const Queue = (): React.ReactNode => {
     <>
       <Navbar />
       <div className="queue-page">
-        <h1>Queue loading...</h1>
-        <h1>Please wait!</h1>
+        <h1>Waiting for a match!</h1>
         <p>Join at time: {joinedTime}</p>
+        <Loading scale={15} />
       </div>
     </>
   );
