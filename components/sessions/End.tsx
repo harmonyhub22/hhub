@@ -1,13 +1,14 @@
-import React, { Component, useEffect } from "react";
-import { Button, Drawer, Modal, Text } from "@geist-ui/core";
+import React, { Component } from "react";
+import { Button, Text } from "@geist-ui/core";
 import SessionInterface from "../../interfaces/models/SessionInterface";
 import { config } from "../config";
 import Crunker from "./Crunker";
-
+import { syncSaveSong } from "../../api/Session";
+import { BookOpen, Check, Download, Save } from "@geist-ui/icons";
 
 interface EndProps {
   member: any,
-  session: SessionInterface|null
+  session: SessionInterface|null,
   songBuffer: AudioBuffer|null,
 }
 
@@ -38,11 +39,18 @@ class End extends Component<EndProps, EndState> {
   };
   
   saveSong() {
-    // todo
-    this.setState({
-      savedToLibrary: true,
-    });
+    if (this.props.session) {
+      syncSaveSong(this.props.session.sessionId, this.props.songBuffer, this.setSavedToLibrary);
+    }
+  }
 
+  setSavedToLibrary(saved:boolean) {
+    this.setState({
+      savedToLibrary: saved,
+    });
+    if (saved === false) {
+      alert('Could not save your song at this time.');
+    }
   }
   
   downloadSong(){
@@ -55,7 +63,7 @@ class End extends Component<EndProps, EndState> {
         downloadedSong: true,
       });
     } else {
-      alert('could not download, please try again');
+      alert('We cannot download your song at this time.');
     }
   }
 
@@ -74,32 +82,32 @@ class End extends Component<EndProps, EndState> {
     } else {
       window.location.assign("/");
     }
-  }
+  };
 
+  goToLibrary() {
+    window.location.assign("/library");
+  };
 
-
-  render(){
+  render() {
     return(
-      
-    <div className="end-session">
-      <Text h1 style={{textAlign: 'center'}}>
-        Congrats {this.props.member.firstname}. 
-      </Text>
-      <Text>{End.congratulatory[this.state.congratsIndex]}</Text>
-      {this.state.downloadedSong ? 
-        <Button disabled>Download Song</Button>
-        :
-        <Button onClick={this.downloadSong}>Download Song</Button>
-      }
-      {this.state.savedToLibrary ?
-        <Button disabled>Save Song to Library</Button>
-        :
-        <Button onClick={this.saveSong}>Save Song to Library</Button>
-      }
-      <Button onClick={this.goHome}>Go Home</Button>
-    </div>
+      <div className="end-session">
+        <Text h1 style={{textAlign: 'center'}}>
+          Congrats {this.props.member.firstname}!
+        </Text>
+        <Text>{End.congratulatory[this.state.congratsIndex]}</Text>
+        <div style={{display: 'flex', justifyContent: "center", width: '100%'}}>
+          <Button style={{marginRight: '20px'}} type="success" auto icon={this.state.downloadedSong ? <Check/> : <Download/>}
+            onClick={this.downloadSong}>
+            Download Song
+          </Button>
+          <Button type="warning" auto ghost={this.state.savedToLibrary} icon={this.state.downloadedSong ? <BookOpen/> : <Save/>}
+            onClick={() => {this.state.savedToLibrary ? this.goToLibrary : this.saveSong}}>
+            {this.state.savedToLibrary ? "Go to your Library" : "Save Song to Library"}
+          </Button>
+        </div>
+        <Button style={{marginTop: '20px'}} type="abort" onClick={this.goHome}>Go Home</Button>
+      </div>
     )
   }
-  
 }
 export default End;
