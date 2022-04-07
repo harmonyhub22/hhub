@@ -151,32 +151,51 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, laye
   }).then(() => tellPartnerToPull());
 };
 
-export const syncSaveSong = (sessionId: string, songBuffer: AudioBuffer | null, setSaved:any) => {
-  if (sessionId != null && songBuffer != null) {
-    const crunker = new Crunker();
-    const blob = crunker.export(songBuffer, 'audio/mpeg').blob;
-    const songUploadUrl = config.server_url + "api/session/" + sessionId + "/upload";
-    const formData = new FormData();
-    formData.append('file', blob, 'file');
-    fetch(songUploadUrl, {
-      method: "PUT", 
+export const syncSaveSong = (sessionData: SessionInterface, songBuffer: AudioBuffer | null, setSaved: any) => {
+  const sessionId = sessionData.sessionId;
+
+  let url = config.server_url + "api/songs/" + sessionId;
+  fetch(
+    url,
+    {
+      method: "POST",
       credentials: "include",
-      body: formData,
-    })
-    .then(response => {
-      if (response.ok) {
-        setSaved(true);
-        return;
-      }
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(sessionData),
+    }
+  ).then((response:any) => {
+    if (response.ok) {
+      return response.json();
+    }
+  }).then((data:SessionInterface) => {
+    if (sessionId != null && songBuffer != null) {
+      const crunker = new Crunker();
+      const blob = crunker.export(songBuffer, 'audio/mpeg').blob;
+      const songUploadUrl = config.server_url + "api/session/" + sessionId + "/upload";
+      const formData = new FormData();
+      formData.append('file', blob, 'file');
+      fetch(songUploadUrl, {
+        method: "PUT", 
+        credentials: "include",
+        body: formData,
+      })
+      .then(response => {
+        if (response.ok) {
+          setSaved(true);
+          return;
+        }
+        setSaved(false);
+      })
+      .catch(err => {
+        setSaved(false);
+      });
+    }
+    else {
       setSaved(false);
-    })
-    .catch(err => {
-      setSaved(false);
-    });
-  }
-  else {
-    setSaved(false);
-  }
+    }
+  });
 }
 
 export const getLayerById = async (sessionId: string, layerId: string) => {
