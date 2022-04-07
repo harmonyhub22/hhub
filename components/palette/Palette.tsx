@@ -8,7 +8,7 @@ import { Mic, Music } from '@geist-ui/icons';
 import PaletteLayer from "./Palette-Layer";
 import PaletteRecorder from "./Palette-Recorder";
 import Member from "../../interfaces/models/Member";
-import { get, put } from "./helpers/indexedDb";
+import { get, put } from "../helpers/indexedDb";
 import { v4 as uuidv4 } from 'uuid'
 
 interface PaletteProps {

@@ -50,7 +50,7 @@ class SessionInfo extends React.Component<SessionInfoProps> {
             </Card.Content>
             <Divider h="1px" my={0} />
             <Card.Content>
-              <Text>Start time<br></br><Code>{this.props.startTime ?? ""}</Code></Text>
+              <Text>Started At<br></br><Code>{this.props.startTime ?? ""}</Code></Text>
             </Card.Content>
             <Divider h="1px" my={0} />
             <Card.Content>

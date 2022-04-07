@@ -114,7 +114,6 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
     document.removeEventListener('mouseup', rightMouseUpHandler);
     mouseDown = false;
     deltaX -= ele.getBoundingClientRect().width;
-    console.log('deltaX', deltaX);
     setDeltaXRight(deltaX);
   };
 
@@ -124,7 +123,6 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
     document.removeEventListener('mouseup', leftMouseUpHandler);
     mouseDown = false;
     deltaX -= ele.getBoundingClientRect().width;
-    console.log('deltaX', deltaX);
     setDeltaXLeft(deltaX);
   };
 

@@ -17,7 +17,7 @@ export const getAllKeys = (dbName:string, objectStoreName:string, callback:any) 
   };
 };
 
-export const deleteAll = (dbName:string, objectStoreName:string, callback:any) => {
+export const deleteAll = (dbName:string, objectStoreName:string) => {
   const request = indexedDB.open(dbName, 1);
   request.onerror = () => {
     console.log('error connecting to indexed db');

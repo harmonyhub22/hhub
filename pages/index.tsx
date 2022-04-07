@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button, Text } from "@geist-ui/core";
+import { Button, Text, Spinner } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import { SocketContext } from "../context/socket";
@@ -7,25 +7,24 @@ import { getLiveSession } from "../api/Session";
 import SessionInterface from "../interfaces/models/SessionInterface";
 import {
   DoubleHomeAnimation,
-  DoubleNote,
   SingleHomeAnimation,
-  SingleNode,
 } from "../components/animations/AnimationPic";
 import { motion } from "framer-motion";
 import {
-  titleAnim,
   homeSlider,
   slider,
 } from "../components/animations/Animation";
 
 const Home = () => {
   const [liveSessionId, setLiveSessionId] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const socket = useContext(SocketContext);
 
   // match with partner, and then route to session page with new session id
   const enterQueue = async () => {
+    setLoading(true);
     router.push({
       pathname: "/queue",
     });
@@ -38,15 +37,12 @@ const Home = () => {
   };
 
   const enterLiveSession = async () => {
+    setLoading(true);
     if (liveSessionId === null || liveSessionId === undefined) return;
     socket.emit("join-session", { sessionId: liveSessionId });
     router.push({
       pathname: "/sessions/" + liveSessionId,
     });
-  };
-
-  const sendMsg = () => {
-    socket.emit("message", "test message");
   };
 
   useEffect(() => {
@@ -111,7 +107,7 @@ const Home = () => {
                 style={{ backgroundColor: "white" }}
                 scale={2.0}
               >
-                Join your Live Session
+                Join your Live Session{ }{loading && <Spinner />}
               </Button>
             )}
           </div>

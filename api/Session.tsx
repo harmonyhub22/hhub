@@ -114,8 +114,6 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, laye
   updateSession:any, tellPartnerToPull: any) => {
 
   let url = config.server_url + "api/session/" + sessionId + "/layers";
-  if (layerData.layerId !== null) url += "/" + layerData.layerId;
-  console.log('post layer data', layerData);
   fetch(
     url,
     {
@@ -153,7 +151,7 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, laye
   }).then(() => tellPartnerToPull());
 };
 
-export const syncSaveSong = (sessionId: string, songBuffer: AudioBuffer | null) => {
+export const syncSaveSong = (sessionId: string, songBuffer: AudioBuffer | null, setSaved:any) => {
   if (sessionId != null && songBuffer != null) {
     const crunker = new Crunker();
     const blob = crunker.export(songBuffer, 'audio/mpeg').blob;
@@ -166,15 +164,18 @@ export const syncSaveSong = (sessionId: string, songBuffer: AudioBuffer | null) 
       body: formData,
     })
     .then(response => {
-      if (response.ok) alert("Successfully saved the song to your library!")
-      else alert("An error occurred saving your song!")
+      if (response.ok) {
+        setSaved(true);
+        return;
+      }
+      setSaved(false);
     })
     .catch(err => {
-      alert('Could not upload recording :(');
+      setSaved(false);
     });
   }
   else {
-    alert('Session ID aad/or song buffer is null');
+    setSaved(false);
   }
 }
 
@@ -243,3 +244,7 @@ export const syncDeleteLayer = (sessionId:string, layerId:string, updateSession:
     }
   });
 }
+
+export const syncCleanUpSession = async (sessionId:string) => {
+  // TODO
+};

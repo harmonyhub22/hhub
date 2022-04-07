@@ -1,7 +1,7 @@
 import Member from "./Member";
 
 export default interface LayerInterface {
-    layerId: string|null,
+    layerId: string,
     member: Member,
     name: string,
     startTime: number,

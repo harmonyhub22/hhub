@@ -292,17 +292,17 @@ table.table-palette tfoot {
   background-size: contain;
 }
 
-.timeline-layer {
+.staged-layer {
   border-radius: 12px;
   border: 1px solid #eaeaea;
   position: absolute;
   margin-top: 2px;
   margin-bottom: 2px;
   background-color: white;
-  z-index: 1000;
+  z-index: 200;
 }
 
-.timeline-layer-wav {
+.staged-layer-wav {
   width: 74%;
   background-image: url("../public/images/black_wave.svg");
   height: 50px;
@@ -320,7 +320,7 @@ table.table-palette tfoot {
   background-position: center;
 }
 
-.timeline-layer-details {
+.staged-layer-details {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -331,11 +331,11 @@ table.table-palette tfoot {
   box-sizing: border-box !important;
 }
 
-.timeline-layer-commit-tooltip {
+.staged-layer-commit-tooltip {
   padding-right: 1px;
 }
 
-.timeline-layer-commit-btn {
+.staged-layer-commit-btn {
   padding: 0px 5px 0px 0px;
   border: none !important;
   border-radius: 50% !important;
@@ -343,7 +343,7 @@ table.table-palette tfoot {
   height: auto !important;
 }
 
-.timeline-layer-initials {
+.staged-layer-initials {
   padding: 0px 8px 8px 2px;
   pointer-events: none;
   -webkit-user-select: none; /* Safari */        
@@ -352,7 +352,7 @@ table.table-palette tfoot {
   user-select: none; /* Standard */
 }
 
-.timeline-layer-resizer {
+.staged-layer-resizer {
   cursor: col-resize;
   height: 100%;
   top: 0;
@@ -361,11 +361,11 @@ table.table-palette tfoot {
   background-image: url("../public/images/re-order-dots.svg");
 }
 
-.timeline-layer-resizer-r {
+.staged-layer-resizer-r {
   right: 0;
 }
 
-.timeline-layer-resizer-l {
+.staged-layer-resizer-l {
   left: 0;
 }
 
@@ -560,6 +560,7 @@ table.table-palette tfoot {
   background-color: #7f4ba1;
   height: 100%;
   position: absolute;
+  z-index: 300;
 }
 
 .extend-timeline-zone {
@@ -568,6 +569,7 @@ table.table-palette tfoot {
   right: 0px;
   background-image: url("../public/images/dot-grid.svg");
   background-size: contain;
+  z-index: 400;
 }
 
 .timeline-click-listener {
@@ -583,6 +585,17 @@ table.table-palette tfoot {
   margin-left: 5vw;
   margin-right: 5vw;
   margin-top: 5vh;
+}
+
+.comitted-layer-details {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-left: 5px;
+  padding-right: 10px;
+  box-sizing: border-box !important;
 }
 
 @import "./intro";

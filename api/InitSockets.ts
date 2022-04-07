@@ -2,26 +2,25 @@ import { io } from "socket.io-client";
 import { config } from "../components/config";
 
 export const createSocket = (memberId: string) => {
-  console.log(config.server_url);
   const socket = io(config.socket_url + "", {
     query: {
       memberId: memberId,
     },
   });
   socket.on("connect", () => {
-    console.log("connected!");
+    console.log("socket connected!");
   });
 
   socket.on("disconnect", () => {
-    console.log("disconnected!");
+    console.log("socket disconnected!");
   });
 
   socket.on("message", (msg) => {
-    console.log(msg);
+    console.log('socket message', msg);
   });
 
   socket.on("error", (error) => {
-    console.log("error connecting!!");
+    console.log("socker had error connecting!!");
   });
 
   return socket;

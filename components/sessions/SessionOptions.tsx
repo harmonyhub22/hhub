@@ -92,7 +92,6 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
   };
 
   registerNewMsg(data: SessionReceiveMsg) {
-    console.log('got new message');
     toast((t) => (
       <>
         <div style={{marginRight: "10px"}}>

@@ -4,8 +4,9 @@ import React from "react";
 import * as Tone from "tone";
 import LayerInterface from "../../interfaces/models/LayerInterface";
 import Member from "../../interfaces/models/Member";
-import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
+import StagedLayer from "../../interfaces/StagedLayerInterface";
 import { config } from "../config";
+import { v4 as uuidv4 } from 'uuid'
 
 interface PaletteLayerProps {
   stagingSoundName: string|null,
@@ -195,10 +196,11 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
   };
 
   handleStageLayer() {
+    const id = uuidv4();
     const layer: LayerInterface = {
-      layerId: null,
+      layerId: id,
       member: this.props.member,
-      name: `layer-${Date.now()}`,
+      name: `layer-${id}`,
       startTime: 0,
       duration: this.state.duration,
       fileName: this.props.stagingSoundName,
@@ -211,9 +213,10 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
       y: 30,
       muted: false,
     }
-    const newLayer: NeverCommittedLayer = {
+    const newLayer: StagedLayer = {
       layer: layer,
-      stagingSoundBufferId: this.props.stagingSoundBufferId,
+      recordingBlob: this.props.stagingSoundBuffer !== null && this.props.stagingSoundBuffer !== undefined ? new Blob([this.props.stagingSoundBuffer], {type: this.props.stagingSoundBuffer.type}) : null,
+      recordingId: this.props.stagingSoundBufferId,
     };
     this.props.stageLayer(newLayer);
     const genreData = {

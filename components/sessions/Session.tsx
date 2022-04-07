@@ -3,6 +3,7 @@ import { Button, Drawer, Modal, Text } from "@geist-ui/core";
 import Member from "../../interfaces/models/Member";
 import SessionInterface from "../../interfaces/models/SessionInterface";
 import {
+  syncCleanUpSession,
   syncDeleteLayer,
   syncGetSession,
   syncPostLayer,
@@ -11,28 +12,30 @@ import LayerInterface from "../../interfaces/models/LayerInterface";
 import Timeline from "./Timeline";
 import SessionInfo from "./SessionInfo";
 import SessionOptions from "./SessionOptions";
-import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
-import Palette from "../ui/Palette";
+import Palette from "../palette/Palette";
 import { IoIosColorPalette } from "react-icons/io";
 import End from "./End";
-import { get, getAllKeys } from "../ui/helpers/indexedDb";
 import Confetti from "react-confetti";
+import StagedLayer from "../../interfaces/StagedLayerInterface";
+import { v4 as uuidv4 } from 'uuid'
+import StagedLayerInterface from "../../interfaces/StagedLayerInterface";
+import { deleteAll } from "../helpers/indexedDb";
 
 interface SessionProps {
-  member: any;
-  socket: any;
+  member: any,
+  socket: any,
 }
 
 interface SessionState {
-  session: SessionInterface | null;
-  partner: Member | null;
-  mustReturnHome: boolean;
-  neverCommittedLayers: NeverCommittedLayer[];
-  showPalette: boolean;
-  sessionEnded: boolean;
-  finalBuffer: any;
-  bpm: number | null;
-}
+  session: SessionInterface|null,
+  partner: Member|null,
+  mustReturnHome: boolean,
+  stagedLayers: StagedLayer[],
+  showPalette: boolean,
+  sessionEnded: boolean,
+  finalBuffer: any,
+  bpm: number|null,
+};
 
 class Session extends Component<SessionProps, SessionState> {
   static socketPullLayerMsg: string = "pull_layer";
@@ -43,7 +46,7 @@ class Session extends Component<SessionProps, SessionState> {
       session: null,
       partner: null,
       mustReturnHome: false,
-      neverCommittedLayers: [],
+      stagedLayers: [],
       showPalette: false,
       sessionEnded: false,
       finalBuffer: null,
@@ -51,17 +54,29 @@ class Session extends Component<SessionProps, SessionState> {
     };
     this.setSession = this.setSession.bind(this);
     this.updateSession = this.updateSession.bind(this);
-    this.commitLayer = this.commitLayer.bind(this);
-    this.deleteLayer = this.deleteLayer.bind(this);
-    this.duplicateLayer = this.duplicateLayer.bind(this);
+
+    // staging layers
+    this.getStagedLayersFromLocalStorage = this.getStagedLayersFromLocalStorage.bind(this);
+    this.setStagedLayersToLocalStorage = this.setStagedLayersToLocalStorage.bind(this);
     this.stageLayer = this.stageLayer.bind(this);
+    this.commitStagedLayer = this.commitStagedLayer.bind(this);
+    this.deleteStagedLayer = this.deleteStagedLayer.bind(this);
+    this.duplicateStagedLayer = this.duplicateStagedLayer.bind(this);
+
+    // comitted layers
+    this.deleteComittedLayer = this.deleteComittedLayer.bind(this);
+    this.duplicateComittedLayer = this.duplicateComittedLayer.bind(this);
+
+    // helper functions
     this.showPalette = this.showPalette.bind(this);
-    this.endSession = this.endSession.bind(this);
     this.registerPullLayer = this.registerPullLayer.bind(this);
-    this.updateBuffer = this.updateBuffer.bind(this);
+    this.updateFinalBuffer = this.updateFinalBuffer.bind(this);
     this.tellPartnerToPull = this.tellPartnerToPull.bind(this);
     this.updateBpm = this.updateBpm.bind(this);
-    this.updateStagedLayer = this.updateStagedLayer.bind(this);
+
+    // end session
+    this.handleEndSession = this.handleEndSession.bind(this);
+    this.cleanUpSession = this.cleanUpSession.bind(this);
   }
 
   setSession(session: SessionInterface | null) {
@@ -77,33 +92,39 @@ class Session extends Component<SessionProps, SessionState> {
   }
 
   componentDidMount() {
-    if (this.props.socket === undefined || this.props.member === undefined) {
+    if (this.props.socket === undefined || this.props.socket === null || this.props.member === undefined) {
       this.setState({
         mustReturnHome: true,
       });
+      return;
     }
+
+    // set up the session
     const sessionId = window.localStorage.getItem("sessionId");
     if (sessionId === null) return;
     syncGetSession(sessionId, this.setSession);
 
-    if (this.props.socket === null || this.props.socket === undefined) return;
+    // join the session if not already joined
     this.props.socket.emit("join_session", { sessionId: sessionId });
+
+    // add socket listener for partner layers
     this.props.socket.on(Session.socketPullLayerMsg, this.registerPullLayer);
+
+    // get staged layer ids from local storage
+    this.getStagedLayersFromLocalStorage(sessionId);
   }
 
   componentDidUpdate(prevProps: SessionProps, prevState: SessionState) {
-    if (
-      JSON.stringify(prevState.session) !==
-        JSON.stringify(this.state.session) &&
-      this.state.session !== null
-    ) {
-      console.log(this.state.session);
+    if (prevState.session?.sessionId !== this.state.session?.sessionId && this.state.session !== null) {
       this.setState({
         partner:
           this.state.session.member1.memberId !== this.props.member.memberId
             ? this.state.session.member1
             : this.state.session.member2,
       });
+    }
+    if (prevState.stagedLayers.length !== this.state.stagedLayers.length) {
+      this.setStagedLayersToLocalStorage();
     }
   }
 
@@ -126,9 +147,61 @@ class Session extends Component<SessionProps, SessionState> {
     }
   }
 
-  commitLayer(layerData: LayerInterface, layerBlob: Blob | null) {
-    console.log("commit layer", layerData);
+  // ** staged layer section
+  getStagedLayersFromLocalStorage(sessionId:string) {
+    const cachedStagedLayerIds = window.localStorage.getItem(`session-${sessionId}-staged-layer-ids`);
+    if (cachedStagedLayerIds !== null) { // nothing there yet
+      const stagedLayerIds: string[] = JSON.parse(cachedStagedLayerIds);
+      const stagedLayers: StagedLayer[] = stagedLayerIds.map((id:string) => {
+        const layer: LayerInterface = {
+          layerId: id,
+          member: this.props.member,
+          name: "",
+          startTime: 0,
+          duration: 0,
+          fileName: null,
+          bucketUrl: null,
+          fadeInDuration: 0,
+          fadeOutDuration: 0,
+          reversed: false,
+          trimmedStartDuration: 0,
+          trimmedEndDuration: 0,
+          y: 0,
+          muted: false
+        };
+        const stagedLayer: StagedLayer = { layer: layer, recordingBlob: null, recordingId: null };
+        return stagedLayer;
+      });
+      if (stagedLayers.length !== 0) {
+        this.setState({
+          stagedLayers: stagedLayers,
+        });
+      }
+    } else { // if there's not storage, set it!
+      this.setStagedLayersToLocalStorage();
+    }
+  };
+
+  setStagedLayersToLocalStorage() {
+    if (this.state.session === null) return;
+    const stagedLayers: StagedLayer[] = this.state.stagedLayers;
+    const stagedLayerIds: string[] = stagedLayers.map((stagedLayer:StagedLayer) => stagedLayer.layer.layerId);
+    window.localStorage.setItem(`session-${this.state.session.sessionId}-staged-layer-ids`, JSON.stringify(stagedLayerIds));
+  };
+
+  stageLayer(stagedLayer: StagedLayer) {
+    this.setState({
+      stagedLayers: [...this.state.stagedLayers, stagedLayer],
+    });
+  };
+
+  commitStagedLayer(layerData: LayerInterface, layerBlob: Blob | null) {
     if (this.state.session === null || this.state.session === undefined) return;
+    let stagedLayers: StagedLayer[] = this.state.stagedLayers;
+    stagedLayers = stagedLayers.filter(e => e.layer.layerId !== layerData.layerId);
+    this.setState({
+      stagedLayers: stagedLayers,
+    });
     syncPostLayer(
       this.state.session.sessionId,
       layerData,
@@ -136,118 +209,101 @@ class Session extends Component<SessionProps, SessionState> {
       this.updateSession,
       this.tellPartnerToPull
     );
-    if (layerData.layerId === null) {
-      // its a never comitted layer
-      const newNeverCommittedLayers: NeverCommittedLayer[] = [];
-      this.state.neverCommittedLayers.forEach((layer: NeverCommittedLayer) => {
-        if (layer.layer.name !== layerData.name)
-          newNeverCommittedLayers.push(layer);
-      });
-      this.setState({
-        neverCommittedLayers: newNeverCommittedLayers,
-      });
-    }
-  }
+  };
 
-  deleteLayer(layerData: LayerInterface) {
-    if (layerData.layerId !== null && this.state.session !== null) {
-      // comitted
+  deleteStagedLayer(layerData: LayerInterface) {
+    let stagedLayers: StagedLayer[] = this.state.stagedLayers;
+    stagedLayers = stagedLayers.filter(e => e.layer.layerId !== layerData.layerId);
+    this.setState({
+      stagedLayers: stagedLayers,
+    });
+  };
+
+  duplicateStagedLayer(stagedLayer: StagedLayer) {
+    // add a new id
+    stagedLayer.layer.layerId = uuidv4();
+    // calculate the start time to be at the end of the duplicated layer
+    stagedLayer.layer.startTime = stagedLayer.layer.startTime + stagedLayer.layer.duration -
+      stagedLayer.layer.trimmedEndDuration - stagedLayer.layer.trimmedStartDuration;
+    this.stageLayer(stagedLayer);
+  };
+  // ** end staged layer section
+
+  // ** comitted layer section
+  deleteComittedLayer(layerData: LayerInterface) {
+    if (this.state.session !== null) {
       syncDeleteLayer(
         this.state.session.sessionId,
         layerData.layerId,
         this.updateSession,
         this.tellPartnerToPull
       );
-    } else {
-      const newNeverCommittedLayers: NeverCommittedLayer[] = [];
-      this.state.neverCommittedLayers.forEach((layer: NeverCommittedLayer) => {
-        if (layer.layer.name !== layerData.name)
-          newNeverCommittedLayers.push(layer);
-      });
-      this.setState({
-        neverCommittedLayers: newNeverCommittedLayers,
-      });
     }
   }
 
-  duplicateLayer(layerData: NeverCommittedLayer) {
-    console.log("old Layer", layerData);
-    const newLayerData: NeverCommittedLayer = JSON.parse(
-      JSON.stringify(layerData)
-    );
-    newLayerData.layer.name = `layer-${Date.now()}`;
-    newLayerData.layer.startTime =
-      layerData.layer.startTime +
-      layerData.layer.duration -
-      layerData.layer.trimmedEndDuration -
-      layerData.layer.trimmedStartDuration;
-    console.log("new layer", newLayerData);
-    this.stageLayer(newLayerData);
-  }
+  duplicateComittedLayer(layerData: StagedLayerInterface) {
+    const id = uuidv4();
+    layerData.layer.layerId = id;
+    layerData.layer.name = `layer-${id}`;
+    layerData.layer.startTime = layerData.layer.startTime + layerData.layer.duration -
+      layerData.layer.trimmedEndDuration - layerData.layer.trimmedStartDuration;
 
-  stageLayer(newLayer: NeverCommittedLayer) {
-    console.log("new layer", newLayer);
-    this.setState({
-      neverCommittedLayers: [...this.state.neverCommittedLayers, newLayer],
-    });
-    console.log([...this.state.neverCommittedLayers, newLayer]);
+    this.stageLayer(layerData);
   }
-
-  updateStagedLayer(updatedLayer: LayerInterface) {
-    if (updatedLayer.layerId === null) {
-      // never committed
-      const neverCommittedLayers = this.state.neverCommittedLayers;
-      this.state.neverCommittedLayers.forEach(
-        (l: NeverCommittedLayer, i: number) => {
-          if (l.layer.name === updatedLayer.name) {
-            neverCommittedLayers[i].layer = updatedLayer;
-            return;
-          }
-        }
-      );
-      this.setState({
-        neverCommittedLayers: neverCommittedLayers,
-      });
-    } else if (this.state.session !== null && updatedLayer.layerId !== null) {
-      const layers = this.state.session.layers;
-      this.state.session.layers.forEach((l: LayerInterface, i: number) => {
-        if (l.layerId === updatedLayer.layerId) {
-          layers[i] = updatedLayer;
-          return;
-        }
-      });
-      this.setState({
-        session: {
-          ...this.state.session,
-          layers: layers,
-        },
-      });
-    }
-  }
+  // ** end comitted layer section
 
   showPalette(show: boolean) {
     this.setState({
       showPalette: show,
     });
-  }
+  };
 
-  endSession() {
+  // ** end session section
+  handleEndSession() {
+    this.cleanUpSession();
     this.setState({
       sessionEnded: true,
     });
-  }
+  };
 
-  updateBuffer(buffer: any) {
+  cleanUpSession() {
+    const sessionId: string|null = window.localStorage.getItem('sessionId');
+    if (sessionId === null) return;
+
+    // clean up any staged layers
+    let cachedStagedLayerIds: string|null = window.localStorage.getItem(`session-${sessionId}-staged-layer-ids`);
+    if (cachedStagedLayerIds !== null) {
+      const stagedLayerIds: string[] = JSON.parse(cachedStagedLayerIds);
+      stagedLayerIds.forEach((layerId:string) => {
+        window.localStorage.removeItem(`staged-layer-${layerId}`);
+      });
+    }
+    window.localStorage.removeItem(`session-${sessionId}-staged-layer-ids`);
+    this.setState({
+      stagedLayers: [],
+    });
+
+    // clean up indexed db
+    deleteAll(Palette.db_name, Palette.db_obj_store_name);
+
+    // remove the sesion id
+    window.localStorage.removeItem('sessionId');
+  };
+
+  updateFinalBuffer(buffer: any) {
     this.setState({
       finalBuffer: buffer,
     });
-  }
+    if (this.state.session !== null)
+      syncCleanUpSession(this.state.session.sessionId);
+  };
+  // ** end end session section
 
   updateBpm(bpm: number | null) {
     this.setState({
       bpm: bpm,
     });
-  }
+  };
 
   render() {
     return (
@@ -290,7 +346,7 @@ class Session extends Component<SessionProps, SessionState> {
 
         <Modal
           width="35rem"
-          visible={this.state.sessionEnded}
+          visible={this.state.finalBuffer !== null}
           disableBackdropClick
         >
           <Modal.Title>Session Complete</Modal.Title>
@@ -314,16 +370,17 @@ class Session extends Component<SessionProps, SessionState> {
 
         <div className="session-content">
           <Timeline
-            layers={this.state.session?.layers ?? []}
-            neverCommittedLayers={this.state.neverCommittedLayers}
-            commitLayer={this.commitLayer}
-            duplicateLayer={this.duplicateLayer}
-            deleteLayer={this.deleteLayer}
-            stageLayer={this.stageLayer}
+            comittedLayers={this.state.session?.layers ?? []}
+            stagedLayers={this.state.stagedLayers}
             sessionEnded={this.state.sessionEnded}
-            updateFinalBuffer={this.updateBuffer}
             bpm={this.state.bpm}
-            updateStagedLayer={this.updateStagedLayer}
+            commitStagedLayer={this.commitStagedLayer}
+            duplicateStagedLayer={this.duplicateStagedLayer}
+            deleteStagedLayer={this.deleteStagedLayer}
+            stageLayer={this.stageLayer}
+            deleteComittedLayer={this.deleteComittedLayer}
+            duplicateComittedLayer={this.duplicateComittedLayer}
+            updateFinalBuffer={this.updateFinalBuffer}
           />
         </div>
 
@@ -331,7 +388,7 @@ class Session extends Component<SessionProps, SessionState> {
           socket={this.props.socket}
           sessionId={this.state.session?.sessionId ?? null}
           partnerFirstname={this.state.partner?.firstname ?? ""}
-          endSession={this.endSession}
+          endSession={this.handleEndSession}
         />
 
         <div className="palette-open-button">
