@@ -21,3 +21,22 @@ export const syncGetYourSongs = (member:Member, setSongsCallback:any) => {
     setSongsCallback(null);
   });
 };
+
+export const syncDeleteSong = (songId:string, callback:any) => {
+  fetch(
+    config.server_url + `api/songs/${songId}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  ).then((response:any) => {
+    if (response.ok) return callback();
+    throw Error();
+  }).catch(err => {
+    console.log(err);
+    throw Error();
+  });
+};

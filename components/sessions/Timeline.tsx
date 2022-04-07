@@ -85,7 +85,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   };
 
   updateCurrentSeconds(offset:number) {
-    const currentSeconds: number = offset * 50;
+    const currentSeconds: number = offset / 50;
     this.setState({
       currentSeconds: currentSeconds <= this.state.seconds ? currentSeconds : this.state.seconds,
     });

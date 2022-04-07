@@ -11,4 +11,5 @@ export default interface SessionInterface {
   member1: Member;
   member2: Member;
   layers: LayerInterface[];
+  bucketUrl: string;
 }
