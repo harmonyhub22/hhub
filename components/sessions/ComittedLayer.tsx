@@ -8,7 +8,6 @@ import StagedLayerInterface from "../../interfaces/StagedLayerInterface";
 interface ComittedLayerProps {
   layer: LayerInterface,
   timelineDuration: number,
-  timelineWidth: number,
   duplicateComittedLayer: any,
   deleteComittedLayer: any
   updateTimelineBuffer: any

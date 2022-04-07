@@ -1,9 +1,7 @@
-import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import { Page, Text, Divider, Link, Grid, Card } from "@geist-ui/core";
 
 const Learn = () => {
-  const Router = useRouter();
   return (
     <>
     <Navbar />

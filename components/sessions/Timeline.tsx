@@ -3,7 +3,7 @@ import LayerInterface from "../../interfaces/models/LayerInterface";
 import Crunker from "./Crunker";
 import { Button, Badge, Spacer } from "@geist-ui/core";
 import { PlayFill, PauseFill } from "@geist-ui/icons";
-import { initResizeTimeline, initTimelineClick } from "../helpers/resize";
+import { initTimelineClick } from "../helpers/resize";
 import * as Tone from "tone";
 import ComittedLayer from "./ComittedLayer";
 import StagedLayerInterface from "../../interfaces/StagedLayerInterface";
@@ -24,7 +24,6 @@ interface TimelineProps {
 };
 
 interface TimelineState {
-  width: number,
   seconds: number,
   buffer: any,
   bufferMap: any,
@@ -45,7 +44,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   constructor(props:TimelineProps) {
     super(props);
     this.state = {
-      width: 885,
       seconds: Timeline.MinTimelineSeconds,
       buffer: null,
       bufferMap: {},
@@ -60,7 +58,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     this.deleteTimelineBuffer = this.deleteTimelineBuffer.bind(this);
     this.playSongsoFar = this.playSongsoFar.bind(this);
     this.increaseTimeline = this.increaseTimeline.bind(this);
-    this.setTimelineWidth = this.setTimelineWidth.bind(this);
     this.updateCurrentSeconds = this.updateCurrentSeconds.bind(this);
   };
 
@@ -72,8 +69,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     this.setState({
       crunker: crunker,
     });
-    this.setTimelineWidth();
-    initResizeTimeline(this.setTimelineWidth);
     initTimelineClick(this.updateCurrentSeconds);
   };
 
@@ -82,31 +77,15 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
       this.props.updateFinalBuffer(this.state.buffer);
     }
   };
-  
-  setTimelineWidth() {
-    let ele = null;
-    let timelineWidth = 400;
-    try {
-      ele = document.getElementById(Timeline.TimelineWrapperId);
-      timelineWidth = ele?.getBoundingClientRect()?.width || 400;
-    } catch (e) {
-      console.log(e);
-    }
-    this.setState({
-      width: timelineWidth,
-      seconds: Math.floor(timelineWidth / 50),
-    });
-  };
 
   increaseTimeline() {
     this.setState({
       seconds: this.state.seconds + 1,
-      width: this.state.width + Timeline.SecondWidth,
     });
   };
 
   updateCurrentSeconds(offset:number) {
-    const currentSeconds: number = offset * (this.state.seconds / this.state.width);
+    const currentSeconds: number = offset / 50;
     this.setState({
       currentSeconds: currentSeconds <= this.state.seconds ? currentSeconds : this.state.seconds,
     });
@@ -225,7 +204,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
                     key={`comitted-layer-${layer.layerId}`}
                     layer={layer}
                     timelineDuration={this.state.seconds}
-                    timelineWidth={this.state.width}
                     duplicateComittedLayer={this.props.duplicateComittedLayer}
                     deleteComittedLayer={this.props.deleteComittedLayer}
                     updateTimelineBuffer={this.updateTimelineBuffer}
@@ -242,7 +220,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
                     recordingId={stagedLayer.recordingId}
                     recordingBlob={stagedLayer.recordingBlob}
                     timelineDuration={this.state.seconds}
-                    timelineWidth={this.state.width}
                     bpm={this.props.bpm}
                     commitStagedLayer={this.props.commitStagedLayer}
                     duplicateStagedLayer={this.props.duplicateStagedLayer}
@@ -254,11 +231,11 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
                 )
               })}
 
-              <div id="extend-timeline-zone" className="extend-timeline-zone" style={{width: `${(this.state.width / this.state.seconds) * 1.5}px`}}></div>
+              <div id="extend-timeline-zone" className="extend-timeline-zone" style={{width: `${1.5 * 50}px`}}></div>
             </div>
 
             <div className="timeline-player-bar"
-              style={{transform: `translate(${this.state.currentSeconds * (this.state.width / this.state.seconds)}px, 0px)`}}>
+              style={{transform: `translate(${this.state.currentSeconds * 50}px, 0px)`}}>
             </div>
           </div>
         </div>

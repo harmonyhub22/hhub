@@ -18,7 +18,6 @@ interface StagedLayerProps {
 
   // props from timeline
   timelineDuration: number,
-  timelineWidth: number,
   bpm: number|null,
 
   // timeline updaters
@@ -59,7 +58,7 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
       tonePlayer: null,
       renaming: false,
       newName: '',
-      layerMaxWidth: (props.layer.duration / props.timelineDuration) * props.timelineWidth,
+      layerMaxWidth: props.layer.duration * StagedLayer.SecondWidth,
       newFadeInDuration: 0,
       newFadeOutDuration: 0,
     };
@@ -401,7 +400,7 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
       currentLayer:{
         ...this.state.currentLayer,
         y: info.y,
-        startTime: info.x * (this.props.timelineDuration / this.props.timelineWidth),
+        startTime: info.x * StagedLayer.SecondWidth,
       },
     });
   }
