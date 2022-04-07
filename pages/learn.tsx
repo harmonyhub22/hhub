@@ -6,8 +6,10 @@ const Learn = () => {
     <>
     <Navbar />
     <Page>
-      <Text h1>Learn Music Theory</Text>
-      <Text h4>Looking to learn what things mean? We got your back!</Text>
+      <div style={{display: 'flex', width: '100%', justifyContent: "center", flexDirection: 'column'}}>
+        <Text h1>Learn Music Theory</Text>
+        <Text h4>Looking to learn what things mean? We got your back!</Text>
+      </div>
 
       <Grid.Container gap={2} justify="center">
         <Grid xs={6}>

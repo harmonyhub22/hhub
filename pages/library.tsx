@@ -81,9 +81,12 @@ const Library = () => {
     <>
       <Navbar />
       <Page>
-        <Text h1>Your Library</Text>
-        <Text h4>Listen to the pieces you created!</Text>
+        <div style={{display: 'flex', width: '100%', justifyContent: "center", flexDirection: 'column', textAlign: 'center'}}>
+          <Text h1>Your Library</Text>
+          <Text h4>Listen to the pieces you created!</Text>
+        </div>
 
+        <div style={{width: '100%', justifyContent: 'center', display: 'fex', textAlign: 'center'}}>
         {((songs?.length ?? 0) === 0 && (member !== null || currentMember !== null)) && <Text>No songs yet... Go Create!</Text>}
 
         <Grid.Container gap={2} justify="center">
@@ -100,7 +103,7 @@ const Library = () => {
             })}
           </Grid>
         </Grid.Container>
-
+        </div>
       </Page>
     </>
   );

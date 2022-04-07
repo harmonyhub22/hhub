@@ -8,8 +8,10 @@ const Tutorial = () => {
     <>
       <Navbar />
       <Page>
-        <Text h1>Tutorial</Text>
-        <Text h4>How to use Harmony Hub!</Text>
+        <div style={{display: 'flex', width: '100%', justifyContent: "center", textAlign: 'center', flexDirection: 'column'}}>
+          <Text h1>Tutorial</Text>
+          <Text h4>How to use Harmony Hub!</Text>
+        </div>
       </Page>
     </>
   );
