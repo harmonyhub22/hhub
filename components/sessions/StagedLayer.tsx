@@ -459,6 +459,7 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
             
             <div>
               <Popover
+                placement={this.state.currentLayer.y < 150 ? "bottom" : this.state.currentLayer.y < 400 ? "right" : "top"}
                 content={
                   <>
                   <Popover.Item title style={{justifyContent: 'center'}}>
@@ -497,7 +498,6 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
                       <Popover
                         content={this.getInfo()}
                         style={{display: 'flex', paddingRight: '5px', cursor: 'pointer'}}
-                        placement="rightStart"
                         >
                         <Info size={36} />
                       </Popover>
@@ -536,7 +536,7 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
                     </Button>
                   </Popover.Item>
                   <Popover.Item style={{justifyContent: 'center'}}>
-                    <Button auto icon={<Copy />} type="success" style={{width: '100%', height: '100%'}}>
+                    <Button auto icon={<Copy />} type="success" onClick={this.handleDuplicate} style={{width: '100%', height: '100%'}}>
                       Duplicate
                     </Button>
                   </Popover.Item>

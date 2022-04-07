@@ -124,6 +124,7 @@ class ComittedLayer extends React.Component<ComittedLayerProps, ComittedLayerSta
             
           <div>
             <Popover
+              placement={this.props.layer.y < 150 ? "bottom" : this.props.layer.y < 400 ? "right" : "top"}
               content={
                 <>
                 <Popover.Item title style={{justifyContent: 'center'}}>

@@ -29,6 +29,7 @@ class SessionInfo extends React.Component<SessionInfoProps> {
         <Draggable
           bounds=".session-info-container" // "parent"
           handle=".session-info"
+          defaultPosition={{x: -90, y: 0}}
         >
         <Collapse shadow title="This Hub" className="session-info" subtitle="Session Info">
           <Card style={{backgroundColor: "white"}}>

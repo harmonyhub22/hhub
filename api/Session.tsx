@@ -245,6 +245,21 @@ export const syncDeleteLayer = (sessionId:string, layerId:string, updateSession:
   });
 }
 
-export const syncCleanUpSession = async (sessionId:string) => {
-  // TODO
+export const syncEndSession = (sessionId:string, callback:any) => {
+  fetch(
+    config.server_url + `api/session/${sessionId}/end`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  ).then((response:any) => {
+    if (response.ok)  callback(true);
+    callback(false);
+  }).catch(err => {
+    console.log(err);
+    callback(false);
+  });
 };

@@ -3,7 +3,7 @@ import { Button, Drawer, Modal, Text } from "@geist-ui/core";
 import Member from "../../interfaces/models/Member";
 import SessionInterface from "../../interfaces/models/SessionInterface";
 import {
-  syncCleanUpSession,
+  syncEndSession,
   syncDeleteLayer,
   syncGetSession,
   syncPostLayer,
@@ -221,7 +221,9 @@ class Session extends Component<SessionProps, SessionState> {
 
   duplicateStagedLayer(stagedLayer: StagedLayer) {
     // add a new id
-    stagedLayer.layer.layerId = uuidv4();
+    const id = uuidv4();
+    stagedLayer.layer.layerId = id;
+    stagedLayer.layer.name = `layer-${id}`;
     // calculate the start time to be at the end of the duplicated layer
     stagedLayer.layer.startTime = stagedLayer.layer.startTime + stagedLayer.layer.duration -
       stagedLayer.layer.trimmedEndDuration - stagedLayer.layer.trimmedStartDuration;
@@ -286,8 +288,12 @@ class Session extends Component<SessionProps, SessionState> {
     // clean up indexed db
     deleteAll(Palette.db_name, Palette.db_obj_store_name);
 
-    // remove the sesion id
-    window.localStorage.removeItem('sessionId');
+    // leave the socket room
+    if (this.props.socket !== null && this.props.socket !== undefined)
+      this.props.socket.leave(`session-${sessionId}`);
+
+    // clean up palette data
+    window.localStorage.removeItem('palette-staging-layer');
   };
 
   updateFinalBuffer(buffer: any) {
@@ -295,7 +301,7 @@ class Session extends Component<SessionProps, SessionState> {
       finalBuffer: buffer,
     });
     if (this.state.session !== null)
-      syncCleanUpSession(this.state.session.sessionId);
+      syncEndSession(this.state.session.sessionId, (succeeded:boolean) => {});
   };
   // ** end end session section
 
