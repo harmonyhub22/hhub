@@ -1,0 +1,18 @@
+.queue-page {
+  min-height: 100vh;
+  width: 80%;
+  margin: auto;
+  @include flex(center, center, column);
+  @media (max-width: 1300px) {
+    margin-top: 8rem;
+    display: block;
+    text-align: center;
+  }
+  h1 {
+    font-size: 4rem;
+    padding: 0rem 0rem;
+    color: #21a0aa;
+    display: inline-block;
+    font-family: "Lobster";
+  }
+}

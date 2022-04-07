@@ -52,6 +52,57 @@ const Home = () => {
   return (
     <>
       <Navbar />
+      <motion.div className="home-button">
+        <div className="home-title">
+          <Text
+            h1
+            style={{
+              textAlign: "center",
+              color: "#21a0aa",
+              fontSize: "4rem",
+              fontFamily: "Lobster",
+            }}
+          >
+            Harmony Hub
+          </Text>
+          <Text
+            style={{
+              textAlign: "center",
+              color: "#3f1844",
+              fontSize: "1rem",
+              fontFamily: "Inter",
+            }}
+          >
+            Make Music with Friends
+          </Text>
+        </div>
+        <div className="home-live-button">
+          {(liveSessionId === null || liveSessionId === undefined) && (
+            <Button
+              shadow
+              type="secondary"
+              id="btn-new-session"
+              onClick={enterQueue}
+              style={{ backgroundColor: "white" }}
+              scale={1.3}
+            >
+              Join a New Session
+            </Button>
+          )}
+          {liveSessionId !== null && liveSessionId !== undefined && (
+            <Button
+              shadow
+              type="success"
+              id="btn-new-session"
+              onClick={enterLiveSession}
+              style={{ backgroundColor: "white" }}
+              scale={2.0}
+            >
+              Join your Live Session
+            </Button>
+          )}
+        </div>
+      </motion.div>
       <motion.div className="home">
         <motion.div
           className="home-single-image"
