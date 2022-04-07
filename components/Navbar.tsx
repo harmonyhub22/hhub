@@ -20,12 +20,6 @@ const SidebarData = [
     cName: "nav_text",
   },
   {
-    title: "Discover",
-    path: "/discover",
-    icon: <IoIcons.IoMdGlobe color="white" />,
-    cName: "nav_text",
-  },
-  {
     title: "Library",
     path: "/library",
     icon: <MdIcons.MdLibraryMusic color="white" />,
@@ -53,12 +47,7 @@ const SidebarData = [
 
 const Navbar = () => {
   const [sidebar, setSidebar] = useState(false);
-  // const showSidebar = () => setSidebar(!sidebar);
-
   const member = useContext(MemberContext);
-
-  /*<IconContext.Provider value={{ color: "black" }}>*/
-  /*</IconContext.Provider>*/
 
   return (
     <>

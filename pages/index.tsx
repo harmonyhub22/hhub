@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button, Text, Spinner } from "@geist-ui/core";
+import { Button, Text, Spinner, Spacer } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import { SocketContext } from "../context/socket";
@@ -107,7 +107,7 @@ const Home = () => {
                 style={{ backgroundColor: "white" }}
                 scale={2.0}
               >
-                Join your Live Session{ }{loading && <Spinner />}
+                Join your Live Session{loading && <Spacer w={2}/>}{loading && <Spinner />}
               </Button>
             )}
           </div>

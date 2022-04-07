@@ -22,6 +22,26 @@ export const getCurrentMember = async () => {
   }
 };
 
+export const syncGetCurrentMember = (setMemberCallback:any) => {
+  fetch(
+    config.server_url + `api/`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  ).then((response:any) => {
+    if (response.ok)  return response.json();
+    throw Error();
+  }).then((jsonResponse:Member) => setMemberCallback(jsonResponse))
+  .catch(err => {
+    console.log(err);
+    setMemberCallback(null);
+  });
+};
+
 export const login = async (email: string, password: string) => {
   try {
     const response = await fetch(config.server_url + "api/login", {
