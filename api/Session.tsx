@@ -151,10 +151,8 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, laye
   }).then(() => tellPartnerToPull());
 };
 
-export const syncSaveSong = (sessionData: SessionInterface, songBuffer: AudioBuffer | null, setSaved: any) => {
-  const sessionId = sessionData.sessionId;
-
-  let url = config.server_url + "api/songs/" + sessionId;
+export const syncSaveSong = (sessionData: SessionInterface, songBuffer: AudioBuffer | null, duration: number, setSaved: any) => {
+  let url = config.server_url +  `api/songs/${sessionData.sessionId}`;
   fetch(
     url,
     {
@@ -163,17 +161,21 @@ export const syncSaveSong = (sessionData: SessionInterface, songBuffer: AudioBuf
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(sessionData),
+      body: JSON.stringify({
+        name: 'new song!',
+        duration: duration,
+      }),
     }
   ).then((response:any) => {
     if (response.ok) {
       return response.json();
     }
+    throw Error();
   }).then((data:SessionInterface) => {
-    if (sessionId != null && songBuffer != null) {
+    if (songBuffer != null) {
       const crunker = new Crunker();
       const blob = crunker.export(songBuffer, 'audio/mpeg').blob;
-      const songUploadUrl = config.server_url + "api/session/" + sessionId + "/upload";
+      const songUploadUrl = config.server_url + `api/session/${sessionData.sessionId}/upload`;
       const formData = new FormData();
       formData.append('file', blob, 'file');
       fetch(songUploadUrl, {
@@ -193,9 +195,9 @@ export const syncSaveSong = (sessionData: SessionInterface, songBuffer: AudioBuf
       });
     }
     else {
-      setSaved(false);
+      setSaved(true);
     }
-  });
+  }).catch((e) => setSaved(false));
 }
 
 export const getLayerById = async (sessionId: string, layerId: string) => {

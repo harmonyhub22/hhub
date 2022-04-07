@@ -34,6 +34,7 @@ interface SessionState {
   showPalette: boolean,
   sessionEnded: boolean,
   finalBuffer: any,
+  finalBufferDuration: number,
   bpm: number|null,
 };
 
@@ -50,6 +51,7 @@ class Session extends Component<SessionProps, SessionState> {
       showPalette: false,
       sessionEnded: false,
       finalBuffer: null,
+      finalBufferDuration: 0,
       bpm: null,
     };
     this.setSession = this.setSession.bind(this);
@@ -296,9 +298,10 @@ class Session extends Component<SessionProps, SessionState> {
     window.localStorage.removeItem('palette-staging-layer');
   };
 
-  updateFinalBuffer(buffer: any) {
+  updateFinalBuffer(buffer: AudioBuffer|null, duration:number) {
     this.setState({
       finalBuffer: buffer,
+      finalBufferDuration: duration,
     });
     if (this.state.session !== null)
       syncEndSession(this.state.session.sessionId, (succeeded:boolean) => {});
@@ -360,7 +363,8 @@ class Session extends Component<SessionProps, SessionState> {
             <End
               member={this.props.member}
               session={this.state.session}
-              songBuffer={this.state.finalBuffer}
+              songBuffer={this.state.finalBuffer} 
+              bufferDuration={this.state.finalBufferDuration}              
             />
           </Modal.Content>
         </Modal>

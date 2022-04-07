@@ -120,7 +120,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
       } else {
         const buffer = this.state.crunker.mergeAudio(Object.values(this.state.bufferMap));
         if (this.props.sessionEnded) {
-          this.props.updateFinalBuffer(buffer);
+          this.props.updateFinalBuffer(buffer, this.state.seconds);
           return;
         }
         const player = new Tone.Player(buffer).toDestination();

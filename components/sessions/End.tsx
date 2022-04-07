@@ -10,6 +10,7 @@ interface EndProps {
   member: any,
   session: SessionInterface|null
   songBuffer: AudioBuffer|null,
+  bufferDuration: number,
 }
 
 interface EndState {
@@ -17,6 +18,7 @@ interface EndState {
   downloadedSong: boolean,
   congratsIndex: number,
 } 
+
 class End extends Component<EndProps, EndState> {
   static congratulatory: string[] = config.congrats;
 
@@ -40,7 +42,7 @@ class End extends Component<EndProps, EndState> {
   
   saveSong() {
     if (this.props.session) {
-      syncSaveSong(this.props.session, this.props.songBuffer, this.setSavedToLibrary);
+      syncSaveSong(this.props.session, this.props.songBuffer, this.props.bufferDuration, this.setSavedToLibrary);
     }
   }
 
