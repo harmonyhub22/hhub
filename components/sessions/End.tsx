@@ -40,7 +40,7 @@ class End extends Component<EndProps, EndState> {
   
   saveSong() {
     if (this.props.session) {
-      syncSaveSong(this.props.session.sessionId, this.props.songBuffer, this.setSavedToLibrary);
+      syncSaveSong(this.props.session, this.props.songBuffer, this.setSavedToLibrary);
     }
   }
 
