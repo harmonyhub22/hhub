@@ -1,3 +1,4 @@
+import { Page, Text } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 
@@ -5,7 +6,13 @@ const Tutorial = () => {
   const Router = useRouter();
   return (
     <>
-      <h1>How to use Harmony Hub</h1>
+      <Navbar />
+      <Page>
+        <div style={{display: 'flex', width: '100%', justifyContent: "center", textAlign: 'center', flexDirection: 'column'}}>
+          <Text h1>Tutorial</Text>
+          <Text h4>How to use Harmony Hub!</Text>
+        </div>
+      </Page>
     </>
   );
 };

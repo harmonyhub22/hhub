@@ -1,151 +1,128 @@
 import React from "react";
 import LayerInterface from "../../interfaces/models/LayerInterface";
-import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
-import Container from "./Container";
-import Crunker from "./Crunker"
-import { Button, Tooltip, Badge, Spacer } from "@geist-ui/core";
-import { ChevronLeft, ChevronRight, PlayFill, PauseFill } from "@geist-ui/icons";
-import { initResizeTimeline } from "../ui/helpers/resize";
+import Crunker from "./Crunker";
+import { Button, Badge, Spacer } from "@geist-ui/core";
+import { PlayFill, PauseFill } from "@geist-ui/icons";
+import { initTimelineClick } from "../helpers/resize";
 import * as Tone from "tone";
+import ComittedLayer from "./ComittedLayer";
+import StagedLayerInterface from "../../interfaces/StagedLayerInterface";
+import StagedLayer from "./StagedLayer";
 
 interface TimelineProps {
-  layers: LayerInterface[],
-  neverCommittedLayers: NeverCommittedLayer[],
-  commitLayer: any,
-  duplicateLayer: any,
-  deleteLayer: any,
-  stageLayer: any,
+  comittedLayers: LayerInterface[],
+  stagedLayers: StagedLayerInterface[],
   sessionEnded: boolean,
+  bpm: number|null,
+  commitStagedLayer: any,
+  duplicateStagedLayer: any,
+  deleteStagedLayer: any,
+  stageLayer: any,
+  deleteComittedLayer: any,
+  duplicateComittedLayer: any,
   updateFinalBuffer: any,
 };
 
 interface TimelineState {
-  width: number,
   seconds: number,
   buffer: any,
-  buffermap: any,
+  bufferMap: any,
   isPlaying: boolean,
   tonePlayer: any,
   currentSeconds: number,
   paused: boolean,
   timer: any,
+  crunker: any,
 };
 
 class Timeline extends React.Component<TimelineProps, TimelineState> {
 
   static TimelineWrapperId: string = "timeline-wrapper";
-  static MaxTimelinePoints: number = 10;
   static MinTimelineSeconds: number = 20;
+  static SecondWidth: number = 50; // px
 
   constructor(props:TimelineProps) {
     super(props);
     this.state = {
-      width: 885, // change
-      seconds: Timeline.MinTimelineSeconds, // changee
+      seconds: Timeline.MinTimelineSeconds,
       buffer: null,
-      buffermap: {},
+      bufferMap: {},
       isPlaying: false,
       tonePlayer: null,
       paused: false,
       currentSeconds: 0,
       timer: null,
+      crunker: null,
     };
-    this.addBuffer = this.addBuffer.bind(this);
-    this.deleteBuffer = this.deleteBuffer.bind(this);
+    this.updateTimelineBuffer = this.updateTimelineBuffer.bind(this);
+    this.deleteTimelineBuffer = this.deleteTimelineBuffer.bind(this);
     this.playSongsoFar = this.playSongsoFar.bind(this);
     this.increaseTimeline = this.increaseTimeline.bind(this);
-    this.decreaseTimeline = this.decreaseTimeline.bind(this);
-    this.updateTimelineWidth = this.updateTimelineWidth.bind(this);
+    this.updateCurrentSeconds = this.updateCurrentSeconds.bind(this);
   };
 
   componentDidMount() {
-    // console.log("util",util);
-    // const buf = util.create();
-    // console.log("buf", buf);
-    this.updateTimelineWidth();
-    initResizeTimeline(this.updateTimelineWidth);
+    const crunker = new Crunker();
+    crunker.notSupported(() => {
+      alert('crunker not supported');
+    });
+    this.setState({
+      crunker: crunker,
+    });
+    initTimelineClick(this.updateCurrentSeconds);
   };
 
   componentDidUpdate(prevProps:TimelineProps, prevState:TimelineState) {
-    if (prevProps.layers.length !== this.props.layers.length) {
-      console.log('got new layer');
-    }
-    if (prevState.seconds !== this.state.seconds) {
-      /*if (prevState.seconds < this.state.seconds) {
-        const offset = document.getElementById(Timeline.TimelineWrapperId)?.offsetTop;
-        console.log('offset', offset);
-      } */
-      this.updateTimelineWidth();
-
-    }
-    if (Object.keys(prevState.buffermap).length !== Object.keys(this.state.buffermap).length) {
-      console.log(this.state.buffermap);
-    }
-
     if (prevProps.sessionEnded !== this.props.sessionEnded && this.props.sessionEnded === true) {
       this.props.updateFinalBuffer(this.state.buffer);
     }
-
-  }
-  
-
-  updateTimelineWidth() {
-    let ele = null;
-    let timelineWidth = 400;
-    try {
-      ele = document.getElementById(Timeline.TimelineWrapperId);
-      timelineWidth = ele?.getBoundingClientRect()?.width || 400;
-      console.log(timelineWidth);
-    } catch (e) {
-      console.log(e);
-    }
-    this.setState({
-      width: timelineWidth,
-    });
-  }
+  };
 
   increaseTimeline() {
     this.setState({
       seconds: this.state.seconds + 1,
     });
-  }
+  };
 
-  decreaseTimeline() {
+  updateCurrentSeconds(offset:number) {
+    const currentSeconds: number = offset / 50;
     this.setState({
-      seconds: this.state.seconds - 1,
+      currentSeconds: currentSeconds <= this.state.seconds ? currentSeconds : this.state.seconds,
     });
-  }
+  };
 
-  addBuffer(startTime:number, buffer:AudioBuffer, layerId:number | null , layerName:string | null, duration: number) {
-    const crunker = new Crunker();
-    crunker.notSupported(() => {
-      console.log('crunker not supported');
-      // Handle no browser support
-    });
-    if (duration + startTime > this.state.seconds) {
+  updateTimelineBuffer(layer:LayerInterface, buffer:AudioBuffer) {
+    if (layer.duration - layer.trimmedStartDuration - layer.trimmedEndDuration + layer.startTime > this.state.seconds) {
       this.setState({
-        seconds: Math.ceil(duration + startTime),
+        seconds: Math.ceil(layer.duration - layer.trimmedStartDuration - layer.trimmedEndDuration + layer.startTime),
       });
     }
-    const temp = crunker.padAudio(buffer,0,startTime);
-    const keyValue = layerId === null ? layerName : layerId;
-    if (keyValue === null) return;
-    const bufferMap = this.state.buffermap;
-    if (layerId !== null && layerName !== null) {
-      delete bufferMap[layerName];
-    }
-    bufferMap[keyValue] = temp;
-    console.log("buffermap",bufferMap)
-    this.setState({
-      buffermap: bufferMap,
-    });
-    if (Object.keys(bufferMap).length === (this.props.layers.length + this.props.neverCommittedLayers.length)) {
-      const buffer =crunker.mergeAudio(Object.values(bufferMap));
-      try {
+    const temp = this.state.crunker.padAudio(buffer, 0, layer.startTime);
+    const bufferMap = this.state.bufferMap;
+    delete bufferMap[layer.layerId];
+    bufferMap[layer.layerId] = temp;
+  
+    if (Object.keys(bufferMap).length === (this.props.comittedLayers.length + this.props.stagedLayers.length)) {
+      if (this.state.timer !== null) clearInterval(this.state.timer);
+      if (this.state.tonePlayer !== null) {
+        if (this.state.tonePlayer.state === "started") this.state.tonePlayer.stop();
         this.state.tonePlayer.dispose();
-      } catch (e) { /* do nothing */ }
-      if (buffer.numberOfChannels !== 0) {
-        console.log('creating toneplayer');
+      }
+      if (Object.values(this.state.bufferMap).length === 0) {
+        this.setState({
+          buffer: null,
+          tonePlayer: null,
+          bufferMap: bufferMap,
+          currentSeconds: 0,
+          paused: false,
+          isPlaying: false,
+        });
+      } else {
+        const buffer = this.state.crunker.mergeAudio(Object.values(this.state.bufferMap));
+        if (this.props.sessionEnded) {
+          this.props.updateFinalBuffer(buffer, this.state.seconds);
+          return;
+        }
         const player = new Tone.Player(buffer).toDestination();
         player.onstop = () => {
           clearInterval(this.state.timer);
@@ -160,56 +137,22 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
         this.setState({
           buffer: buffer,
           tonePlayer: player,
-        });
-      }
-    }
-  }
-
-  deleteBuffer(layerId: string | null, layerName: string | null){
-    const crunker = new Crunker();
-    const bufferMap = this.state.buffermap;
-    if(layerId !== null) {
-      delete bufferMap[layerId];
-      this.setState({
-        buffermap: bufferMap,
-      });
-    }
-    else if(layerName !== null) {
-      delete bufferMap[layerName];
-      this.setState({
-        buffermap: bufferMap,
-      });
-    }
-    try {
-      this.state.tonePlayer.dispose();
-    } catch (e) { /* do nothing */ }
-    if (Object.keys(bufferMap).length === 0) {
-      this.setState({
-        buffer: null,
-        tonePlayer: null,
-      });
-      return;
-    }
-    const buffer = crunker.mergeAudio(Object.values(bufferMap));
-    console.log('buffer', buffer);
-    console.log(buffer.numberOfChannels);
-    if (buffer.numberOfChannels === 0) return;
-    const player = new Tone.Player(buffer).toDestination();
-    player.onstop = () => {
-      clearInterval(this.state.timer);
-      if (!this.state.paused) {
-        this.setState({
+          bufferMap: bufferMap,
           currentSeconds: 0,
           paused: false,
           isPlaying: false,
         });
       }
-    };
+    }
+  };
+
+  deleteTimelineBuffer(layerId: string){
+    const bufferMap = this.state.bufferMap;
+    delete bufferMap[layerId];
     this.setState({
-      buffer: buffer,
-      tonePlayer: new Tone.Player(buffer).toDestination(),
+      bufferMap: bufferMap,
     });
-  }
+  };
   
   playSongsoFar() {
     if ((this.state.tonePlayer?.loaded ?? false) === false) return;
@@ -222,9 +165,9 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
       this.state.tonePlayer.start(0, this.state.currentSeconds);
       const timer = setInterval(() => {
         this.setState({
-          currentSeconds: this.state.currentSeconds + 0.1,
+          currentSeconds: this.state.tonePlayer.state === "started" ? this.state.currentSeconds + 0.05 : this.state.currentSeconds,
         });
-      }, 100);
+      }, 50);
       this.setState({
         timer: timer,
         paused: false,
@@ -233,18 +176,17 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     this.setState({
       isPlaying: !this.state.isPlaying,
     });
-  }
-
+  };
 
   render() {
     return (
-      <div style={{overflowX: 'scroll', overflowY: 'hidden'}}>
-        <div key={`${this.props.layers.length}-${this.props.neverCommittedLayers.length}`} 
-          className="timeline-wrapper" id={Timeline.TimelineWrapperId} style={{width: `${this.state.seconds * 50}px`}}>
-          <div key={`${this.state.seconds}-${this.state.width}`}className="timeline-details">
+      <div style={{overflowX: 'scroll', overflowY: 'hidden', borderRadius: '20px', boxShadow: '0px 0px 18px 0px rgb(0 0 0 / 50%)'}}>
+        <div className="timeline-wrapper" id={Timeline.TimelineWrapperId} style={{width: `${this.state.seconds * Timeline.SecondWidth}px`}}>
+          <div id="timeline-details" className="timeline-details">
             {Array(this.state.seconds).fill(0).map((_, seconds:number) => {
               return (
-                <div key={seconds} className="one-timeline-interval" style={{width: `${this.state.seconds / Timeline.MaxTimelinePoints * 100}%`}}>
+                <div key={seconds} className="one-timeline-interval" 
+                  style={{width: `${Timeline.SecondWidth}px`, borderLeft: seconds !== 0 ? '1px solid whitesmoke' : 'none'}}>
                   <div className="timeline-interval-seconds">
                     <span>{seconds !== 0 && seconds}</span>
                   </div>
@@ -252,25 +194,50 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
                 </div>
               )
             })}
-            {/*<div className="timeline-duration-modifier">
-
-              <Tooltip text={'Decrease Duration'} type="dark" placement="leftStart">
-                <Button iconRight={<ChevronLeft color="black" />} auto scale={2/3} 
-                  className="toggle-timeline-duration-btn" onClick={this.decreaseTimeline} shadow type="secondary">
-                </Button>
-              </Tooltip>
-              <Tooltip text={'Increase Duration'} type="dark" placement="topEnd">
-                <Button iconRight={<ChevronRight color="black" />} auto scale={2/3} 
-                  className="toggle-timeline-duration-btn" onClick={this.increaseTimeline} shadow type="secondary" />
-              </Tooltip>
-          </div>*/}
+            <div className="timeline-click-listener"></div>
           </div>
-          <Container layers={this.props.layers} neverCommittedLayers={this.props.neverCommittedLayers} 
-            commitLayer={this.props.commitLayer} width={this.state.width} seconds={this.state.seconds}
-            duplicateLayer={this.props.duplicateLayer}
-            deleteLayer={this.props.deleteLayer}
-            addBuffer={this.addBuffer}
-            deleteBuffer={this.deleteBuffer} />
+          <div className="layer-outer-container">
+            <div className="layer-container" style={{backgroundSize: `${this.props.bpm === null ? 50 : 50 / (this.props.bpm / 60)}px`}}>
+              {this.props.comittedLayers.map((layer:LayerInterface, i:number) => {      
+                return (
+                  <ComittedLayer
+                    key={`comitted-layer-${layer.layerId}`}
+                    layer={layer}
+                    timelineDuration={this.state.seconds}
+                    duplicateComittedLayer={this.props.duplicateComittedLayer}
+                    deleteComittedLayer={this.props.deleteComittedLayer}
+                    updateTimelineBuffer={this.updateTimelineBuffer}
+                    deleteTimelineBuffer={this.deleteTimelineBuffer}
+                  />
+                )
+              })}
+
+              {this.props.stagedLayers.map((stagedLayer:StagedLayerInterface, i:number) => {
+                return (
+                  <StagedLayer 
+                    key={`staged-layer-${stagedLayer.layer.layerId}`}
+                    layer={stagedLayer.layer}
+                    recordingId={stagedLayer.recordingId}
+                    recordingBlob={stagedLayer.recordingBlob}
+                    timelineDuration={this.state.seconds}
+                    bpm={this.props.bpm}
+                    commitStagedLayer={this.props.commitStagedLayer}
+                    duplicateStagedLayer={this.props.duplicateStagedLayer}
+                    deleteStagedLayer={this.props.deleteStagedLayer}
+                    updateTimelineBuffer={this.updateTimelineBuffer}
+                    deleteTimelineBuffer={this.deleteTimelineBuffer}
+                    increaseTimeline={this.increaseTimeline}
+                  />
+                )
+              })}
+
+              <div id="extend-timeline-zone" className="extend-timeline-zone" style={{width: `${1.5 * 50}px`}}></div>
+            </div>
+
+            <div className="timeline-player-bar"
+              style={{transform: `translate(${this.state.currentSeconds * 50}px, 0px)`}}>
+            </div>
+          </div>
         </div>
         <div style={{position: 'absolute', bottom: '5vh'}}>
           <Button
@@ -288,10 +255,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
             style={{border: '2px solid #320f48', marginLeft: '20px'}}
           />
           <Spacer inline w={0.5} />
-          <Badge>{Math.round(this.state.currentSeconds * 100) / 100}</Badge>
-        </div>
-        <div className="timeline-player-bar"
-          style={{transform: `translate(${this.state.currentSeconds * (this.state.width / this.state.seconds)}px, 0px)`}}>
+          <Badge>{Math.floor(this.state.currentSeconds)}</Badge>
         </div>
       </div>
     );

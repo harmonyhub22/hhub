@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button, Text } from "@geist-ui/core";
+import { Button, Text, Spinner, Spacer } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import { SocketContext } from "../context/socket";
@@ -11,19 +11,20 @@ import {
 } from "../components/animations/AnimationPic";
 import { motion } from "framer-motion";
 import {
-  titleAnim,
   homeSlider,
   slider,
 } from "../components/animations/Animation";
 
 const Home = () => {
   const [liveSessionId, setLiveSessionId] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const socket = useContext(SocketContext);
 
   // match with partner, and then route to session page with new session id
   const enterQueue = async () => {
+    setLoading(true);
     router.push({
       pathname: "/queue",
     });
@@ -36,15 +37,12 @@ const Home = () => {
   };
 
   const enterLiveSession = async () => {
+    setLoading(true);
     if (liveSessionId === null || liveSessionId === undefined) return;
     socket.emit("join-session", { sessionId: liveSessionId });
     router.push({
       pathname: "/sessions/" + liveSessionId,
     });
-  };
-
-  const sendMsg = () => {
-    socket.emit("message", "test message");
   };
 
   useEffect(() => {
@@ -114,7 +112,6 @@ const Home = () => {
         >
           <SingleHomeAnimation />
         </motion.div>
-
         <motion.div
           className="home-images"
           variants={homeSlider}
