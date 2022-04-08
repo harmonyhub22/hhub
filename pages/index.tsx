@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button, Text, Spinner, Spacer } from "@geist-ui/core";
+import { Button, Text, Spinner, Spacer, Collapse, Table } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import { SocketContext } from "../context/socket";
@@ -14,10 +14,13 @@ import {
   homeSlider,
   slider,
 } from "../components/animations/Animation";
+import { getOnlineMembers } from "../api/Helper";
+import Member from "../interfaces/models/Member";
 
 const Home = () => {
   const [liveSessionId, setLiveSessionId] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [onlineMembers, setOnlineMembers] = useState<Member[]|null>(null);
   const router = useRouter();
 
   const socket = useContext(SocketContext);
@@ -32,7 +35,12 @@ const Home = () => {
 
   const checkLiveSession = async () => {
     const liveSession: SessionInterface | null = await getLiveSession();
-    if (liveSession === null) return;
+    if (liveSession === null) {
+      const onlineMembers = await getOnlineMembers();
+      if (onlineMembers === null) return;
+      setOnlineMembers(onlineMembers);
+      return;
+    };
     setLiveSessionId(liveSession.sessionId);
   };
 
@@ -78,16 +86,25 @@ const Home = () => {
         </div>
         <div className="home-live-button">
           {(liveSessionId === null || liveSessionId === undefined) && (
-            <Button
-              shadow
-              type="secondary"
-              id="btn-new-session"
-              onClick={enterQueue}
-              style={{ backgroundColor: "white" }}
-              scale={1.3}
-            >
-              Join a New Session
-            </Button>
+            <>
+              <Button
+                shadow
+                type="secondary"
+                id="btn-new-session"
+                onClick={enterQueue}
+                style={{ backgroundColor: "white" }}
+                scale={1.3}
+              >
+                Find a New Session {loading && <Spinner/>}
+              </Button>
+              {onlineMembers !== null &&
+                <Collapse shadow title={`${onlineMembers.length}`} subtitle="Members Online" style={{padding: '10pt !important', backgroundColor: 'white'}}>
+                  {onlineMembers.length > 0 && <Table data={onlineMembers.map((member:Member) => { return { name: `${member.firstname} ${member.lastname}` }})}>
+                    <Table.Column prop="name" label="name" />
+                  </Table>}
+                </Collapse>
+              }
+            </>
           )}
           {liveSessionId !== null && liveSessionId !== undefined && (
             <Button
@@ -98,7 +115,7 @@ const Home = () => {
               style={{ backgroundColor: "white" }}
               scale={2.0}
             >
-              Join your Live Session
+              Join your Live Session {loading && <Spinner/>}
             </Button>
           )}
         </div>
@@ -117,6 +134,7 @@ const Home = () => {
           variants={homeSlider}
           initial="hidden"
           animate="show"
+          style={{transform: 'translate(15%, -50px) !important'}}
         >
           <DoubleHomeAnimation />
         </motion.div>

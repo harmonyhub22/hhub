@@ -1,4 +1,3 @@
-import { io } from "socket.io-client";
 import Queue from "../interfaces/models/Queue";
 import SessionInterface from "../interfaces/models/SessionInterface";
 import { config } from "../components/config";
@@ -23,6 +22,46 @@ export const joinWaitQueue = async () => {
     console.log(e);
     return null;
   }
+};
+
+export const syncJoinWaitQueue = (callback:any) => {
+  fetch(
+    config.server_url + "api/queue",
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  ).then((response:any) => {
+    if (response.ok) return response.json();
+    throw new Error();
+  }).then((jsonResponse:Queue) => callback(jsonResponse))
+  .catch((e:any) => {
+    console.log(e);
+    callback(null);
+  });
+};
+
+export const syncLeaveWaitQueue = (callback:any) => {
+  const url = config.server_url + 'api/queue';
+  fetch(
+    url,
+    {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  ).then((response:any) => {
+    if (response.ok) return callback(true);
+    throw new Error();
+  }).catch(e => {
+    console.log(e);
+    callback(false);
+  });
 };
 
 export const getLiveSession = async () => {
@@ -140,7 +179,7 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, laye
       })
       .then(response => {
         if (response.ok) updateSession();
-        else throw Error(`Server returned ${response.status}: ${response.statusText}`)
+        else throw new Error(`Server returned ${response.status}: ${response.statusText}`)
       })
       .catch(err => {
         alert('Could not upload recording :(');
@@ -170,7 +209,7 @@ export const syncSaveSong = (sessionData: SessionInterface, songBuffer: AudioBuf
     if (response.ok) {
       return response.json();
     }
-    throw Error();
+    throw new Error();
   }).then((data:SessionInterface) => {
     if (songBuffer != null) {
       const crunker = new Crunker();

@@ -5,7 +5,6 @@ import { SocketContext } from "../../context/socket";
 import Session from "../../components/sessions/Session";
 import { useRouter } from "next/router";
 import Navbar from "../../components/Navbar";
-// import Timer from "../../components/Timer"
 
 const SessionPage = () => {
   const router = useRouter();

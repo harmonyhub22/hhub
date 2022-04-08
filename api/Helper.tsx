@@ -34,7 +34,7 @@ export const syncGetCurrentMember = (setMemberCallback:any) => {
     }
   ).then((response:any) => {
     if (response.ok)  return response.json();
-    throw Error();
+    throw new Error();
   }).then((jsonResponse:Member) => setMemberCallback(jsonResponse))
   .catch(err => {
     console.log(err);
@@ -111,6 +111,25 @@ export const logout = async () => {
     return response.json();
   } catch (e) {
     console.log("logout failed");
+    return null;
+  }
+};
+
+export const getOnlineMembers = async () => {
+  try {
+    const response = await fetch(config.server_url + "api/members/online", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(await response.json());
+    }
+    return response.json();
+  } catch (e:any) {
+    console.log("get online members failed");
     return null;
   }
 };

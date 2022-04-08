@@ -1,27 +1,29 @@
 .home {
-  min-height: 90vh;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: row;
   color: white;
-  margin-top: -9rem;
-  @media (max-width: 1300px) {
+  transform: translate(0px, 30px);
+  @media (max-width: 1000px) {
     .home-images {
       display: none;
     }
-    margin-top: 1rem;
+    margin-top: 40vh;
     margin-left: 8rem;
+    transform: translate(0px, 0px);
   }
 }
 .home-button {
   display: flex;
+  position: absolute;
+  width: 100vw;
   top: 3vh;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   z-index: 3;
-  position: relative;
   .home-live-button {
     margin-top: 1rem;
     font-family: "Inter", sans-serif;

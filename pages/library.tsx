@@ -1,4 +1,4 @@
-import { Button, Fieldset, Grid, Page, Text } from "@geist-ui/core";
+import { Button, Fieldset, Grid, Link, Page, Text } from "@geist-ui/core";
 import { useContext, useEffect, useState } from "react";
 import { syncDeleteSong, syncGetYourSongs } from "../api/Song";
 import { syncGetCurrentMember } from "../api/Helper";
@@ -8,6 +8,7 @@ import Member from "../interfaces/models/Member";
 import SongInterface from "../interfaces/models/SongInterface";
 import { PlayFill, Trash } from "@geist-ui/icons";
 import * as Tone from "tone";
+import moment from "moment";
 
 const Library = () => {
   const [songs, setSongs] = useState<SongInterface[]|null>(null);
@@ -17,6 +18,7 @@ const Library = () => {
   const member = useContext(MemberContext);
 
   const setSongsAndSetTonePlayers = (songs:SongInterface[]|null) => {
+    console.log('songs', songs);
     setSongs(songs);
     createPlayer(songs);
   };
@@ -51,18 +53,19 @@ const Library = () => {
   };
 
   useEffect(() => {
-    if ((member?.memberId ?? null) === null) {
+    if ((member?.memberId ?? null) !== null) {
+      setCurrentMember(member);
+      syncGetYourSongs(member, setSongsAndSetTonePlayers);
+    } else if ((member?.memberId ?? null) === null) {
       syncGetCurrentMember(setCurrentMemberAndGetSongs);
     } else if (currentMember !== null) {
       syncGetYourSongs(currentMember, setSongsAndSetTonePlayers);
-    } else {
-      syncGetYourSongs(member, setSongsAndSetTonePlayers);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlePlay = (songId:string) => {
-    if (tonePlayers.loaded) {
+    if ((tonePlayers?.loaded ?? false) === true) {
       if (tonePlayers.status === "started") tonePlayers.stopAll();
       const player = tonePlayers.get(songId);
       if (player !== null) {
@@ -77,6 +80,21 @@ const Library = () => {
     }
   };
 
+  const fancyTimeFormat = (duration:number) => {   
+    // Hours, minutes and seconds
+    const hrs = ~~(duration / 3600);
+    const mins = ~~((duration % 3600) / 60);
+    const secs = ~~duration % 60;
+    // Output like "1:01" or "4:03:59" or "123:03:59"
+    let ret = "";
+    if (hrs > 0) {
+        ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+    }
+    ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+    ret += "" + secs;
+    return ret;
+  };
+
   return (
     <>
       <Navbar />
@@ -87,23 +105,36 @@ const Library = () => {
         </div>
 
         <div style={{width: '100%', justifyContent: 'center', display: 'fex', textAlign: 'center'}}>
-        {((songs?.length ?? 0) === 0 && (member !== null || currentMember !== null)) && <Text>No songs yet... Go Create!</Text>}
-
-        <Grid.Container gap={2} justify="center">
-          <Grid xs={12}>
-            {songs?.map((song:SongInterface) => {
-              <Fieldset key={`song-${song.songId}`}>
-                <Fieldset.Title>{song.name}</Fieldset.Title>
-                <Fieldset.Subtitle>{song.createdAt}</Fieldset.Subtitle>
-                <Fieldset.Footer>
-                  <Button shadow auto scale={1/3} px={0.6} iconRight={<PlayFill />} type="secondary" onClick={() => handlePlay(song.songId)}></Button>
-                  <Button shadow auto scale={1/3} px={0.6} iconRight={<Trash />} type="error" onClick={() => handleDelete(song)}></Button>
-                </Fieldset.Footer>
-              </Fieldset>
-            })}
-          </Grid>
-        </Grid.Container>
+        {((songs?.length ?? 0) === 0 && (member !== null || currentMember !== null)) && <p><span>No songs yet...</span> <Link href="/queue" color>Go Create!</Link></p>}
         </div>
+
+        {(currentMember !== null && songs !== null) && <Grid.Container gap={2}>
+            {songs.map((song:SongInterface) => (
+              <Grid key={`song-${song.songId}`}>
+                <Fieldset>
+                  <Fieldset.Title style={{padding: '20px', width: '100%', justifyContent: 'center'}}>{song.name}</Fieldset.Title>
+                  <Fieldset.Subtitle style={{paddingLeft: '20px', paddingRight: '20px'}}>{moment(song.createdAt).format("dddd, MMMM Do YYYY, h:mm a")}</Fieldset.Subtitle>
+                  <Fieldset.Content>
+                    <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
+                      <span><b>Duration</b></span>
+                      <span>{fancyTimeFormat(song.duration)}</span>
+                    </div>
+                    <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
+                      <span><b>Featuring</b></span>
+                      {song.session.member1.memberId !== currentMember.memberId ? 
+                        <span>{song.session.member1.firstname} {song.session.member1.lastname}</span> :
+                        <span>{song.session.member2.firstname} {song.session.member2.lastname}</span>
+                      }
+                    </div>
+                  </Fieldset.Content>
+                  <Fieldset.Footer>
+                    <Button shadow auto scale={1/3} px={0.6} iconRight={<PlayFill />} type="secondary" onClick={() => handlePlay(song.songId)}></Button>
+                    <Button shadow auto scale={1/3} px={0.6} iconRight={<Trash />} type="error" onClick={() => handleDelete(song)}></Button>
+                  </Fieldset.Footer>
+                </Fieldset>
+              </Grid>
+            ))}
+        </Grid.Container>}
       </Page>
     </>
   );

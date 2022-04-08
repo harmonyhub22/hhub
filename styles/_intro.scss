@@ -39,7 +39,13 @@
   font-family: "Inter", sans-serif;
 }
 
-.intro-login,
+.intro-login {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  flex-direction: column;
+}
+
 .intro-images {
   flex: 1 1 30rem;
   z-index: 2;
@@ -133,14 +139,12 @@
 
 #btn-new-session-signup {
   margin-bottom: 5px;
-  margin-left: 1rem;
   background-color: transparent;
   color: black;
 }
 
 #btn-new-session-logout {
   margin-bottom: 5px;
-  margin-left: 5rem;
   background-color: transparent;
   color: black;
 }
