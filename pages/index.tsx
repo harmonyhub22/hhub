@@ -86,7 +86,7 @@ const Home = () => {
               style={{ backgroundColor: "white" }}
               scale={1.3}
             >
-              Join a New Session
+              Find a New Session {loading && <Spinner/>}
             </Button>
           )}
           {liveSessionId !== null && liveSessionId !== undefined && (
@@ -98,7 +98,7 @@ const Home = () => {
               style={{ backgroundColor: "white" }}
               scale={2.0}
             >
-              Join your Live Session
+              Join your Live Session {loading && <Spinner/>}
             </Button>
           )}
         </div>

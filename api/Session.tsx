@@ -1,4 +1,3 @@
-import { io } from "socket.io-client";
 import Queue from "../interfaces/models/Queue";
 import SessionInterface from "../interfaces/models/SessionInterface";
 import { config } from "../components/config";
@@ -23,6 +22,46 @@ export const joinWaitQueue = async () => {
     console.log(e);
     return null;
   }
+};
+
+export const syncJoinWaitQueue = (callback:any) => {
+  fetch(
+    config.server_url + "api/queue",
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  ).then((response:any) => {
+    if (response.ok) return response.json();
+    throw Error();
+  }).then((jsonResponse:Queue) => callback(jsonResponse))
+  .catch((e:any) => {
+    console.log(e);
+    callback(null);
+  });
+};
+
+export const syncLeaveWaitQueue = (callback:any) => {
+  const url = config.server_url + 'api/queue';
+  fetch(
+    url,
+    {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  ).then((response:any) => {
+    if (response.ok) return callback(true);
+    throw Error();
+  }).catch(e => {
+    console.log(e);
+    callback(false);
+  });
 };
 
 export const getLiveSession = async () => {

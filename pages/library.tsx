@@ -1,4 +1,4 @@
-import { Button, Fieldset, Grid, Page, Text } from "@geist-ui/core";
+import { Button, Fieldset, Grid, Link, Page, Text } from "@geist-ui/core";
 import { useContext, useEffect, useState } from "react";
 import { syncDeleteSong, syncGetYourSongs } from "../api/Song";
 import { syncGetCurrentMember } from "../api/Helper";
@@ -87,7 +87,7 @@ const Library = () => {
         </div>
 
         <div style={{width: '100%', justifyContent: 'center', display: 'fex', textAlign: 'center'}}>
-        {((songs?.length ?? 0) === 0 && (member !== null || currentMember !== null)) && <Text>No songs yet... Go Create!</Text>}
+        {((songs?.length ?? 0) === 0 && (member !== null || currentMember !== null)) && <p><span>No songs yet...</span> <Link href="/queue" color>Go Create!</Link></p>}
 
         <Grid.Container gap={2} justify="center">
           <Grid xs={12}>
