@@ -1,5 +1,5 @@
 import {
-  Drawer, Tabs, Grid, Select
+  Drawer, Tabs, Grid, Select, Spacer
 } from "@geist-ui/core";
 import PaletteCell from "./Palette-Cell";
 import { config } from "../config";
@@ -133,9 +133,10 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
         <br></br>
       </div>
       <Tabs initialValue="1" align="center" leftSpace={0}>
-        <Tabs.Item label={<><Music /> Sounds</>} value="1">
+        <Tabs.Item label={<><Music /> Sounds</>} value="1" style={{width: '400px'}}>
           {(Palette.sounds !== null && Palette.sounds !== undefined) && <div className="palette-genre">
             <span>Genre</span>
+            <Spacer w={1}/>
             <Select initialValue={this.state.genre} value={this.state.genre} onChange={(val) => {
               if (typeof val === 'string') { this.updatePaletteGenre(val) }
             }}>
@@ -146,7 +147,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
           </div>}
           <br></br>
           {(Palette.sounds[this.state.genre] !== null && Palette.sounds[this.state.genre] !== undefined) && 
-          <Grid.Container gap={2} justify="center" style={{maxWidth: 500}}>
+          <Grid.Container gap={2} justify="center" style={{width: '420px', overflow: 'hidden scroll', height: '400px'}}>
             {Palette.sounds[this.state.genre].map((name:string, i:number) => {
               return(
                 <Grid key={`palette-cell-${this.state.genre}-${i}`}>
@@ -157,17 +158,18 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
             }
           </Grid.Container>}
         </Tabs.Item>
-        <Tabs.Item label={<><Mic/> Record</>} value="2">
+        <Tabs.Item label={<><Mic/> Record</>} value="2" style={{width: '400px'}}>
           <PaletteRecorder updateLayerStagingBuffer={this.updateLayerSoundBuffer} />
         </Tabs.Item>
       </Tabs>
       <br />
 
-      <div style={{textAlign: "center"}}>
+      <div style={{textAlign: "center", position: 'absolute', width: '93%', bottom: '4px', backgroundColor: 'white'}}>
+        <div className="palette-layer-trasition"></div>
         <Drawer.Title>New Layer</Drawer.Title>
         {(this.state.stagingLayerSoundBufferId === null && this.state.stagingLayerSoundName === null) ? 
-          <p>Choose a sound or make a recording</p>
-          : <p>Click the arrow below to stage the layer on the timeline</p>}
+          <p style={{margin: '2px'}}>Choose a sound or make a recording</p>
+          : <p style={{margin: '2px'}}>Click the arrow below to stage the layer on the timeline</p>}
         <PaletteLayer
           stagingSoundBuffer={this.state.stagingLayerSoundBuffer}
           stagingSoundBufferId={this.state.stagingLayerSoundBufferId}

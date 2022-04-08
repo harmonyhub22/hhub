@@ -417,7 +417,7 @@ class Session extends Component<SessionProps, SessionState> {
           onClose={() => this.showPalette(false)}
           placement="right"
         >
-          <Drawer.Content>
+          <Drawer.Content style={{height: '100vh', maxHeight: '100vh'}}>
             <Palette
               stageLayer={this.stageLayer}
               showPalette={this.showPalette}
