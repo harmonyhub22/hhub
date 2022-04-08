@@ -52,6 +52,7 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   const leftMouseDownHandler = function (e:any) {
 
     if (!mouseDown) {
+      mouseDown = true;
       // Get the current mouse position
       x = e.clientX;
 
@@ -62,13 +63,9 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
       deltaX = ele.getBoundingClientRect().width;
 
       // get y transform
-      console.log('transform', ele.style.transform);
       const transform = new WebKitCSSMatrix(ele.style.transform)
       initialX = transform.m41;
       y = transform.m42;
-      console.log('translate: ', initialX, y);
-
-      console.log('minWidth', minWidth);
 
       // Attach the listeners to `document`
       document.addEventListener('mousemove', leftMouseMoveHandler);
@@ -117,7 +114,6 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
     document.removeEventListener('mouseup', rightMouseUpHandler);
     mouseDown = false;
     deltaX -= ele.getBoundingClientRect().width;
-    console.log('deltaX', deltaX);
     setDeltaXRight(deltaX);
   };
 
@@ -127,7 +123,6 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
     document.removeEventListener('mouseup', leftMouseUpHandler);
     mouseDown = false;
     deltaX -= ele.getBoundingClientRect().width;
-    console.log('deltaX', deltaX);
     setDeltaXLeft(deltaX);
   };
 
@@ -164,6 +159,16 @@ export const initResize = (resizeObjectId:string, minWidth:number, maxWidth: num
   leftResizer.addEventListener('mousedown', leftMouseDownHandler);
 };
 
-export const initResizeTimeline = (updateTimelineWidth:any) => {
-  window.addEventListener('resize', updateTimelineWidth);
+export const initTimelineClick = (updateCurrentSeconds:any) => {
+  const timeline: Element|null = document.querySelector(`.timeline-click-listener`);
+  if (timeline === null || timeline === undefined) {
+    console.log('timeline div not found');
+    return;
+  }
+
+  const clickListener = (e:any) => {
+    updateCurrentSeconds(e.offsetX);
+  };
+
+  timeline.addEventListener('mouseup', clickListener);
 };

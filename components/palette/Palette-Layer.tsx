@@ -4,12 +4,13 @@ import React from "react";
 import * as Tone from "tone";
 import LayerInterface from "../../interfaces/models/LayerInterface";
 import Member from "../../interfaces/models/Member";
-import NeverCommittedLayer from "../../interfaces/NeverComittedLayer";
+import StagedLayer from "../../interfaces/StagedLayerInterface";
 import { config } from "../config";
+import { v4 as uuidv4 } from 'uuid'
 
 interface PaletteLayerProps {
   stagingSoundName: string|null,
-  stagingSoundBufferDate: string|null,
+  stagingSoundBufferId: string|null,
   stagingSoundBufferDuration: any,
   stagingSoundBuffer: Blob|null,
   member: Member,
@@ -99,8 +100,7 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
         });
       }, false);
       au.remove();
-    } else if (buffer !== null && bufferDuration !== null) {
-      // get buffer from props
+    } else if (buffer !== null && buffer !== undefined && bufferDuration !== null) {
       const tonePlayer = new Tone.Player(
         URL.createObjectURL(buffer)
       ).toDestination();
@@ -138,9 +138,9 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
         null
       );
     } else if (
-      this.props.stagingSoundBufferDate !== null &&
+      this.props.stagingSoundBufferId !== null &&
       this.props.stagingSoundBuffer !== null &&
-      (this.props.stagingSoundBufferDate !== prevProps.stagingSoundBufferDate ||
+      (this.props.stagingSoundBufferId !== prevProps.stagingSoundBufferId ||
         this.props.stagingSoundBuffer !== prevProps.stagingSoundBuffer)
     ) {
       // set to recording
@@ -150,9 +150,9 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
         this.props.stagingSoundBufferDuration
       );
     } else if (
-      this.props.stagingSoundBufferDate === null &&
+      this.props.stagingSoundBufferId === null &&
       this.props.stagingSoundName === null &&
-      (prevProps.stagingSoundBufferDate !== null ||
+      (prevProps.stagingSoundBufferId !== null ||
         prevProps.stagingSoundName !== null)
     ) {
       // remove name and recording
@@ -196,10 +196,11 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
   };
 
   handleStageLayer() {
+    const id = uuidv4();
     const layer: LayerInterface = {
-      layerId: null,
+      layerId: id,
       member: this.props.member,
-      name: `layer-${Date.now()}`,
+      name: `layer-${id}`,
       startTime: 0,
       duration: this.state.duration,
       fileName: this.props.stagingSoundName,
@@ -210,11 +211,12 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
       trimmedStartDuration: 0,
       trimmedEndDuration: 0,
       y: 30,
+      muted: false,
     }
-    const newLayer: NeverCommittedLayer = {
+    const newLayer: StagedLayer = {
       layer: layer,
-      stagingSoundBuffer: this.props.stagingSoundBuffer,
-      stagingSoundBufferDate: this.props.stagingSoundBufferDate,
+      recordingBlob: this.props.stagingSoundBuffer !== null && this.props.stagingSoundBuffer !== undefined ? new Blob([this.props.stagingSoundBuffer], {type: this.props.stagingSoundBuffer.type}) : null,
+      recordingId: this.props.stagingSoundBufferId,
     };
     this.props.stageLayer(newLayer);
     const genreData = {

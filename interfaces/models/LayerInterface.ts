@@ -1,7 +1,7 @@
 import Member from "./Member";
 
 export default interface LayerInterface {
-    layerId: string|null,
+    layerId: string,
     member: Member,
     name: string,
     startTime: number,
@@ -13,5 +13,6 @@ export default interface LayerInterface {
     reversed: boolean,
     trimmedStartDuration: number,
     trimmedEndDuration: number,
-    y: number
+    y: number,
+    muted: boolean,
 }
