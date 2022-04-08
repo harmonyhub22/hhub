@@ -14,7 +14,7 @@ export const syncGetYourSongs = (member:Member, setSongsCallback:any) => {
     }
   ).then((response:any) => {
     if (response.ok) return response.json();
-    throw Error();
+    throw new Error();
   }).then((jsonResponse:SongInterface) => setSongsCallback(jsonResponse))
   .catch(err => {
     console.log(err);
@@ -34,9 +34,9 @@ export const syncDeleteSong = (songId:string, callback:any) => {
     }
   ).then((response:any) => {
     if (response.ok) return callback();
-    throw Error();
+    throw new Error();
   }).catch(err => {
     console.log(err);
-    throw Error();
+    throw new Error();
   });
 };
