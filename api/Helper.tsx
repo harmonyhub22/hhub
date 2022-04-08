@@ -117,7 +117,7 @@ export const logout = async () => {
 
 export const getOnlineMembers = async () => {
   try {
-    const response = await fetch(config.server_url + "api/online", {
+    const response = await fetch(config.server_url + "api/members/online", {
       method: "GET",
       credentials: "include",
       headers: {
