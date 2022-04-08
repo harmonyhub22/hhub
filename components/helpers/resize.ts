@@ -172,3 +172,56 @@ export const initTimelineClick = (updateCurrentSeconds:any) => {
 
   timeline.addEventListener('mouseup', clickListener);
 };
+
+export const initResizePalette = (setWidth:any) => {
+  const ele: HTMLElement|null = document.getElementById("palette-resizer");
+  if (ele === null || ele === undefined) {
+    console.log('could not start resizer');
+    return;
+  }
+
+  const resizeEle: HTMLElement|null = document.getElementById("palette-content");
+  if (resizeEle === null || resizeEle === undefined) {
+    console.log('could not get resizer div');
+    return;
+  }
+
+  let mouseDown: boolean = false;
+  let x: number = 0;
+  let initialW: number = 0;
+
+  const mouseMoveHandler = function (e:any) {
+    // How far the mouse has been moved
+    const dx: number = e.clientX - x;
+    console.log('dx', dx);
+
+    // Adjust the position and dimension of the element on the x axis
+    resizeEle.style.width = `${initialW - dx}px`;
+  };
+
+  const mouseDownHandler = function(e:any) {
+    if (!mouseDown) {
+      mouseDown = true;
+      // Get the current mouse position
+      x = e.clientX;
+      console.log(x);
+
+      initialW = resizeEle.getBoundingClientRect().width;
+
+      // Attach the listeners to `document`
+      document.addEventListener('mousemove', mouseMoveHandler);
+      document.addEventListener('mouseup', mouseUpHandler);
+    }
+  }
+
+  const mouseUpHandler = function () {
+    // Remove the handlers of `mousemove` and `mouseup`
+    document.removeEventListener('mousemove', mouseMoveHandler);
+    document.removeEventListener('mouseup', mouseUpHandler);
+    mouseDown = false;
+    setWidth(resizeEle.getBoundingClientRect().width);
+  };
+
+  // Add listener
+  ele.addEventListener('mousedown', mouseDownHandler);
+}

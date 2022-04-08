@@ -148,7 +148,7 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
   render() {
     return (
     <>
-      <div className="palette-recording-tab" style={{width: '400px', textAlign: 'center', display: 'flex', justifyContent: 'space-around', 
+      <div className="palette-recording-tab" style={{width: '100%', textAlign: 'center', display: 'flex', justifyContent: 'space-around', 
         flexDirection: 'column', height: '50vh'}}>
         <Text h5>Record with your microphone</Text>
         <div className="palette-metronome">

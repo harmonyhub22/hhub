@@ -20,6 +20,7 @@ import StagedLayer from "../../interfaces/StagedLayerInterface";
 import { v4 as uuidv4 } from 'uuid'
 import StagedLayerInterface from "../../interfaces/StagedLayerInterface";
 import { deleteAll } from "../helpers/indexedDb";
+import { Code } from "@geist-ui/icons";
 
 interface SessionProps {
   member: any,
@@ -36,6 +37,7 @@ interface SessionState {
   finalBuffer: any,
   finalBufferDuration: number,
   bpm: number|null,
+  paletteWidth: number,
 };
 
 class Session extends Component<SessionProps, SessionState> {
@@ -53,6 +55,7 @@ class Session extends Component<SessionProps, SessionState> {
       finalBuffer: null,
       finalBufferDuration: 0,
       bpm: null,
+      paletteWidth: 400,
     };
     this.setSession = this.setSession.bind(this);
     this.updateSession = this.updateSession.bind(this);
@@ -75,6 +78,7 @@ class Session extends Component<SessionProps, SessionState> {
     this.updateFinalBuffer = this.updateFinalBuffer.bind(this);
     this.tellPartnerToPull = this.tellPartnerToPull.bind(this);
     this.updateBpm = this.updateBpm.bind(this);
+    this.setPaletteWidth = this.setPaletteWidth.bind(this);
 
     // end session
     this.handleEndSession = this.handleEndSession.bind(this);
@@ -114,6 +118,14 @@ class Session extends Component<SessionProps, SessionState> {
 
     // get staged layer ids from local storage
     this.getStagedLayersFromLocalStorage(sessionId);
+
+    // get palette width
+    const paletteWidth: string|null = window.localStorage.getItem('palette-width');
+    if (paletteWidth !== null) {
+      this.setState({
+        paletteWidth: parseInt(paletteWidth),
+      });
+    }
   }
 
   componentDidUpdate(prevProps: SessionProps, prevState: SessionState) {
@@ -314,6 +326,13 @@ class Session extends Component<SessionProps, SessionState> {
     });
   };
 
+  setPaletteWidth(w:number) {
+    this.setState({
+      paletteWidth: w,
+    });
+    window.localStorage.setItem('palette-width', w.toString());
+  };
+
   render() {
     return (
       <>
@@ -417,11 +436,16 @@ class Session extends Component<SessionProps, SessionState> {
           onClose={() => this.showPalette(false)}
           placement="right"
         >
-          <Drawer.Content style={{height: '100vh', maxHeight: '100vh'}}>
+          <Drawer.Content id="palette-content" style={{height: '100vh', maxHeight: '100vh',
+            width: `${this.state.paletteWidth}px`, display: 'flex', minWidth: '300px',
+            flexDirection: 'column', justifyContent: 'space-between'}}>
+            <Button icon={<Code />} id="palette-resizer"
+              auto style={{padding: '0px', position: "fixed", left: '0', bottom: '50%'}}></Button>
             <Palette
               stageLayer={this.stageLayer}
               showPalette={this.showPalette}
               member={this.props.member}
+              setPaletteWidth={this.setPaletteWidth}
             />
           </Drawer.Content>
         </Drawer>

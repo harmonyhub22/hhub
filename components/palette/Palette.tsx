@@ -10,11 +10,13 @@ import PaletteRecorder from "./Palette-Recorder";
 import Member from "../../interfaces/models/Member";
 import { get, put } from "../helpers/indexedDb";
 import { v4 as uuidv4 } from 'uuid'
+import { initResizePalette } from "../helpers/resize";
 
 interface PaletteProps {
   stageLayer: any,
   showPalette: any,
   member: Member,
+  setPaletteWidth: any,
 };
 
 interface PaletteState {
@@ -67,6 +69,9 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
       stagingLayerSoundBufferDuration: jsonData.duration || null,
       genre: jsonData.genre || Object.keys(config.sounds)[0],
     });
+
+    // resize the palette
+    initResizePalette(this.props.setPaletteWidth);
   }
 
   componentDidUpdate(prevProps:PaletteProps, prevState:PaletteState) {
@@ -130,10 +135,9 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
     <>
       <div style={{textAlign: 'center'}}>
         <Drawer.Title>Sound Palette</Drawer.Title>
-        <br></br>
       </div>
       <Tabs initialValue="1" align="center" leftSpace={0}>
-        <Tabs.Item label={<><Music /> Sounds</>} value="1" style={{width: '400px'}}>
+        <Tabs.Item label={<><Music /> Sounds</>} value="1">
           {(Palette.sounds !== null && Palette.sounds !== undefined) && <div className="palette-genre">
             <span>Genre</span>
             <Spacer w={1}/>
@@ -147,7 +151,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
           </div>}
           <br></br>
           {(Palette.sounds[this.state.genre] !== null && Palette.sounds[this.state.genre] !== undefined) && 
-          <Grid.Container gap={2} justify="center" style={{width: '420px', overflow: 'hidden scroll', height: '400px'}}>
+          <Grid.Container gap={2} justify="center" style={{maxWidth: '100%', overflow: 'hidden scroll', height: '310px', margin: '0px'}}>
             {Palette.sounds[this.state.genre].map((name:string, i:number) => {
               return(
                 <Grid key={`palette-cell-${this.state.genre}-${i}`}>
@@ -162,9 +166,8 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
           <PaletteRecorder updateLayerStagingBuffer={this.updateLayerSoundBuffer} />
         </Tabs.Item>
       </Tabs>
-      <br />
 
-      <div style={{textAlign: "center", position: 'absolute', width: '93%', bottom: '4px', backgroundColor: 'white'}}>
+      <div style={{textAlign: "center", backgroundColor: 'white'}}>
         <div className="palette-layer-trasition"></div>
         <Drawer.Title>New Layer</Drawer.Title>
         {(this.state.stagingLayerSoundBufferId === null && this.state.stagingLayerSoundName === null) ? 

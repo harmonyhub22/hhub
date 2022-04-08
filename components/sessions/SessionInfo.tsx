@@ -14,23 +14,50 @@ interface SessionInfoProps {
   updateBpm: any,
 };
 
-class SessionInfo extends React.Component<SessionInfoProps> {
+interface SessionInfoState {
+  offset: number,
+}
+
+class SessionInfo extends React.Component<SessionInfoProps, SessionInfoState> {
   constructor(props:SessionInfoProps) {
     super(props);
+    this.state = {
+      offset: -90,
+    };
     this.setBpm = this.setBpm.bind(this);
+    this.handleDragStop = this.handleDragStop.bind(this);
+  }
+
+  componentDidMount() {
+    const offset: string|null = window.localStorage.getItem('session-info-offset');
+    if (offset !== null && offset !== undefined) {
+      this.setState({
+        offset: parseInt(offset),
+      });
+    }
   }
 
   setBpm(val: any) {
     this.props.updateBpm(val === null ? null : parseInt(val));
   }
 
+  handleDragStop = (event:any, info:any) => {
+    this.setState({
+      offset: info.x,
+    });
+    window.localStorage.setItem('session-info-offset', info.x.toString());
+  };
+
   render() {
     return (
       <div className="session-info-container">
         <Draggable
+          key={this.state.offset}
           bounds=".session-info-container" // "parent"
           handle=".session-info"
-          defaultPosition={{x: -90, y: 0}}
+          cancel=".session-info .title svg"
+          defaultPosition={{x: this.state.offset, y: 0}}
+          onStop={this.handleDragStop}
         >
         <Collapse shadow title="This Hub" className="session-info" subtitle="Session Info">
           <Card style={{backgroundColor: "white"}}>
