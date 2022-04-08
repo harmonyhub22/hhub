@@ -98,8 +98,9 @@ const Home = () => {
                 Find a New Session {loading && <Spinner/>}
               </Button>
               {onlineMembers !== null &&
-                <Collapse shadow title={`${onlineMembers.length}`} subtitle="Members Online" style={{padding: '10pt !important', backgroundColor: 'white'}}>
-                  {onlineMembers.length > 0 && <Table data={onlineMembers.map((member:Member) => { return { name: `${member.firstname} ${member.lastname}` }})}>
+                <Collapse shadow title={`${onlineMembers.length}`} subtitle="Members Online" style={{padding: '10pt !important', backgroundColor: 'white'}}
+                  className="members-online">
+                  {onlineMembers.length > 0 && <Table style={{maxHeight: '200px'}} data={onlineMembers.map((member:Member) => { return { name: `${member.firstname} ${member.lastname}` }})}>
                     <Table.Column prop="name" label="name" />
                   </Table>}
                 </Collapse>

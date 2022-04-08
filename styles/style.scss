@@ -624,6 +624,12 @@ table.table-palette tfoot {
   width: 200px;
 }
 
+.members-online .content .content {
+  max-height: 400px;
+  overflow-y: scroll;
+  padding: 2px 0px;
+}
+
 @import "./intro";
 @import "./home";
 @import "./queue";
