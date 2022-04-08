@@ -3,7 +3,7 @@ export const config = {
     server_url: process.env.SERVER_URL,
     socket_url: process.env.SOCKET_URL,
     sounds: {
-        'edm': [
+        'EDM': [
             'edm-drums',
             'edm-marimba',
             'edm-piano1',
@@ -16,7 +16,7 @@ export const config = {
             'edm-synth4',
             'edm-guitar',
         ],
-        'chill': [
+        'Chill': [
             'chill-drum',
             'chill-guitar1',
             'chill-music-box',
@@ -26,7 +26,7 @@ export const config = {
             'chill-spaceship',
             'chill-marimba',
         ],
-        'funkpop': [
+        'Funk Pop': [
             'funkpop-bass1',
             'funkpop-bass2',
             'funkpop-chord1',
@@ -36,6 +36,10 @@ export const config = {
             'funkpop-trumpet',
             'funkpop-tuba',
         ],
+        'Sick beats': [
+            'lofi-beat1',
+            'lofi-beat2',
+        ]
     },
     congrats: [
         "You are a Bach 2.0!",
