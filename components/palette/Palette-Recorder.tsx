@@ -148,27 +148,30 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
   render() {
     return (
     <>
-      <div className="palette-recording-tab">
-        <Text>Record with your microphone</Text>
+      <div className="palette-recording-tab" style={{width: '100%', textAlign: 'center', display: 'flex', justifyContent: 'space-around', 
+        flexDirection: 'column', height: '50vh'}}>
+        <Text h5>Record with your microphone</Text>
         <div className="palette-metronome">
           <span>Metronome</span>
-          <Spacer w={1}/>
-          <Toggle type="warning" style={{padding: '0px'}} onChange={(e:ToggleEvent) => this.toggleMetronome(e.target.checked)}/>
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <Toggle type="warning" style={{padding: '0px'}} onChange={(e:ToggleEvent) => this.toggleMetronome(e.target.checked)}/>
+          </div>
         </div>
         <div className="palette-recording-details">
-          <Text className={this.state.isRecording ? "record-timer" : ""} blockquote>{this.printTime(this.state.currentSeconds)}</Text>
+          <Text className={this.state.isRecording ? "record-timer" : ""} style={{width: '30%'}} blockquote>{this.printTime(this.state.currentSeconds)}
+          </Text>
           {/*<Capacity value={Math.floor(this.state.volume)} style={{transform: 'rotate(-90deg)'}} />*/}
+          {!this.state.isRecording ?
+            <Button icon={<Target color="white" />} className="record-btn" auto onClick={this.startRecording}
+              style={{background: '#320f48', color: 'white'}}>
+              Start Recording
+            </Button>
+          : 
+            <Button icon={<StopCircle/>} className="record-btn" auto type="error" onClick={this.stopRecording}>
+              Stop Recording
+            </Button>
+          }
         </div>
-        {!this.state.isRecording ?
-          <Button icon={<Target color="white" />} className="record-btn" auto onClick={this.startRecording}
-            style={{background: '#320f48', color: 'white'}}>
-            Start Recording
-          </Button>
-        : 
-          <Button icon={<StopCircle/>} className="record-btn" auto type="error" onClick={this.stopRecording}>
-            Stop Recording
-          </Button>
-        }
       </div>
     </>
     )

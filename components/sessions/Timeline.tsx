@@ -239,7 +239,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
             </div>
           </div>
         </div>
-        <div style={{position: 'absolute', bottom: '5vh'}}>
+        <div style={{position: 'absolute', bottom: '5vh', zIndex: '400'}}>
           <Button
             iconRight={this.state.isPlaying ? 
               <PauseFill color="#c563c5" />
