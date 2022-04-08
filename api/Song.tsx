@@ -26,7 +26,7 @@ export const syncDeleteSong = (songId:string, callback:any) => {
   fetch(
     config.server_url + `api/songs/${songId}`,
     {
-      method: "GET",
+      method: "DELETE",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",

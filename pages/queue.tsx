@@ -53,14 +53,13 @@ const Queue = (): React.ReactNode => {
     ret += "" + mins + ":" + (secs < 10 ? "0" : "");
     ret += "" + secs;
     return ret;
-  }
+  };
 
   useEffect(() => {
     if (socket === null || socket === undefined) {
       console.log('socket undefined');
-      syncLeaveWaitQueue((worked:boolean) => {
-        if (worked) window.location.assign('/');
-      });
+      syncLeaveWaitQueue((worked:boolean) => {});
+      window.location.assign('/');
       return;
     }
     if (queue === null) {
