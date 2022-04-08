@@ -1,9 +1,10 @@
 import Navbar from "../components/Navbar";
-import { Card, Divider, Dot, Page, Text, User } from "@geist-ui/core";
+import { Button, Card, Divider, Dot, Page, Text, User } from "@geist-ui/core";
 import Member from "../interfaces/models/Member";
 import { syncGetCurrentMember } from "../api/Helper";
 import { useContext, useEffect, useState } from "react";
 import { MemberContext } from "../context/member";
+import { Edit } from "@geist-ui/icons";
 
 const Profile = () => {
   const [currentMember, setCurrentMember] = useState<Member|null>(null);
@@ -30,9 +31,12 @@ const Profile = () => {
         {currentMember !== null && 
         <div style={{display: 'flex', justifyContent: 'center'}}>
           <Card width="600px">
-          <Card.Content>
+          <Card.Content style={{position: 'relative'}}>
             <User src="/images/profile-avatar.webp" name={`${currentMember.firstname} ${currentMember.lastname}`}>
             </User>
+            <div style={{position: 'absolute', right: '5px', bottom: '15px'}}>
+              <Button iconRight={<Edit />} auto scale={2/3} px={0.6} />
+            </div>
           </Card.Content>
           <Divider h="1px" my={0} />
           <Card.Content>

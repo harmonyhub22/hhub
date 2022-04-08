@@ -113,11 +113,15 @@ const Library = () => {
               <Grid key={`song-${song.songId}`}>
                 <Fieldset>
                   <Fieldset.Title style={{padding: '20px', width: '100%', justifyContent: 'center'}}>{song.name}</Fieldset.Title>
-                  <Fieldset.Subtitle style={{paddingLeft: '20px', paddingRight: '20px'}}>{moment(song.createdAt).format("dddd, MMMM Do YYYY, h:mm a")}</Fieldset.Subtitle>
+                  <Fieldset.Subtitle style={{paddingLeft: '20px', paddingRight: '20px', textAlign: 'center'}}>{moment(song.createdAt).format("dddd, MMMM Do YYYY, h:mm a")}</Fieldset.Subtitle>
                   <Fieldset.Content>
                     <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
                       <span><b>Duration</b></span>
                       <span>{fancyTimeFormat(song.duration)}</span>
+                    </div>
+                    <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
+                      <span><b>By</b></span>
+                      <span>{song.member.firstname} {song.member.lastname}</span>
                     </div>
                     <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
                       <span><b>Featuring</b></span>

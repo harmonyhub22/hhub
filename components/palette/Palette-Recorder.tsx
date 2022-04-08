@@ -21,6 +21,8 @@ interface PaletteRecorderState {
 
 class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecorderState> {
 
+  static RecordingLimit: number = 180; // seconds
+
   constructor(props:PaletteRecorderProps) {
     super(props);
     this.state = {
@@ -53,51 +55,21 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
         recorder: mediaRecorder,
       });
 
-      const timer = setInterval(() => {
-        this.setState({
-          currentSeconds: this.state.currentSeconds + 1,
-        });
-      }, 1000);
-      this.setState({
-        isRecording: true,
-        timer: timer,
-      });
-
-      // volume stuff
-      /*
-      const audioContext = new window.AudioContext;
-      console.log(audioContext);
-      const analyser = audioContext.createAnalyser();
-      const mic = audioContext.createMediaStreamSource(mediaRecorder.stream);
-      mic.connect(analyser);
-      const pcmData = new Float32Array(analyser.fftSize);
-      const onFrame = () => {
-          analyser.getFloatTimeDomainData(pcmData);
-          let sumSquares = 0.0;
-          for (const amplitude of pcmData) { sumSquares += amplitude*amplitude; }
-          console.log(Math.sqrt(sumSquares / pcmData.length) * 100);
-          this.setState({
-            volume: Math.sqrt(sumSquares / pcmData.length) * 100,
-          });
-          if (this.state.isRecording) return;
-          window.requestAnimationFrame(onFrame);
-      };
-      window.requestAnimationFrame(onFrame);
-
-      proc.onaudioprocess = () => {
-        const array = new Uint8Array(analyser.frequencyBinCount);
-        analyser.getByteFrequencyData(array);
-        const arraySum = array.reduce((a, value) => a + value, 0);
-        const average = arraySum / array.length;
-        this.setState({
-          volume: average,
-        });
-      };
-      */
-
       let startTime: any = Date.now();
       mediaRecorder.onstart = (event) => {
         startTime = Date.now();
+        const timer = setInterval(() => {
+          if (this.state.currentSeconds > PaletteRecorder.RecordingLimit) {
+            mediaRecorder.stop();
+          }
+          this.setState({
+            currentSeconds: this.state.currentSeconds + 1,
+          });
+        }, 1000);
+        this.setState({
+          isRecording: true,
+          timer: timer,
+        });
       };
 
       const audioChunks: any[] = [];
@@ -160,7 +132,6 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
         <div className="palette-recording-details">
           <Text className={this.state.isRecording ? "record-timer" : ""} style={{width: '30%'}} blockquote>{this.printTime(this.state.currentSeconds)}
           </Text>
-          {/*<Capacity value={Math.floor(this.state.volume)} style={{transform: 'rotate(-90deg)'}} />*/}
           {!this.state.isRecording ?
             <Button icon={<Target color="white" />} className="record-btn" auto onClick={this.startRecording}
               style={{background: '#320f48', color: 'white'}}>
