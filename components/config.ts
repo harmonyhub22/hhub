@@ -3,6 +3,16 @@ export const config = {
     server_url: process.env.SERVER_URL,
     socket_url: process.env.SOCKET_URL,
     sounds: {
+        'edm': [
+            'edm-drums',
+            'edm-marimba',
+            'edm-piano',
+            'edm-spooky',
+            'edm-synth1',
+            'edm-synth2',
+            'edm-synth3',
+            'edm-synth4',
+        ],
         'alternative': [
             'bass1',
             'bass2',
