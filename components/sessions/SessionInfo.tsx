@@ -3,6 +3,7 @@ import { ToggleEvent } from "@geist-ui/core/esm/toggle";
 import React from "react";
 import Member from "../../interfaces/models/Member";
 import Draggable from "react-draggable";
+import moment from "moment";
 
 interface SessionInfoProps {
   youMemberId: string,
@@ -51,7 +52,7 @@ class SessionInfo extends React.Component<SessionInfoProps> {
             </Card.Content>
             <Divider h="1px" my={0} />
             <Card.Content>
-              <Text>Started At<br></br><Code>{this.props.startTime ?? ""}</Code></Text>
+              <Text>Started At<br></br><Code>{this.props.startTime !== null ? moment(this.props.startTime).format("dddd, MMMM Do YYYY, h:mm a") : ""}</Code></Text>
             </Card.Content>
             <Divider h="1px" my={0} />
             <Card.Content>

@@ -6,6 +6,7 @@ import SessionMade from "../interfaces/socket-data/session_made";
 import Navbar from "../components/Navbar";
 import { Button, Code, Loading, Text } from "@geist-ui/core";
 import Queue from "../interfaces/models/Queue";
+import moment from 'moment';
 
 const Queue = (): React.ReactNode => {
   const [queue, setQueue] = useState<Queue|null>(null);
@@ -83,7 +84,7 @@ const Queue = (): React.ReactNode => {
         <p>do not refresh this page</p>
         {queue !== null &&
         <>
-          <p>Joined at <Code>{queue.timeEntered}</Code></p>
+          <p>Joined on <Code>{moment(queue.timeEntered).format("dddd, MMMM Do YYYY, h:mm a")}</Code></p>
           <Text h3 style={{color: '#21a0aa'}}>{fancyTimeFormat(netWaitTime)}</Text>
           <Loading scale={15} />
           <Button onClick={leaveQueue} type="success" ghost shadow>

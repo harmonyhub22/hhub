@@ -8,6 +8,7 @@ import Member from "../interfaces/models/Member";
 import SongInterface from "../interfaces/models/SongInterface";
 import { PlayFill, Trash } from "@geist-ui/icons";
 import * as Tone from "tone";
+import moment from "moment";
 
 const Library = () => {
   const [songs, setSongs] = useState<SongInterface[]|null>(null);
@@ -112,7 +113,7 @@ const Library = () => {
               <Grid key={`song-${song.songId}`}>
                 <Fieldset>
                   <Fieldset.Title style={{padding: '20px', width: '100%', justifyContent: 'center'}}>{song.name}</Fieldset.Title>
-                  <Fieldset.Subtitle style={{paddingLeft: '20px', paddingRight: '20px'}}>{song.createdAt}</Fieldset.Subtitle>
+                  <Fieldset.Subtitle style={{paddingLeft: '20px', paddingRight: '20px'}}>{moment(song.createdAt).format("dddd, MMMM Do YYYY, h:mm a")}</Fieldset.Subtitle>
                   <Fieldset.Content>
                     <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
                       <span><b>Duration</b></span>
