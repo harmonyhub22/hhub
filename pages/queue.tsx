@@ -57,23 +57,21 @@ const Queue = (): React.ReactNode => {
 
   useEffect(() => {
     if (socket === null || socket === undefined) {
-      console.log('socket undefined');
-      syncLeaveWaitQueue((worked:boolean) => {});
       window.location.assign('/');
       return;
     }
     if (queue === null) {
       syncJoinWaitQueue(joinWaitQueueCallback);
     }
+    window.onbeforeunload = () => {
+      syncLeaveWaitQueue((worked:boolean) => {});
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const leaveQueue = () => {
     if (queue !== null && queue !== undefined) {
-      syncLeaveWaitQueue((worked:boolean) => {
-        if (worked) window.location.assign("/");
-        else alert('could not leave the queue');
-      });
+      window.location.assign("/");
     }
   };
 
