@@ -52,7 +52,7 @@ export const config = {
         "You have those golden ears!",
         "Your partner can now jam out to your masterpiece!",
         "Share the song to show everyone how talented you are!",
-        "This is better than Justin Bieber’s new hit!",
+        "This is better than Justin BieberU+2019s new hit!",
         "Might as well join Queen in their next gig!",
         "You are like the second coming of Beethoven!",
     ],

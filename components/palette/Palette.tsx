@@ -41,7 +41,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
       stagingLayerSoundBuffer: null,
       stagingLayerSoundBufferId: null,
       stagingLayerSoundBufferDuration: null,
-      genre: '',
+      genre: Object.keys(config.sounds)[0],
     };
     this.updateLayerSoundName = this.updateLayerSoundName.bind(this);
     this.updateLayerSoundBuffer = this.updateLayerSoundBuffer.bind(this);
