@@ -13,6 +13,16 @@ export const config = {
             'edm-synth3',
             'edm-synth4',
         ],
+        'chill': [
+            'chill-drum',
+            'chill-guitar1',
+            'chill-music-box',
+            'chill-piano1',
+            'chill-piano2',
+            'chill-piano3',
+            'chill-spaceship',
+            'chill-marimba',
+        ],
         'alternative': [
             'bass1',
             'bass2',
