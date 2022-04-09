@@ -35,7 +35,7 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
     };
     this.startRecording = this.startRecording.bind(this);
     this.stopRecording = this.stopRecording.bind(this);
-  }
+  };
 
   componentWillUnmount() {
     this.state.metronome.stop();
@@ -46,7 +46,7 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
       timer: null,
       recorder: null,
     });
-  }
+  };
 
   startRecording() {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
@@ -93,12 +93,12 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
 
       mediaRecorder.start();
     });
-  }
+  };
 
   stopRecording() {
     if (this.state.recorder === null) return;
     this.state.recorder.stop();
-  }
+  };
 
   toggleMetronome(checked:boolean) {
     if (checked) {
@@ -109,13 +109,13 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
     } else {
       this.state.metronome.stop();
     }
-  }
+  };
 
   printTime(seconds:number) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().length < 2 ? 0 : ""}${secs}`;
-  }
+  };
 
   render() {
     return (

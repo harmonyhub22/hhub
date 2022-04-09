@@ -400,7 +400,7 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
       currentLayer:{
         ...this.state.currentLayer,
         y: info.y,
-        startTime: info.x * StagedLayer.SecondWidth,
+        startTime: info.x / StagedLayer.SecondWidth,
       },
     });
   }

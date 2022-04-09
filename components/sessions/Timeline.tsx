@@ -40,6 +40,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   static TimelineWrapperId: string = "timeline-wrapper";
   static MinTimelineSeconds: number = 20;
   static SecondWidth: number = 50; // px
+  static MaxTimelineSeconds: number = 360 // 6 minutes
 
   constructor(props:TimelineProps) {
     super(props);
@@ -79,12 +80,25 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   };
 
   increaseTimeline() {
-    this.setState({
-      seconds: this.state.seconds + 1,
-    });
+    const newSeconds = this.state.seconds + 1;
+    if (newSeconds > Timeline.MaxTimelineSeconds) {
+      alert('song limit reached (6 minutes)');
+    } else {
+      this.setState({
+        seconds: newSeconds,
+      });
+    }
   };
 
   updateCurrentSeconds(offset:number) {
+    if ((this.state.tonePlayer?.state ?? null) === "started") {
+      this.setState({
+        paused: true,
+        isPlaying: false,
+      });
+      this.state.tonePlayer.stop();
+      if (this.state.timer !== null) clearInterval(this.state.timer);
+    }
     const currentSeconds: number = offset / 50;
     this.setState({
       currentSeconds: currentSeconds <= this.state.seconds ? currentSeconds : this.state.seconds,
@@ -93,8 +107,9 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
 
   updateTimelineBuffer(layer:LayerInterface, buffer:AudioBuffer) {
     if (layer.duration - layer.trimmedStartDuration - layer.trimmedEndDuration + layer.startTime > this.state.seconds) {
+      const newSeconds = Math.ceil(layer.duration - layer.trimmedStartDuration - layer.trimmedEndDuration + layer.startTime);
       this.setState({
-        seconds: Math.ceil(layer.duration - layer.trimmedStartDuration - layer.trimmedEndDuration + layer.startTime),
+        seconds: newSeconds <= Timeline.MaxTimelineSeconds ? newSeconds : Timeline.MaxTimelineSeconds,
       });
     }
     const temp = this.state.crunker.padAudio(buffer, 0, layer.startTime);
@@ -181,7 +196,8 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
   render() {
     return (
       <div style={{overflowX: 'scroll', overflowY: 'hidden', borderRadius: '20px', boxShadow: '0px 0px 18px 0px rgb(0 0 0 / 50%)'}}>
-        <div className="timeline-wrapper" id={Timeline.TimelineWrapperId} style={{width: `${this.state.seconds * Timeline.SecondWidth}px`}}>
+        <div className="timeline-wrapper" id={Timeline.TimelineWrapperId} style={{width: `${this.state.seconds * Timeline.SecondWidth}px`, 
+          maxWidth: `${Timeline.MaxTimelineSeconds * Timeline.SecondWidth}px`}}>
           <div id="timeline-details" className="timeline-details">
             {Array(this.state.seconds).fill(0).map((_, seconds:number) => {
               return (

@@ -93,9 +93,10 @@ const Home = () => {
                 id="btn-new-session"
                 onClick={enterQueue}
                 style={{ backgroundColor: "white" }}
-                scale={1.3}
+                scale={2.0}
+                disabled={loading}
               >
-                Find a New Session {loading && <Spinner/>}
+                Find{loading && "ing"} a New Session {loading && <><Spacer w={1}/><Spinner/></>}
               </Button>
               {onlineMembers !== null &&
                 <Collapse shadow title={`${onlineMembers.length}`} subtitle="Members Online" style={{padding: '10pt !important', backgroundColor: 'white'}}
@@ -115,8 +116,9 @@ const Home = () => {
               onClick={enterLiveSession}
               style={{ backgroundColor: "white" }}
               scale={2.0}
+              disabled={loading}
             >
-              Join your Live Session {loading && <Spinner/>}
+              Join{loading && "ing"} your Live Session {loading && <><Spacer w={1}/><Spinner/></>}
             </Button>
           )}
         </div>

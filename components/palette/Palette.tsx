@@ -56,6 +56,9 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
   }
 
   componentDidMount() {
+    // resize the palette
+    initResizePalette(this.props.setPaletteWidth);
+
     const data = window.localStorage.getItem(Palette.local_storage_key) || null;
     if (data === null) return;
 
@@ -69,9 +72,6 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
       stagingLayerSoundBufferDuration: jsonData.duration || null,
       genre: jsonData.genre || Object.keys(config.sounds)[0],
     });
-
-    // resize the palette
-    initResizePalette(this.props.setPaletteWidth);
   }
 
   componentDidUpdate(prevProps:PaletteProps, prevState:PaletteState) {
@@ -151,7 +151,7 @@ class Palette extends React.Component<PaletteProps, PaletteState> {
           </div>}
           <br></br>
           {(Palette.sounds[this.state.genre] !== null && Palette.sounds[this.state.genre] !== undefined) && 
-          <Grid.Container gap={2} justify="center" style={{maxWidth: '100%', overflow: 'hidden scroll', height: '310px', margin: '0px'}}>
+          <Grid.Container gap={2} justify="center" style={{maxWidth: '100%', overflow: 'hidden scroll', height: '310px', minHeight: '310px', margin: '0px'}}>
             {Palette.sounds[this.state.genre].map((name:string, i:number) => {
               return(
                 <Grid key={`palette-cell-${this.state.genre}-${i}`}>
