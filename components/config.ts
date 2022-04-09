@@ -39,6 +39,7 @@ export const config = {
         'Sick beats': [
             'lofi-beat1',
             'lofi-beat2',
+            'freestyle-rap-beat1',
         ]
     },
     congrats: [
