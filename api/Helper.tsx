@@ -55,13 +55,13 @@ export const login = async (email: string, password: string) => {
         password: password,
       }),
     });
+    const resJson = await response.json();
     if (!response.ok) {
-      throw new Error(await response.json());
+      throw new Error(resJson.reason);
     }
-    console.log("Hello I am here at the helper");
-    return response.json();
+    return resJson;
   } catch (e) {
-    console.log("login failed");
+    console.log(e.message);
     return null;
   }
 };
@@ -86,12 +86,13 @@ export const signup = async (
         password: password,
       }),
     });
+    const resJson = await response.json();
     if (!response.ok) {
-      throw new Error(await response.json());
+      throw new Error(resJson.reason);
     }
-    return response.json();
+    return resJson;
   } catch (e) {
-    console.log("sign up failed");
+    console.log(e.message);
     return null;
   }
 };
@@ -110,7 +111,7 @@ export const logout = async () => {
     }
     return response.json();
   } catch (e) {
-    console.log("logout failed");
+    alert("logout failed");
     return null;
   }
 };
