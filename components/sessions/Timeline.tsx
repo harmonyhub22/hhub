@@ -75,16 +75,30 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
 
   componentDidUpdate(prevProps:TimelineProps, prevState:TimelineState) {
     if (prevProps.sessionEnded !== this.props.sessionEnded && this.props.sessionEnded === true) {
-      this.props.updateFinalBuffer(this.state.buffer);
+      const bufferMap = this.state.bufferMap;
+      const comittedLayerIds: string[] = this.props.comittedLayers.map((layer:LayerInterface) => layer.layerId);
+      Object.keys(bufferMap).forEach((layerId:string) => {
+        if (!comittedLayerIds.includes(layerId)) {
+          delete bufferMap[layerId];
+        }
+      });
+      const finalBuffer = this.state.crunker.mergeAudio(Object.values(bufferMap));
+      this.setState({
+        bufferMap: bufferMap,
+        buffer: finalBuffer,
+      });
+      this.props.updateFinalBuffer(finalBuffer);
     }
-    if (prevProps.comittedLayers.length > this.props.comittedLayers.length) {
+    if (prevProps.comittedLayers.length !== this.props.comittedLayers.length) {
       const bufferMap = this.state.bufferMap;
       const layerIds: string[] = this.props.comittedLayers.map((layer:LayerInterface) => layer.layerId);
+      console.log(layerIds);
       Object.keys(bufferMap).forEach((layerId:string) => {
         if (!layerIds.includes(layerId)) {
           delete bufferMap[layerId];
         }
       });
+      console.log(bufferMap);
       if (this.state.timer !== null) clearInterval(this.state.timer);
       if (this.state.tonePlayer !== null) {
         if (this.state.tonePlayer.state === "started") this.state.tonePlayer.stop();
@@ -101,10 +115,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
         });
       } else {
         const buffer = this.state.crunker.mergeAudio(Object.values(bufferMap));
-        if (this.props.sessionEnded) {
-          this.props.updateFinalBuffer(buffer, this.state.seconds);
-          return;
-        }
         const player = new Tone.Player(buffer).toDestination();
         player.onstop = () => {
           clearInterval(this.state.timer);
@@ -188,10 +198,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
         });
       } else {
         const buffer = this.state.crunker.mergeAudio(Object.values(bufferMap));
-        if (this.props.sessionEnded) {
-          this.props.updateFinalBuffer(buffer, this.state.seconds);
-          return;
-        }
         const player = new Tone.Player(buffer).toDestination();
         player.onstop = () => {
           clearInterval(this.state.timer);
@@ -237,10 +243,6 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
       });
     } else {
       const buffer = this.state.crunker.mergeAudio(Object.values(bufferMap));
-      if (this.props.sessionEnded) {
-        this.props.updateFinalBuffer(buffer, this.state.seconds);
-        return;
-      }
       const player = new Tone.Player(buffer).toDestination();
       player.onstop = () => {
         clearInterval(this.state.timer);

@@ -6,6 +6,5 @@ export default interface SongInterface {
     member: Member;
     session: SessionInterface;
     name: string;
-    duration: number;
     createdAt: Date;
 };

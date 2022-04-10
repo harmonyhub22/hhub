@@ -10,7 +10,6 @@ interface EndProps {
   member: any,
   session: SessionInterface|null
   songBuffer: AudioBuffer|null,
-  bufferDuration: number,
 }
 
 interface EndState {
@@ -32,17 +31,21 @@ class End extends Component<EndProps, EndState> {
     this.saveSong = this.saveSong.bind(this);
     this.goHome = this.goHome.bind(this);
     this.downloadSong = this.downloadSong.bind(this);
+    this.setSavedToLibrary = this.setSavedToLibrary.bind(this);
+    this.goToLibrary = this.goToLibrary.bind(this);
   }
 
   componentDidMount() {
     this.setState({
       congratsIndex: Math.floor(Math.random() * (End.congratulatory.length + 1)),
     });
+    console.log(this.props);
+    console.log(this.state);
   };
   
   saveSong() {
     if (this.props.session) {
-      syncSaveSong(this.props.session, this.props.songBuffer, this.props.bufferDuration, this.setSavedToLibrary);
+      syncSaveSong(this.props.session, this.props.songBuffer, this.setSavedToLibrary);
     }
   }
 
@@ -103,7 +106,7 @@ class End extends Component<EndProps, EndState> {
             Download Song
           </Button>
           <Button type="warning" auto ghost={this.state.savedToLibrary} icon={this.state.downloadedSong ? <BookOpen/> : <Save/>}
-            onClick={() => {this.state.savedToLibrary ? this.goToLibrary : this.saveSong}}>
+            onClick={() => {this.state.savedToLibrary ? this.goToLibrary() : this.saveSong()}}>
             {this.state.savedToLibrary ? "Go to your Library" : "Save Song to Library"}
           </Button>
         </div>

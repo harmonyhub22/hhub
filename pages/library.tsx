@@ -117,7 +117,7 @@ const Library = () => {
                   <Fieldset.Content>
                     <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
                       <span><b>Duration</b></span>
-                      <span>{fancyTimeFormat(song.duration)}</span>
+                      <span>{fancyTimeFormat(tonePlayers.get(song.songId)?.buffer?.duration ?? 0)}</span>
                     </div>
                     <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
                       <span><b>By</b></span>

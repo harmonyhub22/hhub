@@ -190,53 +190,48 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, laye
   });
 };
 
-export const syncSaveSong = (sessionData: SessionInterface, songBuffer: AudioBuffer | null, duration: number, setSaved: any) => {
-  let url = config.server_url +  `api/songs/${sessionData.sessionId}`;
-  fetch(
-    url,
-    {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: 'new song!',
-        duration: duration,
-      }),
-    }
-  ).then((response:any) => {
+export const syncSaveSong = (sessionData: SessionInterface, songBuffer: AudioBuffer | null, setSaved: any) => {
+  if (songBuffer === null || songBuffer === undefined) return setSaved(false);
+  const crunker = new Crunker();
+  const blob = crunker.export(songBuffer, 'audio/mpeg').blob;
+  const songUploadUrl = config.server_url + `api/session/${sessionData.sessionId}/upload`;
+  const formData = new FormData();
+  formData.append('file', blob, 'file');
+  fetch(songUploadUrl, {
+    method: "PUT", 
+    credentials: "include",
+    body: formData,
+  })
+  .then(response => {
     if (response.ok) {
-      return response.json();
+      return;
     }
-    throw new Error();
-  }).then((data:SessionInterface) => {
-    if (songBuffer != null) {
-      const crunker = new Crunker();
-      const blob = crunker.export(songBuffer, 'audio/mpeg').blob;
-      const songUploadUrl = config.server_url + `api/session/${sessionData.sessionId}/upload`;
-      const formData = new FormData();
-      formData.append('file', blob, 'file');
-      fetch(songUploadUrl, {
-        method: "PUT", 
+    throw new Error('could not save');
+  }).then(() => {
+    const url = config.server_url +  `api/songs/${sessionData.sessionId}`;
+    fetch(
+      url,
+      {
+        method: "POST",
         credentials: "include",
-        body: formData,
-      })
-      .then(response => {
-        if (response.ok) {
-          setSaved(true);
-          return;
-        }
-        setSaved(false);
-      })
-      .catch(err => {
-        setSaved(false);
-      });
-    }
-    else {
-      setSaved(true);
-    }
-  }).catch((e) => setSaved(false));
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: 'new song!',
+        }),
+      }
+    ).then((response:any) => {
+      if (response.ok) {
+        setSaved(true);
+        return response.json();
+      }
+      throw new Error('could not save song');
+    })
+  })
+  .catch(err => {
+    setSaved(false);
+  });
 }
 
 export const getLayerById = async (sessionId: string, layerId: string) => {

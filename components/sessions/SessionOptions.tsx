@@ -102,6 +102,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
     }
     if (prevState.endSessionVotes !== this.state.endSessionVotes && this.state.endSessionVotes >= 2) {
       this.props.endSession();
+      window.localStorage.removeItem(`session-${this.props.sessionId}-options`);
     }
   }
 
