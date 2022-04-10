@@ -29,7 +29,7 @@ const Login = (): React.ReactNode => {
       // window.location.assign("/");
       return;
     }
-    // window.alert("Email and password do not match");
+    window.alert("Email and password do not match");
   };
 
   const goToSignup = () => {
