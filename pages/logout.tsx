@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { login, logout } from "../api/Helper";
 import { titleSlider } from "../components/animations/Animation";
 import { Galaxy } from "../components/animations/AnimationPic";
+import { useCookies } from 'react-cookie';
 
 const Login = (): React.ReactNode => {
   const router = useRouter();
