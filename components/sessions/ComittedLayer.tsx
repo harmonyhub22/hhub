@@ -51,20 +51,27 @@ class ComittedLayer extends React.Component<ComittedLayerProps, ComittedLayerSta
     if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
     let tonePlayer: Tone.Player | null = null;
     if (fileName !== null) {
-      tonePlayer = new Tone.Player('../../' + fileName + '.mp3').toDestination();
+      tonePlayer = new Tone.Player('../../' + fileName + '.mp3',
+      onload = () => {
+        if (tonePlayer === null) return;
+        tonePlayer.buffer = tonePlayer.buffer.slice(this.props.layer.trimmedStartDuration, this.props.layer.duration - this.props.layer.trimmedEndDuration);
+        tonePlayer.fadeIn = this.props.layer.fadeInDuration;
+        tonePlayer.fadeOut = this.props.layer.fadeOutDuration;
+        tonePlayer.mute = this.props.layer.muted;
+        this.props.updateTimelineBuffer(this.props.layer, tonePlayer.buffer);
+      }).toDestination();
     } else if (bucketUrl !== null) {
-      tonePlayer = new Tone.Player(bucketUrl).toDestination();
+      tonePlayer = new Tone.Player(bucketUrl, 
+      onload = () => {
+        if (tonePlayer === null) return;
+        tonePlayer.buffer = tonePlayer.buffer.slice(this.props.layer.trimmedStartDuration, this.props.layer.duration - this.props.layer.trimmedEndDuration);
+        tonePlayer.fadeIn = this.props.layer.fadeInDuration;
+        tonePlayer.fadeOut = this.props.layer.fadeOutDuration;
+        tonePlayer.mute = this.props.layer.muted;
+        this.props.updateTimelineBuffer(this.props.layer, tonePlayer.buffer);
+      }).toDestination();
     }
-    if (tonePlayer === null) return;
-    tonePlayer.buffer.onload = () => {
-      if (tonePlayer === null) return;
-      tonePlayer.reverse = this.props.layer.reversed;
-      tonePlayer.fadeIn = this.props.layer.fadeInDuration;
-      tonePlayer.fadeOut = this.props.layer.fadeOutDuration;
-      tonePlayer.mute = this.props.layer.muted;
-      tonePlayer.buffer = tonePlayer.buffer.slice(this.props.layer.trimmedStartDuration, this.props.layer.duration - this.props.layer.trimmedEndDuration);
-      this.props.updateTimelineBuffer(this.props.layer, tonePlayer.buffer);
-    }
+
     this.setState({
       tonePlayer: tonePlayer,
     })
@@ -80,7 +87,6 @@ class ComittedLayer extends React.Component<ComittedLayerProps, ComittedLayerSta
         <p>Duration <Code>{Math.round((this.props.layer.duration - this.props.layer.trimmedStartDuration - this.props.layer.trimmedEndDuration) * 100) / 100}s</Code></p>
         <p>Fade In <Code>{Math.round((this.props.layer.fadeInDuration) * 100) / 100}s</Code></p>
         <p>Fade Out <Code>{Math.round((this.props.layer.fadeOutDuration) * 100) / 100}s</Code></p>
-        <p>Reversed <Code>{this.props.layer.reversed ? 'True' : 'False'}</Code></p>
       </>
       }></Description>
     );
@@ -102,6 +108,7 @@ class ComittedLayer extends React.Component<ComittedLayerProps, ComittedLayerSta
   };
 
   handleDelete() {
+    this.props.deleteTimelineBuffer(this.props.layer.layerId);
     this.props.deleteComittedLayer(this.props.layer);
   };
 
@@ -152,11 +159,11 @@ class ComittedLayer extends React.Component<ComittedLayerProps, ComittedLayerSta
                     </Popover>
                   </Tooltip>
                 </Popover.Item>
-                <Popover.Item style={{justifyContent: 'center'}}>
+                {this.props.layer.bucketUrl === null && <Popover.Item style={{justifyContent: 'center'}}>
                   <Button auto icon={<Copy />} type="success" onClick={this.handleDuplicate} style={{width: '100%', height: '100%'}}>
                     Duplicate
                   </Button>
-                </Popover.Item>
+                </Popover.Item>}
                 <Popover.Item style={{justifyContent: 'center'}}>
                   <Button auto icon={<Trash2 />} type="error" onClick={this.handleDelete} style={{width: '100%', height: '100%'}}>
                     Delete

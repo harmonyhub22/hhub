@@ -177,7 +177,6 @@ class Session extends Component<SessionProps, SessionState> {
           bucketUrl: null,
           fadeInDuration: 0,
           fadeOutDuration: 0,
-          reversed: false,
           trimmedStartDuration: 0,
           trimmedEndDuration: 0,
           y: 0,

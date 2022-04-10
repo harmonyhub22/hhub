@@ -74,35 +74,39 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
 
     // get duration of audio
     if (name !== null) { // get public sound mp3
-      const au = document.createElement('audio');
-      au.src = '../../' + name + '.mp3';
-      au.addEventListener('loadedmetadata', () => {
-        const duration = au.duration;
-        const tonePlayer = new Tone.Player('../../' + name + '.mp3').toDestination();
-        console.log("The duration of the song is of: " + duration + " seconds");
-        tonePlayer.onstop = () => {
-          clearInterval(this.state.timer);
-          if (!this.state.paused) {
-            this.setState({
-              currentSeconds: 0,
-              paused: false,
-              isPlaying: false,
-            });
-          }
-        };
-        this.setState({
-          tonePlayer: tonePlayer,
-          duration: duration,
-          isPlaying: false,
-          currentSeconds: 0,
-          paused: false,
-          timer: null,
-        });
-      }, false);
-      au.remove();
+      const tonePlayer = new Tone.Player('../../' + name + '.mp3',
+        onload= () => {
+          this.setState({
+            duration: tonePlayer.buffer.duration,
+            tonePlayer: tonePlayer,
+            isPlaying: false,
+            currentSeconds: 0,
+            paused: false,
+            timer: null,
+          });
+      }).toDestination();
+      tonePlayer.onstop = () => {
+        clearInterval(this.state.timer);
+        if (!this.state.paused) {
+          this.setState({
+            currentSeconds: 0,
+            paused: false,
+            isPlaying: false,
+          });
+        }
+      };
     } else if (buffer !== null && buffer !== undefined && bufferDuration !== null) {
       const tonePlayer = new Tone.Player(
-        URL.createObjectURL(buffer)
+        URL.createObjectURL(buffer), onload = () => {
+          this.setState({
+            duration: tonePlayer.buffer.duration,
+            tonePlayer: tonePlayer,
+            isPlaying: false,
+            currentSeconds: 0,
+            paused: false,
+            timer: null,
+          });
+        }
       ).toDestination();
       const duration = bufferDuration;
       tonePlayer.onstop = () => {
@@ -115,14 +119,6 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
           });
         }
       };
-      this.setState({
-        tonePlayer: tonePlayer,
-        duration: duration,
-        isPlaying: false,
-        currentSeconds: 0,
-        paused: false,
-        timer: null,
-      });
     }
   }
 
@@ -207,7 +203,6 @@ class PaletteLayer extends React.Component<PaletteLayerProps, PaletteLayerState>
       bucketUrl: null,
       fadeInDuration: 0,
       fadeOutDuration: 0,
-      reversed: false,
       trimmedStartDuration: 0,
       trimmedEndDuration: 0,
       y: 30,

@@ -55,13 +55,12 @@ export const login = async (email: string, password: string) => {
         password: password,
       }),
     });
-    const resJson = await response.json();
     if (!response.ok) {
-      throw new Error(resJson.reason);
+      alert((await response.json())?.reason);
+      throw new Error(await response.json());
     }
-    return resJson;
+    return response.json();
   } catch (e) {
-    console.log(e.message);
     return null;
   }
 };
@@ -86,13 +85,11 @@ export const signup = async (
         password: password,
       }),
     });
-    const resJson = await response.json();
     if (!response.ok) {
-      throw new Error(resJson.reason);
+      alert((await response.json())?.reason);
+      throw new Error(await response.json());
     }
-    return resJson;
   } catch (e) {
-    console.log(e.message);
     return null;
   }
 };
@@ -111,7 +108,7 @@ export const logout = async () => {
     }
     return response.json();
   } catch (e) {
-    alert("logout failed");
+    alert("Logout failed");
     return null;
   }
 };

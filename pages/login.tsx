@@ -26,6 +26,7 @@ const Login = (): React.ReactNode => {
     if (existingMember != null) {
       window.location.href = window.location.origin;
     }
+    window.alert("Email and password do not match");
   };
 
   const goToSignup = () => {
@@ -54,7 +55,7 @@ const Login = (): React.ReactNode => {
             <Input.Password
               clearable
               label="Password"
-              placeholder="Use a strong password"
+              placeholder="password"
               value={password}
               onChange={(e: any) => setPassword(e.target.value)}
               style={{ backgroundColor: "white" }}
