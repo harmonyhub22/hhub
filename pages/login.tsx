@@ -25,6 +25,7 @@ const Login = (): React.ReactNode => {
     const existingMember = await login(email, password);
     if (existingMember != null) {
       window.location.href = window.location.origin;
+      return;
     }
     window.alert("Email and password do not match");
   };
