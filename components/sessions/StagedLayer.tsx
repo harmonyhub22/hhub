@@ -497,7 +497,7 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
                       </Popover>
                     </Tooltip>
                   </Popover.Item>
-                  <Popover.Item style={{justifyContent: 'center', padding: '0'}}>
+                  {/*<Popover.Item style={{justifyContent: 'center', padding: '0'}}>
                     Fade In {this.state.newFadeInDuration !== this.state.currentLayer.fadeInDuration 
                       && <><Spacer w={1}/><Button icon={<CheckInCircleFill />} onClick={this.setFadeInDuration} auto scale={2/3} px={0.6}
                         style={{borderRadius: '50%'}}></Button></>}
@@ -516,7 +516,7 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
                     <Slider value={this.state.newFadeOutDuration} min={0} 
                       max={this.state.currentLayer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration} 
                       step={0.1} onChange={this.handleFadeOut} />
-                  </Popover.Item>
+                  </Popover.Item>*/}
                   
                   <Popover.Item line />
                   <Popover.Item style={{justifyContent: 'center', minWidth: '170px'}}>
