@@ -1,18 +1,21 @@
 import { Button, Input, Spacer } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { login, signup } from "../api/Helper";
+import { signup } from "../api/Helper";
 import Wave from "../components/animations/Wave";
 import { Galaxy, LoginAnimation } from "../components/animations/AnimationPic";
 import { imgVariant, titleSlider } from "../components/animations/Animation";
 import { motion } from "framer-motion";
-import Navbar from "../components/Navbar";
+import { useCookies } from 'react-cookie';
+import AuthResponse from "../interfaces/authResponse";
 
 const Signup = (): React.ReactNode => {
   const [email, setEmail] = useState<string>("");
   const [firstname, setFirstname] = useState<string>("");
   const [lastname, setLastname] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const [cookies, setCookie, removeCookie] = useCookies(['hhub-token']);
 
   const getSignedUp = async () => {
     if (
@@ -21,12 +24,14 @@ const Signup = (): React.ReactNode => {
       lastname.length === 0 ||
       password.length === 0
     ) {
-      console.log("email, firstname, lastname, and password required");
+      alert("email, firstname, lastname, and password required");
       return;
     }
-    const newMember = await signup(email, firstname, lastname, password);
-    if (newMember != null) {
-      window.location.href = window.location.origin;
+    const authResponse: AuthResponse|null = await signup(email, firstname, lastname, password);
+    if (authResponse != null && authResponse.success === true) {
+      setCookie("hhub-token", authResponse["hhub-token"]);
+      window.location.assign("/");
+      return;
     }
   };
 

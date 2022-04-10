@@ -61,6 +61,7 @@ export const login = async (email: string, password: string) => {
     }
     return response.json();
   } catch (e) {
+    console.log(e);
     return null;
   }
 };
@@ -89,6 +90,7 @@ export const signup = async (
       alert((await response.json())?.reason);
       throw new Error(await response.json());
     }
+    return response.json();
   } catch (e) {
     return null;
   }

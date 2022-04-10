@@ -6,12 +6,16 @@ import Wave from "../components/animations/Wave";
 import * as AnimationPic from "../components/animations/AnimationPic";
 import { imgVariant, titleSlider } from "../components/animations/Animation";
 import { motion } from "framer-motion";
+import { useCookies } from 'react-cookie';
+import AuthResponse from "../interfaces/authResponse";
 
 const Login = (): React.ReactNode => {
   const router = useRouter();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const [cookies, setCookie, removeCookie] = useCookies(['hhub-token']);
 
   const getLogin = async () => {
     if (email.length === 0) {
@@ -22,11 +26,12 @@ const Login = (): React.ReactNode => {
       alert("Please provide your password!")
       return;
     }
-    const existingMember = await login(email, password);
-    console.log('existing Member', existingMember);
+    const authResponse: AuthResponse|null = await login(email, password);
+    console.log('auth Response', authResponse);
 
-    if (existingMember !== null) {
-      // window.location.assign("/");
+    if (authResponse !== null && authResponse.success === true) {
+      setCookie('hhub-token', authResponse["hhub-token"]);
+      window.location.assign("/");
       return;
     }
     window.alert("Email and password do not match");

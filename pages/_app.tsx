@@ -10,6 +10,7 @@ import { MemberContext } from "../context/member";
 import { useRouter } from "next/router";
 import { AnimatePresence } from "framer-motion";
 import { Toaster } from "react-hot-toast";
+import { CookiesProvider } from "react-cookie";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [member, setMember] = useState<Member>({} as Member);
@@ -41,6 +42,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <GeistProvider>
       <CssBaseline />
+      <CookiesProvider>
       <MemberContext.Provider value={member}>
         <SocketContext.Provider value={socket}>
           <AnimatePresence exitBeforeEnter>
@@ -48,6 +50,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           </AnimatePresence>
         </SocketContext.Provider>
       </MemberContext.Provider>
+      </CookiesProvider>
       <Toaster
         position="top-left"
         toastOptions={{
