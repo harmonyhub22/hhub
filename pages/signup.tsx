@@ -30,6 +30,7 @@ const Signup = (): React.ReactNode => {
     const authResponse: AuthResponse|null = await signup(email, firstname, lastname, password);
     if (authResponse != null && authResponse.success === true) {
       setCookie("hhub-token", authResponse["hhub-token"]);
+      console.log('set cookie');
       window.location.assign("/");
       return;
     }
