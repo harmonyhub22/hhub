@@ -1,5 +1,6 @@
 .learn-page {
-  margin-top: 5rem;
+  display: flex;
+  flex-direction: column;
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
     "Lucida Sans", Arial, sans-serif;
   h1 {
@@ -8,5 +9,19 @@
     color: #21a0aa;
     display: inline-block;
     font-family: "Lobster";
+  }
+  .learn-note {
+    margin-left: 40rem;
+    margin-bottom: 2rem;
+  }
+  .learn-title {
+    margin-bottom: -10rem;
+  }
+  @media (max-width: 1300px) {
+    display: block;
+    text-align: center;
+    .learn-title {
+      margin-bottom: -20rem;
+    }
   }
 }
