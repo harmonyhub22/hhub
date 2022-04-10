@@ -15,7 +15,7 @@ const Signup = (): React.ReactNode => {
   const [lastname, setLastname] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [cookies, setCookie, removeCookie] = useCookies(['hhub-token']);
+  const [cookies, setCookie, removeCookie] = useCookies(['hhub-token-2']);
 
   const getSignedUp = async () => {
     if (
@@ -29,7 +29,7 @@ const Signup = (): React.ReactNode => {
     }
     const authResponse: AuthResponse|null = await signup(email, firstname, lastname, password);
     if (authResponse != null && authResponse.success === true) {
-      setCookie("hhub-token", authResponse["hhub-token"]);
+      setCookie("hhub-token-2", authResponse["hhub-token"]);
       console.log('set cookie');
       window.location.assign("/");
       return;
