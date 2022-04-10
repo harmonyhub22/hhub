@@ -23,11 +23,13 @@ const Login = (): React.ReactNode => {
       return;
     }
     const existingMember = await login(email, password);
-    if (existingMember != null) {
-      window.location.href = window.location.origin;
+    console.log('existing Member', existingMember);
+
+    if (existingMember !== null) {
+      // window.location.assign("/");
       return;
     }
-    window.alert("Email and password do not match");
+    // window.alert("Email and password do not match");
   };
 
   const goToSignup = () => {
