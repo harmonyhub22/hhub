@@ -14,18 +14,21 @@ const Login = (): React.ReactNode => {
   const [password, setPassword] = useState<string>("");
 
   const getLogin = async () => {
-    if (email.length === 0 || password.length === 0) {
-      console.log("email and password required");
+    if (email.length === 0) {
+      alert("Please provide your username!")
+      return;
+    }
+    if (password.length === 0) {
+      alert("Please provide your password!")
       return;
     }
     const existingMember = await login(email, password);
-    console.log(existingMember);
-
     if (existingMember != null) {
       window.location.href = window.location.origin;
       return;
     }
-    window.alert("Please enter a correct information");
+
+    window.alert("Incorrect username or password!");
   };
 
   const goToSignup = () => {
