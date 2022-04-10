@@ -105,6 +105,9 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
             this.createTonePlayer(null, idbBlob);
           }
         });
+      } else {
+        if (this.state.tonePlayer === null)
+          this.createTonePlayer(cachedState.currentLayer.fileName, null);
       }
       initResize(`staged-layer-${cachedState.currentLayer.layerId}`, 
         StagedLayer.layerMinWidth, cachedState.layerMaxWidth, 'staged-layer-resizer-l', 'staged-layer-resizer-r',
@@ -186,6 +189,7 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
     if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
 
     let tonePlayer: Tone.Player | null = null;
+    console.log('creating toneplayer');
 
     if (fileName !== null && fileName !== undefined) {
       tonePlayer = new Tone.Player('../../' + fileName + '.mp3',
@@ -225,6 +229,7 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
         <p>Duration <Code>{Math.round((this.state.currentLayer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration) * 100) / 100}s</Code></p>
         <p>Fade In <Code>{Math.round((this.state.currentLayer.fadeInDuration) * 100) / 100}s</Code></p>
         <p>Fade Out <Code>{Math.round((this.state.currentLayer.fadeOutDuration) * 100) / 100}s</Code></p>
+        <p>Sound <Code>{(this.state.currentLayer.bucketUrl !== null || this.state.recordingId !== null) ? "Recording" : this.state.currentLayer.fileName}</Code></p>
       </>
       }></Description>
     );

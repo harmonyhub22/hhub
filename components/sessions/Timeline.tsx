@@ -77,6 +77,55 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     if (prevProps.sessionEnded !== this.props.sessionEnded && this.props.sessionEnded === true) {
       this.props.updateFinalBuffer(this.state.buffer);
     }
+    if (prevProps.comittedLayers.length > this.props.comittedLayers.length) {
+      const bufferMap = this.state.bufferMap;
+      const layerIds: string[] = this.props.comittedLayers.map((layer:LayerInterface) => layer.layerId);
+      Object.keys(bufferMap).forEach((layerId:string) => {
+        if (!layerIds.includes(layerId)) {
+          delete bufferMap[layerId];
+        }
+      });
+      if (this.state.timer !== null) clearInterval(this.state.timer);
+      if (this.state.tonePlayer !== null) {
+        if (this.state.tonePlayer.state === "started") this.state.tonePlayer.stop();
+        this.state.tonePlayer.dispose();
+      }
+      if (Object.values(bufferMap).length === 0) {
+        this.setState({
+          buffer: null,
+          tonePlayer: null,
+          bufferMap: bufferMap,
+          currentSeconds: 0,
+          paused: false,
+          isPlaying: false,
+        });
+      } else {
+        const buffer = this.state.crunker.mergeAudio(Object.values(bufferMap));
+        if (this.props.sessionEnded) {
+          this.props.updateFinalBuffer(buffer, this.state.seconds);
+          return;
+        }
+        const player = new Tone.Player(buffer).toDestination();
+        player.onstop = () => {
+          clearInterval(this.state.timer);
+          if (!this.state.paused) {
+            this.setState({
+              currentSeconds: 0,
+              paused: false,
+              isPlaying: false,
+            });
+          }
+        };
+        this.setState({
+          buffer: buffer,
+          tonePlayer: player,
+          bufferMap: bufferMap,
+          currentSeconds: 0,
+          paused: false,
+          isPlaying: false,
+        });
+      }
+    }
   };
 
   increaseTimeline() {
@@ -116,14 +165,19 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     const bufferMap = this.state.bufferMap;
     delete bufferMap[layer.layerId];
     bufferMap[layer.layerId] = temp;
+
+    this.setState({
+      bufferMap: bufferMap,
+    });
   
     if (Object.keys(bufferMap).length === (this.props.comittedLayers.length + this.props.stagedLayers.length)) {
+      console.log('updating timeline buffer')
       if (this.state.timer !== null) clearInterval(this.state.timer);
       if (this.state.tonePlayer !== null) {
         if (this.state.tonePlayer.state === "started") this.state.tonePlayer.stop();
         this.state.tonePlayer.dispose();
       }
-      if (Object.values(this.state.bufferMap).length === 0) {
+      if (Object.values(bufferMap).length === 0) {
         this.setState({
           buffer: null,
           tonePlayer: null,
@@ -133,7 +187,7 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
           isPlaying: false,
         });
       } else {
-        const buffer = this.state.crunker.mergeAudio(Object.values(this.state.bufferMap));
+        const buffer = this.state.crunker.mergeAudio(Object.values(bufferMap));
         if (this.props.sessionEnded) {
           this.props.updateFinalBuffer(buffer, this.state.seconds);
           return;
@@ -167,6 +221,46 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     this.setState({
       bufferMap: bufferMap,
     });
+    if (this.state.timer !== null) clearInterval(this.state.timer);
+    if (this.state.tonePlayer !== null) {
+      if (this.state.tonePlayer.state === "started") this.state.tonePlayer.stop();
+      this.state.tonePlayer.dispose();
+    }
+    if (Object.values(bufferMap).length === 0) {
+      this.setState({
+        buffer: null,
+        tonePlayer: null,
+        bufferMap: bufferMap,
+        currentSeconds: 0,
+        paused: false,
+        isPlaying: false,
+      });
+    } else {
+      const buffer = this.state.crunker.mergeAudio(Object.values(bufferMap));
+      if (this.props.sessionEnded) {
+        this.props.updateFinalBuffer(buffer, this.state.seconds);
+        return;
+      }
+      const player = new Tone.Player(buffer).toDestination();
+      player.onstop = () => {
+        clearInterval(this.state.timer);
+        if (!this.state.paused) {
+          this.setState({
+            currentSeconds: 0,
+            paused: false,
+            isPlaying: false,
+          });
+        }
+      };
+      this.setState({
+        buffer: buffer,
+        tonePlayer: player,
+        bufferMap: bufferMap,
+        currentSeconds: 0,
+        paused: false,
+        isPlaying: false,
+      });
+    }
   };
   
   playSongsoFar() {

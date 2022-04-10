@@ -13,6 +13,7 @@ const SessionPage = () => {
 
   useEffect(() => {
     if (typeof router.query?.sessionId === "string") {
+      console.log('setting sessionId')
       window.localStorage.setItem('sessionId', router.query.sessionId);
     }
   }, [router.query.sessionId]);
@@ -20,7 +21,7 @@ const SessionPage = () => {
   return (
     <>
       <Navbar />
-      <Session member={member} socket={socket}  />
+      <Session member={member} socket={socket} sessionId={typeof router.query?.sessionId === "string" ? router.query.sessionId : null}  />
     </>
   );
 };

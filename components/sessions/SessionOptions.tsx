@@ -63,6 +63,16 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
       this.props.socket.on(SessionOptions.socketEndpointUndoEndSession, this.registerUnVoteEnd);
       this.props.socket.on(SessionOptions.socketEndpointSendRoomMsg, this.registerNewMsg);
     }
+    const cachedSessionOptions: string|null = window.localStorage.getItem(`session-${this.props.sessionId}-options`);
+    if (cachedSessionOptions !== null) {
+      const sessionOptions: SessionOptionsState = JSON.parse(cachedSessionOptions);
+      this.setState({
+        youVotedToEnd: sessionOptions.youVotedToEnd,
+        endSessionVotes: sessionOptions.endSessionVotes,
+        isMessaging: sessionOptions.isMessaging,
+        currentMessage: sessionOptions.currentMessage,
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -74,6 +84,22 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
   }
 
   componentDidUpdate(prevProps:SessionOptionsProps, prevState:SessionOptionsState) {
+    if (prevProps.sessionId !== this.props.sessionId) {
+      const cachedSessionOptions: string|null = window.localStorage.getItem(`session-${this.props.sessionId}-options`);
+      if (cachedSessionOptions !== null) {
+        const sessionOptions: SessionOptionsState = JSON.parse(cachedSessionOptions);
+        this.setState({
+          youVotedToEnd: sessionOptions.youVotedToEnd,
+          endSessionVotes: sessionOptions.endSessionVotes,
+          isMessaging: sessionOptions.isMessaging,
+          currentMessage: sessionOptions.currentMessage,
+        });
+      }
+    }
+    if (JSON.stringify(prevState) !== JSON.stringify(this.state)) {
+      window.localStorage.setItem(`session-${this.props.sessionId}-options`, 
+        JSON.stringify(this.state));
+    }
     if (prevState.endSessionVotes !== this.state.endSessionVotes && this.state.endSessionVotes >= 2) {
       this.props.endSession();
     }

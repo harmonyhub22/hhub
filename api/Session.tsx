@@ -150,7 +150,7 @@ export const postLayer = async (sessionId: string, layerData: LayerInterface) =>
 };
 
 export const syncPostLayer = (sessionId: string, layerData: LayerInterface, layerBlob: Blob|null, 
-  updateSession:any, tellPartnerToPull: any) => {
+  tellPartnerToPull: any) => {
 
   let url = config.server_url + "api/session/" + sessionId + "/layers";
   fetch(
@@ -178,16 +178,16 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, laye
         body: formData,
       })
       .then(response => {
-        if (response.ok) updateSession();
+        if (response.ok) tellPartnerToPull();
         else throw new Error(`Server returned ${response.status}: ${response.statusText}`)
       })
       .catch(err => {
         alert('Could not upload recording :(');
       });
     } else {
-      updateSession();
+      tellPartnerToPull();
     }
-  }).then(() => tellPartnerToPull());
+  });
 };
 
 export const syncSaveSong = (sessionData: SessionInterface, songBuffer: AudioBuffer | null, duration: number, setSaved: any) => {

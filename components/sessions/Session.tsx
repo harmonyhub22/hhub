@@ -25,6 +25,7 @@ import { Code } from "@geist-ui/icons";
 interface SessionProps {
   member: any,
   socket: any,
+  sessionId: string|null,
 }
 
 interface SessionState {
@@ -106,7 +107,7 @@ class Session extends Component<SessionProps, SessionState> {
     }
 
     // set up the session
-    const sessionId = window.localStorage.getItem("sessionId");
+    const sessionId = this.props.sessionId ?? window.localStorage.getItem("sessionId");
     if (sessionId === null) return;
     syncGetSession(sessionId, this.setSession);
 
@@ -219,7 +220,6 @@ class Session extends Component<SessionProps, SessionState> {
       this.state.session.sessionId,
       layerData,
       layerBlob,
-      this.updateSession,
       this.tellPartnerToPull
     );
   };
@@ -303,7 +303,7 @@ class Session extends Component<SessionProps, SessionState> {
 
     // leave the socket room
     if (this.props.socket !== null && this.props.socket !== undefined)
-      this.props.socket.leave(`session-${sessionId}`);
+      this.props.socket.emit("leave_session", { sessionId: sessionId });
 
     // clean up palette data
     window.localStorage.removeItem('palette-staging-layer');

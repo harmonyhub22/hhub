@@ -21,8 +21,8 @@ const Queue = (): React.ReactNode => {
     console.log(data);
     socket.off('session_made', this);
     router.push({
-      pathname: "/sessions/" + data.sessionId,
-      query: { id: data.sessionId },
+      pathname: "/sessions/[sessionId]",
+      query: { sessionId: data.sessionId },
     });
   };
 

@@ -37,10 +37,9 @@ class ComittedLayer extends React.Component<ComittedLayerProps, ComittedLayerSta
   }
 
   componentDidMount() {
-    // console.log('mounted comitted layer', this.props.layer.layerId);
-    if (this.state.tonePlayer === null) {
-      this.createTonePlayer(this.props.layer.fileName, this.props.layer.bucketUrl);
-    }
+    console.log('mounted comitted layer', this.props.layer.layerId);
+    console.log(this.props.layer);
+    this.createTonePlayer(this.props.layer.fileName, this.props.layer.bucketUrl);
   }
 
   componentWillUnmount() {
@@ -48,6 +47,7 @@ class ComittedLayer extends React.Component<ComittedLayerProps, ComittedLayerSta
   }
 
   createTonePlayer(fileName: string|null, bucketUrl: string|null) {
+    console.log('creating toneplayer');
     if (this.state.tonePlayer !== null) this.state.tonePlayer.dispose();
     let tonePlayer: Tone.Player | null = null;
     if (fileName !== null) {
@@ -61,6 +61,7 @@ class ComittedLayer extends React.Component<ComittedLayerProps, ComittedLayerSta
         this.props.updateTimelineBuffer(this.props.layer, tonePlayer.buffer);
       }).toDestination();
     } else if (bucketUrl !== null) {
+      console.log(bucketUrl);
       tonePlayer = new Tone.Player(bucketUrl, 
       onload = () => {
         if (tonePlayer === null) return;
@@ -87,6 +88,7 @@ class ComittedLayer extends React.Component<ComittedLayerProps, ComittedLayerSta
         <p>Duration <Code>{Math.round((this.props.layer.duration - this.props.layer.trimmedStartDuration - this.props.layer.trimmedEndDuration) * 100) / 100}s</Code></p>
         <p>Fade In <Code>{Math.round((this.props.layer.fadeInDuration) * 100) / 100}s</Code></p>
         <p>Fade Out <Code>{Math.round((this.props.layer.fadeOutDuration) * 100) / 100}s</Code></p>
+        <p>Sound <Code>{this.props.layer.bucketUrl !== null ? "Recording" : this.props.layer.fileName}</Code></p>
       </>
       }></Description>
     );

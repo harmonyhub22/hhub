@@ -49,7 +49,8 @@ const Home = () => {
     if (liveSessionId === null || liveSessionId === undefined) return;
     socket.emit("join-session", { sessionId: liveSessionId });
     router.push({
-      pathname: "/sessions/" + liveSessionId,
+      pathname: "/sessions/[sessionId]",
+      query: { sessionId: liveSessionId },
     });
   };
 
