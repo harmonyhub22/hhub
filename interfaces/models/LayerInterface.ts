@@ -10,7 +10,6 @@ export default interface LayerInterface {
     bucketUrl: string|null,
     fadeInDuration: number,
     fadeOutDuration: number,
-    reversed: boolean,
     trimmedStartDuration: number,
     trimmedEndDuration: number,
     y: number,

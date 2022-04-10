@@ -25,7 +25,6 @@ const Signup = (): React.ReactNode => {
       return;
     }
     const newMember = await signup(email, firstname, lastname, password);
-    console.log("New member is", newMember);
     if (newMember != null) {
       window.location.href = window.location.origin;
     }

@@ -49,7 +49,8 @@ const Home = () => {
     if (liveSessionId === null || liveSessionId === undefined) return;
     socket.emit("join-session", { sessionId: liveSessionId });
     router.push({
-      pathname: "/sessions/" + liveSessionId,
+      pathname: "/sessions/[sessionId]",
+      query: { sessionId: liveSessionId },
     });
   };
 
@@ -93,13 +94,15 @@ const Home = () => {
                 id="btn-new-session"
                 onClick={enterQueue}
                 style={{ backgroundColor: "white" }}
-                scale={1.3}
+                scale={2.0}
+                disabled={loading}
               >
-                Find a New Session {loading && <Spinner/>}
+                Find{loading && "ing"} a New Session {loading && <><Spacer w={1}/><Spinner/></>}
               </Button>
               {onlineMembers !== null &&
-                <Collapse shadow title={`${onlineMembers.length}`} subtitle="Members Online" style={{padding: '10pt !important', backgroundColor: 'white'}}>
-                  {onlineMembers.length > 0 && <Table data={onlineMembers.map((member:Member) => { return { name: `${member.firstname} ${member.lastname}` }})}>
+                <Collapse shadow title={`${onlineMembers.length}`} subtitle="Members Online" style={{padding: '10pt !important', backgroundColor: 'white'}}
+                  className="members-online">
+                  {onlineMembers.length > 0 && <Table style={{maxHeight: '200px'}} data={onlineMembers.map((member:Member) => { return { name: `${member.firstname} ${member.lastname}` }})}>
                     <Table.Column prop="name" label="name" />
                   </Table>}
                 </Collapse>
@@ -114,8 +117,9 @@ const Home = () => {
               onClick={enterLiveSession}
               style={{ backgroundColor: "white" }}
               scale={2.0}
+              disabled={loading}
             >
-              Join your Live Session {loading && <Spinner/>}
+              Join{loading && "ing"} your Live Session {loading && <><Spacer w={1}/><Spinner/></>}
             </Button>
           )}
         </div>

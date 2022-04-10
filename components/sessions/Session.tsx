@@ -25,6 +25,7 @@ import { Code } from "@geist-ui/icons";
 interface SessionProps {
   member: any,
   socket: any,
+  sessionId: string|null,
 }
 
 interface SessionState {
@@ -35,7 +36,6 @@ interface SessionState {
   showPalette: boolean,
   sessionEnded: boolean,
   finalBuffer: any,
-  finalBufferDuration: number,
   bpm: number|null,
   paletteWidth: number,
 };
@@ -53,7 +53,6 @@ class Session extends Component<SessionProps, SessionState> {
       showPalette: false,
       sessionEnded: false,
       finalBuffer: null,
-      finalBufferDuration: 0,
       bpm: null,
       paletteWidth: 400,
     };
@@ -106,7 +105,7 @@ class Session extends Component<SessionProps, SessionState> {
     }
 
     // set up the session
-    const sessionId = window.localStorage.getItem("sessionId");
+    const sessionId = this.props.sessionId ?? window.localStorage.getItem("sessionId");
     if (sessionId === null) return;
     syncGetSession(sessionId, this.setSession);
 
@@ -177,7 +176,6 @@ class Session extends Component<SessionProps, SessionState> {
           bucketUrl: null,
           fadeInDuration: 0,
           fadeOutDuration: 0,
-          reversed: false,
           trimmedStartDuration: 0,
           trimmedEndDuration: 0,
           y: 0,
@@ -220,7 +218,6 @@ class Session extends Component<SessionProps, SessionState> {
       this.state.session.sessionId,
       layerData,
       layerBlob,
-      this.updateSession,
       this.tellPartnerToPull
     );
   };
@@ -276,7 +273,6 @@ class Session extends Component<SessionProps, SessionState> {
 
   // ** end session section
   handleEndSession() {
-    this.cleanUpSession();
     this.setState({
       sessionEnded: true,
     });
@@ -304,19 +300,22 @@ class Session extends Component<SessionProps, SessionState> {
 
     // leave the socket room
     if (this.props.socket !== null && this.props.socket !== undefined)
-      this.props.socket.leave(`session-${sessionId}`);
+      this.props.socket.emit("leave_session", { sessionId: sessionId });
 
     // clean up palette data
     window.localStorage.removeItem('palette-staging-layer');
+
+    // end the session
+    syncEndSession(sessionId, (succeeded:boolean) => {
+      console.log('ended the session', succeeded);
+    });
   };
 
-  updateFinalBuffer(buffer: AudioBuffer|null, duration:number) {
+  updateFinalBuffer(buffer: AudioBuffer|null) {
     this.setState({
       finalBuffer: buffer,
-      finalBufferDuration: duration,
     });
-    if (this.state.session !== null)
-      syncEndSession(this.state.session.sessionId, (succeeded:boolean) => {});
+    this.cleanUpSession();
   };
   // ** end end session section
 
@@ -382,8 +381,7 @@ class Session extends Component<SessionProps, SessionState> {
             <End
               member={this.props.member}
               session={this.state.session}
-              songBuffer={this.state.finalBuffer} 
-              bufferDuration={this.state.finalBufferDuration}              
+              songBuffer={this.state.finalBuffer}             
             />
           </Modal.Content>
         </Modal>

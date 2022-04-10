@@ -193,7 +193,6 @@ export const initResizePalette = (setWidth:any) => {
   const mouseMoveHandler = function (e:any) {
     // How far the mouse has been moved
     const dx: number = e.clientX - x;
-    console.log('dx', dx);
 
     // Adjust the position and dimension of the element on the x axis
     resizeEle.style.width = `${initialW - dx}px`;
@@ -204,7 +203,6 @@ export const initResizePalette = (setWidth:any) => {
       mouseDown = true;
       // Get the current mouse position
       x = e.clientX;
-      console.log(x);
 
       initialW = resizeEle.getBoundingClientRect().width;
 

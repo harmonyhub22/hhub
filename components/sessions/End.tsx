@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Text } from "@geist-ui/core";
+import { Button, Spinner, Text } from "@geist-ui/core";
 import SessionInterface from "../../interfaces/models/SessionInterface";
 import { config } from "../config";
 import Crunker from "./Crunker";
@@ -10,13 +10,13 @@ interface EndProps {
   member: any,
   session: SessionInterface|null,
   songBuffer: AudioBuffer|null,
-  bufferDuration: number,
 }
 
 interface EndState {
   savedToLibrary: boolean,
   downloadedSong: boolean,
   congratsIndex: number,
+  loading: boolean,
 } 
 
 class End extends Component<EndProps, EndState> {
@@ -28,27 +28,54 @@ class End extends Component<EndProps, EndState> {
       savedToLibrary: false,
       downloadedSong:false,
       congratsIndex: 0,
+      loading: false,
     };
     this.saveSong = this.saveSong.bind(this);
     this.goHome = this.goHome.bind(this);
     this.downloadSong = this.downloadSong.bind(this);
+    this.setSavedToLibrary = this.setSavedToLibrary.bind(this);
+    this.goToLibrary = this.goToLibrary.bind(this);
   }
 
   componentDidMount() {
-    this.setState({
-      congratsIndex: Math.floor(Math.random() * (End.congratulatory.length + 1)),
-    });
+    const cachedState: string|null = window.localStorage.getItem('end-state');
+    if (cachedState === null) {
+      this.setState({
+        congratsIndex: Math.floor(Math.random() * (End.congratulatory.length + 1)),
+      });
+    } else {
+      const jsonCachedState: EndState = JSON.parse(cachedState);
+      this.setState({
+        savedToLibrary: jsonCachedState.savedToLibrary,
+        downloadedSong: jsonCachedState.downloadedSong,
+        congratsIndex: jsonCachedState.congratsIndex,
+        loading: jsonCachedState.loading,
+      });
+    }
+    window.onbeforeunload = () => {
+      window.localStorage.removeItem('end-state');
+    };
   };
+
+  componentDidUpdate(prevProps:EndProps, prevState:EndState) {
+    if (JSON.stringify(prevState) !== JSON.stringify(this.state)) {
+      window.localStorage.setItem('end-state', JSON.stringify(this.state));
+    }
+  }
   
   saveSong() {
     if (this.props.session) {
-      syncSaveSong(this.props.session, this.props.songBuffer, this.props.bufferDuration, this.setSavedToLibrary);
+      this.setState({
+        loading: true,
+      });
+      syncSaveSong(this.props.session, this.props.songBuffer, this.setSavedToLibrary);
     }
   }
 
   setSavedToLibrary(saved:boolean) {
     this.setState({
       savedToLibrary: saved,
+      loading: false,
     });
     if (saved === false) {
       alert('Could not save your song at this time.');
@@ -99,12 +126,13 @@ class End extends Component<EndProps, EndState> {
         <Text>{End.congratulatory[this.state.congratsIndex]}</Text>
         <div style={{display: 'flex', justifyContent: "center", width: '100%'}}>
           <Button style={{marginRight: '20px'}} type="success" auto icon={this.state.downloadedSong ? <Check/> : <Download/>}
-            onClick={this.downloadSong}>
+            onClick={this.downloadSong} disabled={this.state.loading}>
             Download Song
           </Button>
           <Button type="warning" auto ghost={this.state.savedToLibrary} icon={this.state.downloadedSong ? <BookOpen/> : <Save/>}
-            onClick={() => {this.state.savedToLibrary ? this.goToLibrary : this.saveSong}}>
+            onClick={() => {this.state.savedToLibrary ? this.goToLibrary() : this.saveSong()}} disabled={this.state.loading}>
             {this.state.savedToLibrary ? "Go to your Library" : "Save Song to Library"}
+            {this.state.loading && <Spinner />}
           </Button>
         </div>
         <Button style={{marginTop: '20px'}} type="abort" onClick={this.goHome}>Go Home</Button>
