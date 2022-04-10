@@ -78,7 +78,6 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
     this.setFadeOutDuration = this.setFadeOutDuration.bind(this);
     this.handleDuplicate = this.handleDuplicate.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
-    this.handleReverse = this.handleReverse.bind(this);
     this.setName = this.setName.bind(this);
     this.setNewName = this.setNewName.bind(this);
     this.handleCommit = this.handleCommit.bind(this);
@@ -116,6 +115,8 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
         newName: cachedState.newName,
         recordingId: cachedState.recordingId,
         renaming: cachedState.renaming,
+        newFadeInDuration: cachedState.newFadeInDuration,
+        newFadeOutDuration: cachedState.newFadeOutDuration,
       });
     }
   }
@@ -148,8 +149,7 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
     }
 
     // create a new tonePlayer
-    if (prevState.currentLayer.reversed !== this.state.currentLayer.reversed 
-      || prevState.currentLayer.fadeOutDuration!== this.state.currentLayer.fadeOutDuration 
+    if (prevState.currentLayer.fadeOutDuration!== this.state.currentLayer.fadeOutDuration 
       || prevState.currentLayer.fadeInDuration !== this.state.currentLayer.fadeInDuration
       || prevState.currentLayer.trimmedStartDuration !== this.state.currentLayer.trimmedStartDuration
       || prevState.currentLayer.trimmedEndDuration !== this.state.currentLayer.trimmedEndDuration
@@ -188,23 +188,28 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
     let tonePlayer: Tone.Player | null = null;
 
     if (fileName !== null && fileName !== undefined) {
-      tonePlayer = new Tone.Player('../../' + fileName + '.mp3').toDestination();
+      tonePlayer = new Tone.Player('../../' + fileName + '.mp3',
+       onload = () => {
+        if (tonePlayer === null) return;
+        tonePlayer.fadeIn = this.state.currentLayer.fadeInDuration;
+        tonePlayer.fadeOut = this.state.currentLayer.fadeOutDuration;
+        tonePlayer.mute = this.state.currentLayer.muted;
+        tonePlayer.buffer = tonePlayer.buffer.slice(this.state.currentLayer.trimmedStartDuration,this.state.currentLayer.duration - this.state.currentLayer.trimmedEndDuration);
+        this.props.updateTimelineBuffer(this.state.currentLayer, tonePlayer.buffer);
+       }).toDestination();
     }
     else if (recordingBlob !== null && recordingBlob !== undefined) {
-      tonePlayer = new Tone.Player(URL.createObjectURL(recordingBlob)).toDestination();
-    } 
-
-    if (tonePlayer === null) return;
-    tonePlayer.buffer.onload = () => {
-      if (tonePlayer === null) return;
-      tonePlayer.reverse = this.state.currentLayer.reversed;
-      tonePlayer.buffer.reverse = this.state.currentLayer.reversed;
-      tonePlayer.fadeIn = this.state.currentLayer.fadeInDuration;
-      tonePlayer.fadeOut = this.state.currentLayer.fadeOutDuration;
-      tonePlayer.mute = this.state.currentLayer.muted;
-      tonePlayer.buffer = tonePlayer.buffer.slice(this.state.currentLayer.trimmedStartDuration,this.state.currentLayer.duration - this.state.currentLayer.trimmedEndDuration);
-      this.props.updateTimelineBuffer(this.state.currentLayer, tonePlayer.buffer);
+      tonePlayer = new Tone.Player(URL.createObjectURL(recordingBlob),
+      onload = () => {
+        if (tonePlayer === null) return;
+        tonePlayer.fadeIn = this.state.currentLayer.fadeInDuration;
+        tonePlayer.fadeOut = this.state.currentLayer.fadeOutDuration;
+        tonePlayer.mute = this.state.currentLayer.muted;
+        tonePlayer.buffer = tonePlayer.buffer.slice(this.state.currentLayer.trimmedStartDuration,this.state.currentLayer.duration - this.state.currentLayer.trimmedEndDuration);
+        this.props.updateTimelineBuffer(this.state.currentLayer, tonePlayer.buffer);
+       }).toDestination();
     }
+
     this.setState({
       tonePlayer: tonePlayer,
     });
@@ -220,7 +225,6 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
         <p>Duration <Code>{Math.round((this.state.currentLayer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration) * 100) / 100}s</Code></p>
         <p>Fade In <Code>{Math.round((this.state.currentLayer.fadeInDuration) * 100) / 100}s</Code></p>
         <p>Fade Out <Code>{Math.round((this.state.currentLayer.fadeOutDuration) * 100) / 100}s</Code></p>
-        <p>Reversed <Code>{this.state.currentLayer.reversed ? 'True' : 'False'}</Code></p>
       </>
       }></Description>
     );
@@ -327,15 +331,6 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
     });
   };
   // ** end fade tonePlayer section
-
-  handleReverse() {
-    this.setState({
-      currentLayer:{
-        ...this.state.currentLayer,
-        reversed: !this.state.currentLayer.reversed,
-      }
-    });
-  };
 
   // ** trimming tonePlayer section
   updateTrimmedStart(deltaX:number) {
@@ -481,7 +476,7 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
                     <Tooltip text={'Play'}
                       placement="top" type="dark">
                       <Button
-                        iconRight={<PlayFill/>}
+                        iconRight={this.state.tonePlayer.state === "started" ? <StopCircle /> : <PlayFill/>}
                         auto
                         type="secondary"
                         ghost
@@ -504,28 +499,23 @@ class StagedLayer extends React.Component<StagedLayerProps, StagedLayerState> {
                   </Popover.Item>
                   <Popover.Item style={{justifyContent: 'center', padding: '0'}}>
                     Fade In {this.state.newFadeInDuration !== this.state.currentLayer.fadeInDuration 
-                      && <Button icon={<CheckInCircleFill />} onClick={this.setFadeInDuration}></Button>}
+                      && <><Spacer w={1}/><Button icon={<CheckInCircleFill />} onClick={this.setFadeInDuration} auto scale={2/3} px={0.6}
+                        style={{borderRadius: '50%'}}></Button></>}
                   </Popover.Item>
                   <Popover.Item>
-                    <Slider value={this.state.currentLayer.fadeInDuration} min={0}
+                    <Slider value={this.state.newFadeInDuration} min={0}
                       max={this.state.currentLayer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration} 
                       step={0.1} onChange={this.handleFadeIn} />
                   </Popover.Item>
                   <Popover.Item style={{justifyContent: 'center', padding: '0'}}>
                     Fade Out {this.state.newFadeOutDuration !== this.state.currentLayer.fadeOutDuration 
-                      && <Button icon={<CheckInCircleFill />} onClick={this.setFadeOutDuration}></Button>}
+                      && <><Spacer w={1}/><Button icon={<CheckInCircleFill />} onClick={this.setFadeOutDuration} auto scale={2/3} px={0.6}
+                        style={{borderRadius: '50%'}}></Button></>}
                   </Popover.Item>
                   <Popover.Item>
-                    <Slider value={this.state.currentLayer.fadeOutDuration} min={0} 
+                    <Slider value={this.state.newFadeOutDuration} min={0} 
                       max={this.state.currentLayer.duration - this.state.currentLayer.trimmedStartDuration - this.state.currentLayer.trimmedEndDuration} 
                       step={0.1} onChange={this.handleFadeOut} />
-                  </Popover.Item>
-                  <Popover.Item style={{justifyContent: 'center'}}>
-                    <Button auto icon={<Repeat />}
-                      onClick={this.handleReverse} style={{width: '100%', height: '100%'}}>
-                      {this.state.currentLayer.reversed ?
-                      "Unreverse" : "Reverse"}
-                    </Button>
                   </Popover.Item>
                   
                   <Popover.Item line />

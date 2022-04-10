@@ -169,7 +169,7 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, laye
     }
   }).then((data:LayerInterface) => {
     if (layerBlob !== null && data.layerId !== null) {
-      const fileUploadUrl = layerData.layerId !== null ? `${url}/upload` : `${url}/${data.layerId}/upload`;
+      const fileUploadUrl = `${url}/${data.layerId}/upload`;
       const formData = new FormData();
       formData.append('file', layerBlob, 'file');
       fetch(fileUploadUrl, {
