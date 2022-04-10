@@ -130,7 +130,7 @@ class End extends Component<EndProps, EndState> {
             Download Song
           </Button>
           <Button type="warning" auto ghost={this.state.savedToLibrary} icon={this.state.downloadedSong ? <BookOpen/> : <Save/>}
-            onClick={() => {this.state.savedToLibrary ? this.goToLibrary() : this.saveSong()}}>
+            onClick={() => {this.state.savedToLibrary ? this.goToLibrary() : this.saveSong()}} disabled={this.state.loading}>
             {this.state.savedToLibrary ? "Go to your Library" : "Save Song to Library"}
             {this.state.loading && <Spinner />}
           </Button>

@@ -17,9 +17,9 @@ const Queue = (): React.ReactNode => {
   const socket = useContext(SocketContext);
 
   const moveToSession = (data: SessionMade) => {
+    console.log('got move to session signal', data);
     if (timer !== null) clearInterval(timer);
     console.log(data);
-    socket.off('session_made', this);
     router.push({
       pathname: "/sessions/[sessionId]",
       query: { sessionId: data.sessionId },
@@ -28,17 +28,16 @@ const Queue = (): React.ReactNode => {
 
   const joinWaitQueueCallback = (queue:Queue|null) => {
     console.log('queue', queue);
-    if (queue === null || queue === undefined) {
+    /*if (queue === null || queue === undefined) {
       alert('could not join queue');
       window.location.assign('/');
-    }
+    } */
     if (timer !== null) clearInterval(timer);
     const queueTimer = setInterval(() => {
       setNetWaitTime(netWaitTime => netWaitTime += 1);
     }, 1000);
     setTimer(queueTimer);
     setQueue(queue);
-    socket.on("session_made", moveToSession);
   }
 
   const fancyTimeFormat = (duration:number) => {   
@@ -61,10 +60,12 @@ const Queue = (): React.ReactNode => {
       window.location.assign('/');
       return;
     }
+    socket.on("session_made", moveToSession);
     if (queue === null) {
       syncJoinWaitQueue(joinWaitQueueCallback);
     }
     window.onbeforeunload = () => {
+      socket.off('session_made', moveToSession);
       syncLeaveWaitQueue((worked:boolean) => {});
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
