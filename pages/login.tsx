@@ -15,7 +15,7 @@ const Login = (): React.ReactNode => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [cookies, setCookie, removeCookie] = useCookies(['hhub-token']);
+  const [cookies, setCookie, removeCookie] = useCookies(['hhub-token-2']);
 
   const getLogin = async () => {
     if (email.length === 0) {
@@ -30,7 +30,7 @@ const Login = (): React.ReactNode => {
     console.log('auth Response', authResponse);
 
     if (authResponse !== null && authResponse.success === true) {
-      setCookie('hhub-token', authResponse["hhub-token"]);
+      setCookie('hhub-token-2', authResponse["hhub-token"]);
       window.location.assign("/");
       return;
     }
