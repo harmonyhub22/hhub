@@ -306,7 +306,9 @@ class Session extends Component<SessionProps, SessionState> {
     window.localStorage.removeItem('palette-staging-layer');
 
     // end the session
-    syncEndSession(sessionId, (succeeded:boolean) => {});
+    syncEndSession(sessionId, (succeeded:boolean) => {
+      console.log('ended the session', succeeded);
+    });
   };
 
   updateFinalBuffer(buffer: AudioBuffer|null) {

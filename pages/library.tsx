@@ -40,16 +40,25 @@ const Library = () => {
       }
     }
     if (songs === null) {
+      console.log('null');
       setTonePlayers(null);
       return;
     }
-    const newTonePlayers = new Tone.Players().toDestination();
+    const urlMap: any = {};
     songs.map((song:SongInterface) => {
-      if (song.session.bucketUrl === null) {
-        newTonePlayers.add(song.songId, song.session.bucketUrl);
+      console.log(song.session);
+      if (song.session.bucketUrl !== null) {
+        console.log(song.session);
+        urlMap[song.songId] = song.session.bucketUrl;
       }
     });
-    setTonePlayers(tonePlayers);
+    console.log(urlMap);
+    const newTonePlayers = new Tone.Players(
+      urlMap,
+      onload = () => {
+        setTonePlayers(newTonePlayers);
+      }
+    ).toDestination();
   };
 
   useEffect(() => {
@@ -65,11 +74,17 @@ const Library = () => {
   }, []);
 
   const handlePlay = (songId:string) => {
+    console.log(tonePlayers);
     if ((tonePlayers?.loaded ?? false) === true) {
       if (tonePlayers.status === "started") tonePlayers.stopAll();
       const player = tonePlayers.get(songId);
       if (player !== null) {
-        player.start(0);
+        player.onload = (e:any) => {
+          e.start(0);
+        }
+        console.log(player);
+        // player.start();
+        // player.start(0);
       }
     }
   };
@@ -117,11 +132,11 @@ const Library = () => {
                   <Fieldset.Content>
                     <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
                       <span><b>Duration</b></span>
-                      <span>{fancyTimeFormat(tonePlayers.get(song.songId)?.buffer?.duration ?? 0)}</span>
+                      <span>{fancyTimeFormat(tonePlayers?.get(song.songId)?.buffer?.duration ?? 0)}</span>
                     </div>
                     <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
                       <span><b>By</b></span>
-                      <span>{song.member.firstname} {song.member.lastname}</span>
+                      <span>{currentMember.firstname} {currentMember.lastname}</span>
                     </div>
                     <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
                       <span><b>Featuring</b></span>

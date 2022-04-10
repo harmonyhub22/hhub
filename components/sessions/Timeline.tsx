@@ -91,7 +91,8 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
     }
     if (prevProps.comittedLayers.length !== this.props.comittedLayers.length) {
       const bufferMap = this.state.bufferMap;
-      const layerIds: string[] = this.props.comittedLayers.map((layer:LayerInterface) => layer.layerId);
+      let layerIds: string[] = this.props.comittedLayers.map((layer:LayerInterface) => layer.layerId);
+      layerIds = [...layerIds, ...this.props.stagedLayers.map((stagedLayer:StagedLayerInterface) => stagedLayer.layer.layerId)];
       console.log(layerIds);
       Object.keys(bufferMap).forEach((layerId:string) => {
         if (!layerIds.includes(layerId)) {
