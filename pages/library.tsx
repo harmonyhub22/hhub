@@ -9,6 +9,7 @@ import SongInterface from "../interfaces/models/SongInterface";
 import { PlayFill, Trash } from "@geist-ui/icons";
 import * as Tone from "tone";
 import moment from "moment";
+import { start } from "repl";
 
 const Library = () => {
   const [songs, setSongs] = useState<SongInterface[]|null>(null);
@@ -77,14 +78,10 @@ const Library = () => {
     console.log(tonePlayers);
     if ((tonePlayers?.loaded ?? false) === true) {
       if (tonePlayers.status === "started") tonePlayers.stopAll();
-      const player = tonePlayers.get(songId);
-      if (player !== null) {
-        player.onload = (e:any) => {
-          e.start(0);
-        }
-        console.log(player);
-        // player.start();
-        // player.start(0);
+      try {
+        tonePlayers.player(songId).start(0);
+      } catch (e:any) {
+        alert('could not player song right now');
       }
     }
   };
@@ -132,7 +129,7 @@ const Library = () => {
                   <Fieldset.Content>
                     <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
                       <span><b>Duration</b></span>
-                      <span>{fancyTimeFormat(tonePlayers?.get(song.songId)?.buffer?.duration ?? 0)}</span>
+                      <span>{fancyTimeFormat(tonePlayers?.player(song.songId)?.buffer?.duration ?? 0)}</span>
                     </div>
                     <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
                       <span><b>By</b></span>

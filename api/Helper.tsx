@@ -86,12 +86,14 @@ export const signup = async (
         password: password,
       }),
     });
+    console.log(response);
     if (!response.ok) {
       alert((await response.json())?.reason);
       throw new Error(await response.json());
     }
     return response.json();
   } catch (e) {
+    console.log(e);
     return null;
   }
 };
