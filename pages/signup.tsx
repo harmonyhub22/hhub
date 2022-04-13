@@ -1,12 +1,10 @@
 import { Button, Input, Spacer } from "@geist-ui/core";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { signup } from "../api/Helper";
 import Wave from "../components/animations/Wave";
-import { Galaxy, LoginAnimation } from "../components/animations/AnimationPic";
+import { Galaxy } from "../components/animations/AnimationPic";
 import { imgVariant, titleSlider } from "../components/animations/Animation";
 import { motion } from "framer-motion";
-import { useCookies } from 'react-cookie';
 import AuthResponse from "../interfaces/authResponse";
 
 const Signup = (): React.ReactNode => {
@@ -14,8 +12,6 @@ const Signup = (): React.ReactNode => {
   const [firstname, setFirstname] = useState<string>("");
   const [lastname, setLastname] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-
-  const [cookies, setCookie, removeCookie] = useCookies(['hhub-token-2']);
 
   const getSignedUp = async () => {
     if (
@@ -29,8 +25,6 @@ const Signup = (): React.ReactNode => {
     }
     const authResponse: AuthResponse|null = await signup(email, firstname, lastname, password);
     if (authResponse != null && authResponse.success === true) {
-      setCookie("hhub-token-2", authResponse["hhub-token"]);
-      console.log('set cookie');
       window.location.assign("/");
       return;
     }
@@ -91,7 +85,6 @@ const Signup = (): React.ReactNode => {
             </Button>
           </motion.div>
         </motion.div>
-        <Wave />
         <motion.div
           className="intro-images"
           variants={imgVariant}
