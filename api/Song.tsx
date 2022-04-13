@@ -37,6 +37,5 @@ export const syncDeleteSong = (songId:string, callback:any) => {
     throw new Error();
   }).catch(err => {
     console.log(err);
-    throw new Error();
   });
 };

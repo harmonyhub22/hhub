@@ -64,6 +64,10 @@ class End extends Component<EndProps, EndState> {
   }
   
   saveSong() {
+    if (this.props.songBuffer === null || this.props.songBuffer === undefined) {
+      alert(`you didn't make any layers!`);
+      return;
+    }
     if (this.props.session) {
       this.setState({
         loading: true,
@@ -83,8 +87,11 @@ class End extends Component<EndProps, EndState> {
   }
   
   downloadSong(){
-    console.log(this.props.songBuffer);
-    if (this.props.songBuffer !== null && this.props.session !== null) {
+    if (this.props.songBuffer === null || this.props.songBuffer === undefined) {
+      alert(`you didn't make any layers!`);
+      return;
+    }
+    if (this.props.session !== null) {
       const crunker = new Crunker();
       const blob = crunker.export(this.props.songBuffer, 'audio/mpeg');
       crunker.download(blob.blob, `session-${this.props.session.sessionId}`);
