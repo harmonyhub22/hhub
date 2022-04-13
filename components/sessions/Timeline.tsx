@@ -82,12 +82,16 @@ class Timeline extends React.Component<TimelineProps, TimelineState> {
           delete bufferMap[layerId];
         }
       });
-      const finalBuffer = this.state.crunker.mergeAudio(Object.values(bufferMap));
-      this.setState({
-        bufferMap: bufferMap,
-        buffer: finalBuffer,
-      });
-      this.props.updateFinalBuffer(finalBuffer);
+      if (Object.keys(bufferMap).length > 0) {
+        const finalBuffer = this.state.crunker.mergeAudio(Object.values(bufferMap));
+        this.setState({
+          bufferMap: bufferMap,
+          buffer: finalBuffer,
+        });
+        this.props.updateFinalBuffer(finalBuffer);
+      } else {
+        this.props.updateFinalBuffer(null);
+      }
     }
     if (prevProps.comittedLayers.length !== this.props.comittedLayers.length) {
       const bufferMap = this.state.bufferMap;
