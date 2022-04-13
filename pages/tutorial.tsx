@@ -8,11 +8,11 @@ const Tutorial = () => {
     <>
       <Navbar />
       <Page className="tutorial">
-        <div style={{display: 'flex', width: '100%', justifyContent: "center", textAlign: 'center', flexDirection: 'column'}}>
+        <div>
           <Text h1>Tutorial</Text>
           <Text h4>How to use Harmony Hub!</Text>
+          <iframe width="720" height="520" src="https://youtube.com/embed/JBqOLxqZ4L8"></iframe>
         </div>
-        <iframe width="720" height="520" src="https://youtube.com/embed/JBqOLxqZ4L8"></iframe>
       </Page>
     </>
   );
