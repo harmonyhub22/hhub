@@ -85,7 +85,6 @@ const Signup = (): React.ReactNode => {
             </Button>
           </motion.div>
         </motion.div>
-        <Wave />
         <motion.div
           className="intro-images"
           variants={imgVariant}
