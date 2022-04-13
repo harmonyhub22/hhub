@@ -36,10 +36,32 @@ export const config = {
             'funkpop-trumpet',
             'funkpop-tuba',
         ],
+        'Choir': [
+            'choir1',
+            'choir2',
+            'choir3',
+        ],
+        'Piano': [
+            'piano1',
+            'piano2',
+        ],
+        'Harp': [
+            'harp1',
+        ],
+        'Chords': [
+            'chord1',
+            'chord2',
+            'chord3',
+        ],
         'Sick beats': [
             'lofi-beat1',
             'lofi-beat2',
             'freestyle-rap-beat1',
+            'bongos',
+            'castanets',
+            'simple-beat1',
+            'simple-beat2',
+            'claps',
         ]
     },
     congrats: [
