@@ -26,7 +26,6 @@ const Profile = () => {
       <Page style={{textAlign: 'center'}}>
         <div style={{display: 'flex', width: '100%', justifyContent: "center", flexDirection: 'column'}}>
           <Text h1>You</Text>
-          <Text h4>Future Drake loading...</Text>
         </div>
         {currentMember !== null && 
         <div style={{display: 'flex', justifyContent: 'center'}}>
