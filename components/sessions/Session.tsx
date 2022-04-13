@@ -373,7 +373,7 @@ class Session extends Component<SessionProps, SessionState> {
 
         <Modal
           width="35rem"
-          visible={this.state.finalBuffer !== null}
+          visible={this.state.sessionEnded}
           disableBackdropClick
         >
           <Modal.Title>Session Complete</Modal.Title>
