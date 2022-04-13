@@ -2,11 +2,9 @@ import { Button, Input, Spacer } from "@geist-ui/core";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { login } from "../api/Helper";
-import Wave from "../components/animations/Wave";
 import * as AnimationPic from "../components/animations/AnimationPic";
 import { imgVariant, titleSlider } from "../components/animations/Animation";
 import { motion } from "framer-motion";
-import { useCookies } from 'react-cookie';
 import AuthResponse from "../interfaces/authResponse";
 
 const Login = (): React.ReactNode => {
@@ -14,8 +12,6 @@ const Login = (): React.ReactNode => {
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-
-  const [cookies, setCookie, removeCookie] = useCookies(['hhub-token-2']);
 
   const getLogin = async () => {
     if (email.length === 0) {
@@ -30,7 +26,6 @@ const Login = (): React.ReactNode => {
     console.log('auth Response', authResponse);
 
     if (authResponse !== null && authResponse.success === true) {
-      setCookie('hhub-token-2', authResponse["hhub-token"]);
       window.location.assign("/");
       return;
     }

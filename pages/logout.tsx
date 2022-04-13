@@ -1,11 +1,10 @@
-import { Button, Input, Spacer, Text, Page } from "@geist-ui/core";
+import { Button } from "@geist-ui/core";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { login, logout } from "../api/Helper";
+import { useEffect } from "react";
+import { logout } from "../api/Helper";
 import { titleSlider } from "../components/animations/Animation";
 import { Galaxy } from "../components/animations/AnimationPic";
-import { useCookies } from 'react-cookie';
 
 const Login = (): React.ReactNode => {
   const router = useRouter();
