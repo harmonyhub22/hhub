@@ -178,8 +178,11 @@ export const syncPostLayer = (sessionId: string, layerData: LayerInterface, laye
         body: formData,
       })
       .then(response => {
-        if (response.ok) tellPartnerToPull();
-        else throw new Error(`Server returned ${response.status}: ${response.statusText}`)
+        if (response.ok) {
+          tellPartnerToPull();
+          return;
+        }
+        throw new Error(`Server returned ${response.status}: ${response.statusText}`)
       })
       .catch(err => {
         alert('Could not upload recording :(');
