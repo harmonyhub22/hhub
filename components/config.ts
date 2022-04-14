@@ -41,12 +41,17 @@ export const config = {
             'choir2',
             'choir3',
         ],
-        'Piano': [
-            'piano1',
-            'piano2',
-        ],
-        'Harp': [
-            'harp1',
+        'Cinematic': [
+            'cinematic-harp1',
+            'cinematic-flute1',
+            'cinematic-piano1',
+            'cinematic-piano2',
+            'cinematic-frenchhorn1',
+            'cinematic-frenchhorn2',
+            'cinematic-windchimes',
+            'cinematic-cymbal1',
+            'cinematic-strings1',
+            'cinematic-strings2',
         ],
         'Chords': [
             'chord1',
@@ -62,6 +67,9 @@ export const config = {
             'simple-beat1',
             'simple-beat2',
             'claps',
+        ],
+        'Craziness': [
+            'craziness'
         ]
     },
     congrats: [
