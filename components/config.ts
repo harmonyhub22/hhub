@@ -50,6 +50,7 @@ export const config = {
             'cinematic-frenchhorn2',
             'cinematic-windchimes',
             'cinematic-cymbal1',
+            'cinematic-cymbal2',
             'cinematic-strings1',
             'cinematic-strings2',
         ],
@@ -66,6 +67,9 @@ export const config = {
             'castanets',
             'simple-beat1',
             'simple-beat2',
+            'simple-beat3',
+            'simple-beat4',
+            'drumset-crazy1',
             'claps',
         ],
         'Craziness': [
