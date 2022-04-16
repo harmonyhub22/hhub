@@ -28,7 +28,7 @@ class PaletteRecorder extends React.Component<PaletteRecorderProps, PaletteRecor
     this.state = {
       recorder: null,
       isRecording: false,
-      metronome: new Player("../../metronome130.mp3").toDestination(),
+      metronome: new Player("../../metronome.mp3").toDestination(),
       timer: null,
       currentSeconds: 0,
       volume: 0,
