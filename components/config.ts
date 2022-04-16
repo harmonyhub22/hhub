@@ -46,6 +46,9 @@ export const config = {
             'cinematic-flute1',
             'cinematic-piano1',
             'cinematic-piano2',
+            'cinematic-piano3',
+            'cinematic-piano4',
+            'cinematic-piano5',
             'cinematic-frenchhorn1',
             'cinematic-frenchhorn2',
             'cinematic-windchimes',
@@ -53,6 +56,7 @@ export const config = {
             'cinematic-cymbal2',
             'cinematic-strings1',
             'cinematic-strings2',
+            'cinematic-strings3',
         ],
         'Chords': [
             'C-major-low',
