@@ -56,6 +56,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
     this.sendMessage = this.sendMessage.bind(this);
     this.registerNewMsg = this.registerNewMsg.bind(this);
     this.onEnterSubmit = this.onEnterSubmit.bind(this);
+    this.sendSessionMessage = this.sendSessionMessage.bind(this);
   }
 
   componentDidMount() {
@@ -106,11 +107,7 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
       window.localStorage.removeItem(`session-${this.props.sessionId}-options`);
     }
     if (prevProps.sessionMessage !== this.props.sessionMessage && this.props.sessionMessage.length !== 0) {
-      const sMsg: SessionReceiveMsg = {
-        name: 'Harmony Hub',
-        message: this.props.sessionMessage,
-      }
-      this.registerNewMsg(sMsg);
+      this.sendSessionMessage(this.props.sessionMessage);
     }
   }
 
@@ -181,6 +178,14 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
       currentMessage: '',
       isMessaging: false,
     });
+  };
+
+  sendSessionMessage(msg:string) {
+    const data: SessionSendMsg = {
+      sessionId: this.props.sessionId ?? '',
+      message: msg,
+    }
+    this.props.socket.emit(SessionOptions.socketEndpointSendRoomMsg, data);
   };
 
   handleMessaging() {
