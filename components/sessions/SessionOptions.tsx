@@ -8,6 +8,7 @@ interface SessionOptionsProps {
   sessionId: string|null,
   partnerFirstname: string,
   endSession: any,
+  sessionMessage: string,
 };
 
 interface SessionOptionsState {
@@ -103,6 +104,13 @@ class SessionOptions extends React.Component<SessionOptionsProps, SessionOptions
     if (prevState.endSessionVotes !== this.state.endSessionVotes && this.state.endSessionVotes >= 2) {
       this.props.endSession();
       window.localStorage.removeItem(`session-${this.props.sessionId}-options`);
+    }
+    if (prevProps.sessionMessage !== this.props.sessionMessage && this.props.sessionMessage.length !== 0) {
+      const sMsg: SessionReceiveMsg = {
+        name: 'Harmony Hub',
+        message: this.props.sessionMessage,
+      }
+      this.registerNewMsg(sMsg);
     }
   }
 

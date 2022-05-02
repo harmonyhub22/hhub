@@ -38,6 +38,7 @@ interface SessionState {
   finalBuffer: any,
   bpm: number|null,
   paletteWidth: number,
+  sessionMessage: string,
 };
 
 class Session extends Component<SessionProps, SessionState> {
@@ -55,6 +56,7 @@ class Session extends Component<SessionProps, SessionState> {
       finalBuffer: null,
       bpm: null,
       paletteWidth: 400,
+      sessionMessage: '',
     };
     this.setSession = this.setSession.bind(this);
     this.updateSession = this.updateSession.bind(this);
@@ -272,9 +274,10 @@ class Session extends Component<SessionProps, SessionState> {
   };
 
   // ** end session section
-  handleEndSession() {
+  handleEndSession(forced=false) {
     this.setState({
       sessionEnded: true,
+      sessionMessage: forced ? 'Session force ended' : '',
     });
   };
 
@@ -393,6 +396,7 @@ class Session extends Component<SessionProps, SessionState> {
           startTime={this.state.session?.startTime ?? null}
           bpm={this.state.bpm}
           updateBpm={this.updateBpm}
+          endSession={this.handleEndSession}
         />
 
         <div className="session-content">
@@ -416,6 +420,7 @@ class Session extends Component<SessionProps, SessionState> {
           sessionId={this.state.session?.sessionId ?? null}
           partnerFirstname={this.state.partner?.firstname ?? ""}
           endSession={this.handleEndSession}
+          sessionMessage={this.state.sessionMessage}
         />
 
         <div className="palette-open-button">

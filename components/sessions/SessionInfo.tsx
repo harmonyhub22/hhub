@@ -1,4 +1,4 @@
-import { Card, Dot, Text, Collapse, Divider, Code, Toggle, Select } from "@geist-ui/core";
+import { Card, Dot, Text, Collapse, Divider, Code, Toggle, Select, Button } from "@geist-ui/core";
 import { ToggleEvent } from "@geist-ui/core/esm/toggle";
 import React from "react";
 import Member from "../../interfaces/models/Member";
@@ -12,6 +12,7 @@ interface SessionInfoProps {
   startTime: Date|null,
   bpm: number|null,
   updateBpm: any,
+  endSession: any,
 };
 
 interface SessionInfoState {
@@ -26,6 +27,7 @@ class SessionInfo extends React.Component<SessionInfoProps, SessionInfoState> {
     };
     this.setBpm = this.setBpm.bind(this);
     this.handleDragStop = this.handleDragStop.bind(this);
+    this.forceQuit = this.forceQuit.bind(this);
   }
 
   componentDidMount() {
@@ -46,6 +48,10 @@ class SessionInfo extends React.Component<SessionInfoProps, SessionInfoState> {
       offset: info.x,
     });
     window.localStorage.setItem('session-info-offset', info.x.toString());
+  };
+
+  forceQuit = () => {
+    this.props.endSession();
   };
 
   render() {
@@ -98,6 +104,10 @@ class SessionInfo extends React.Component<SessionInfoProps, SessionInfoState> {
                 <Select.Option value="130">130</Select.Option>
                 <Select.Option value="140">140</Select.Option>
               </Select>
+            </Card.Content>
+            <Divider h="1px" my={0} />
+            <Card.Content>
+              <Button onClick={this.forceQuit}>Force Quit (End the Session)</Button>
             </Card.Content>
           </Card>
         </Collapse>
