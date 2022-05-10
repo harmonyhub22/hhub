@@ -1,10 +1,10 @@
-# hhub
+# Harmony Hub
 
 Built with [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Description
 
-This is the frontend of the Harmony Hub application created by Team Musico for Senior CSCE 482 Capstone Spring 2022. Visit our final product <a href="https://harmonyhub.vercel.app" target="_blank">here</a>. The code contains advanced React components such as a DAW, draggable music layers, an adjustable timeline, and live socket updates. It is open source so feel free to make adjustments, spin-offs, and improvments. 
+This is the frontend of the Harmony Hub application created by Team Musico for Senior CSCE 482 Capstone Spring 2022. Visit our final product <a href="https://harmonyhub.vercel.app" target="_blank">here</a>. The code contains advanced React components such as a DAW, draggable music layers, an adjustable timeline, and live socket updates. It is open source so feel free to make adjustments, spin-offs, and improvments. Our backend exists in a separate repository, found <a href="https://github.com/harmonyhub22/hhub-backend" target="_blank">here</a>.
 
 ## Spin up Locally
 
